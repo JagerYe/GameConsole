@@ -4,8 +4,8 @@ class Controller
 {
     public function requireDAO($dao)
     {
-        require_once "{$_SERVER['DOCUMENT_ROOT']}/MessageBoard/models/$dao/{$dao}Service.php";
-        require_once "{$_SERVER['DOCUMENT_ROOT']}/MessageBoard/models/$dao/$dao.php";
+        require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/$dao/{$dao}Service.php";
+        require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/$dao/$dao.php";
     }
     public function getJsonToModel($model, $jsonStr, $isInsert = false)
     {

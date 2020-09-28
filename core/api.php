@@ -8,11 +8,11 @@ class Api
         $url = rtrim($_GET["url"], "/");
         $url = explode("/", $url);
         $controllerName = "{$url[0]}Controller";
-        if (!file_exists("{$_SERVER['DOCUMENT_ROOT']}/MessageBoard/controllers/$controllerName.php")) {
+        if (!file_exists("{$_SERVER['DOCUMENT_ROOT']}/GameConsole/controllers/$controllerName.php")) {
             $controllerName = 'IndexController';
             $url[1] = 'getIndexView';
         }
-        require_once "{$_SERVER['DOCUMENT_ROOT']}/MessageBoard/controllers/$controllerName.php";
+        require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/controllers/$controllerName.php";
         $controller = new $controllerName;
         $methodName = isset($url[1]) ? $url[1] : "getIndexView";
         if (!method_exists($controller, $methodName)) {
