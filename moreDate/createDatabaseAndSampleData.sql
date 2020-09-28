@@ -23,7 +23,9 @@ CREATE TABLE `MemberLoginStatus`(
     `loginID` INT NOT NULL AUTO_INCREMENT,
     `memberID` INT NOT NULL,
     `cookieID` TEXT NOT NULL,
+    `keepLoggedIn` BOOLEAN NOT NULL,
     `loginDate` DATETIME NOT NULL,
+    `usageTime` DATETIME,
     `logoutDate` DATETIME,
     PRIMARY KEY(`loginID`),
     FOREIGN KEY(`memberID`) REFERENCES `Members`(`id`)
@@ -82,7 +84,9 @@ CREATE TABLE `EmployeeLoginStatus`(
     `loginID` INT NOT NULL AUTO_INCREMENT,
     `employeeID` INT NOT NULL,
     `cookieID` TEXT NOT NULL,
+    `keepLoggedIn` BOOLEAN NOT NULL,
     `loginDate` DATETIME NOT NULL,
+    `usageTime` DATETIME,
     `logoutDate` DATETIME,
     PRIMARY KEY(`loginID`),
     FOREIGN KEY(`employeeID`) REFERENCES `Employees`(`id`)
@@ -106,3 +110,10 @@ CREATE TABLE `PermissionControl`(
     FOREIGN KEY(`employeeID`) REFERENCES `Employees`(`id`),
     FOREIGN KEY(`permissionID`) REFERENCES `Permissions`(`id`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8mb4;
+
+INSERT INTO `Members`(`account`, `password`, `name`, `email`, `phone`, `address`, `status`, `creationDate`) VALUES
+('m01','123456','a','a@s.s','1234567890','aca',true,NOW()),
+('m02','123456','a','a@s.s','1234567890','aca',true,NOW()),
+('m03','123456','a','a@s.s','1234567890','aca',true,NOW());
+
+INSERT INTO `MemberLoginStatus`(`memberID`, `cookieID`, `keepLoggedIn`, `loginDate`) VALUES (1,'11235',false,NOW());
