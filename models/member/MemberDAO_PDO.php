@@ -100,7 +100,7 @@ class MemberDAO_PDO implements MemberDAO
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return false;
+            return null;
         }
         $dbh = null;
         return $request;
@@ -117,7 +117,7 @@ class MemberDAO_PDO implements MemberDAO
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return false;
+            return null;
         }
         $dbh = null;
         return $request;
@@ -133,7 +133,7 @@ class MemberDAO_PDO implements MemberDAO
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return false;
+            return null;
         }
         $dbh = null;
         return $request;

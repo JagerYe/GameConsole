@@ -5,6 +5,6 @@ class EmployeeService
 {
     public static function getDAO()
     {
-        return new MemberDAO_PDO();
+        return new EmployeeDAO_PDO();
     }
 }

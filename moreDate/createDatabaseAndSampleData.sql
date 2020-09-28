@@ -37,6 +37,8 @@ CREATE TABLE `Commodities`(
     `name` TEXT NOT NULL,
     `price` INT NOT NULL,
     `quantity` INT NOT NULL,
+    `status` BOOLEAN NOT NULL,
+    `text` TEXT,
     `image` BLOB,
     `creationDate` DATETIME NOT NULL,
     `changeDate` DATETIME,

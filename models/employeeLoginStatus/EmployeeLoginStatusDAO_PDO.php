@@ -21,7 +21,7 @@ class EmployeeLoginStatusDAO_PDO implements EmployeeLoginStatusDAO
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return 0;
+            return -1;
         }
         $dbh = null;
         return $id;

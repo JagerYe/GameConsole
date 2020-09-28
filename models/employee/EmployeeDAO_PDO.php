@@ -92,7 +92,7 @@ class EmployeeDAO_PDO implements EmployeeDAO
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return false;
+            return null;
         }
         $dbh = null;
         return $request;
@@ -109,7 +109,7 @@ class EmployeeDAO_PDO implements EmployeeDAO
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return false;
+            return null;
         }
         $dbh = null;
         return $request;
@@ -125,7 +125,7 @@ class EmployeeDAO_PDO implements EmployeeDAO
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return false;
+            return null;
         }
         $dbh = null;
         return $request;
