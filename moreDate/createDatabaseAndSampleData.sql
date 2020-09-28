@@ -72,8 +72,6 @@ CREATE TABLE `Employees`(
     `password` TEXT NOT NULL,
     `name` VARCHAR(20) NOT NULL,
     `email` VARCHAR(50) NOT NULL,
-    `phone` VARCHAR(20) NOT NULL,
-    `address` TEXT NOT NULL,
     `creationDate` DATETIME NOT NULL,
     `changeDate` DATETIME,
     PRIMARY KEY(`id`)
