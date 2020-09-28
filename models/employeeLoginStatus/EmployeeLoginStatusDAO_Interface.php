@@ -1,5 +1,5 @@
 <?php
-interface EmployeeLoginStatusDAO
+interface EmployeeLoginStatusDAO_Interface
 {
     public function doLogin($employeeID , $cookieID, $keepLoggedIn = false);
     public function doLogoutByID($id, $dbh = null);

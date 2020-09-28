@@ -1,5 +1,5 @@
 <?php
-interface EmployeeDAO
+interface EmployeeDAO_Interface
 {
     public function insert($account, $password, $name, $email);
     public function update($id, $name, $email);

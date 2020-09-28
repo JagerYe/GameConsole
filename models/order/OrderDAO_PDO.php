@@ -1,7 +1,8 @@
 <?php
 require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/order/OrderDAO_Interface.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/orderDetail/OrderDetailService.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/config.php";
-class OrderDAO_PDO implements OrderDAO
+class OrderDAO implements OrderDAO_Interface
 {
     //新增訂單
     public function insert($memberID, $address, $orderDetails)
@@ -9,19 +10,24 @@ class OrderDAO_PDO implements OrderDAO
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("INSERT INTO `Orders`(`memberID`, `address`, `creationDate`) VALUES (:memberID,:address,NOW());");
+            $sth = $dbh->prepare("INSERT INTO `Orders`(`memberID`, `address`, `creationDatetime`) VALUES (:memberID,:address,NOW());");
             $sth->bindParam("memberID", $memberID);
             $sth->bindParam("address", $address);
             $sth->execute();
             $id = $dbh->lastInsertId();
 
-            //等訂單明細
+            //新增訂單明細
+            if (OrderDetailService::getDAO()->insert($id, $orderDetails, $dbh)) {
+                throw new Exception('新增明細發生錯誤');
+            }
 
             $dbh->commit();
             $sth = null;
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
+            return 0;
+        } catch (Exception $err) {
             return 0;
         }
         $dbh = null;
@@ -47,7 +53,7 @@ class OrderDAO_PDO implements OrderDAO
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return false;
+            return null;
         }
         $dbh = null;
         return $request;

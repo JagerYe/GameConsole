@@ -1,16 +1,16 @@
 <?php
-require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/memberLoginStatus/MemberLoginStatusDAO_Interface.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/employeeLoginStatus/EmployeeLoginStatusDAO_Interface.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/config.php";
-class MemberLoginStatusDAO_PDO implements MemberLoginStatusDAO
+class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
 {
     //登入
-    public function doLogin($memberID, $cookieID, $keepLoggedIn = false)
+    public function doLogin($employeeID , $cookieID, $keepLoggedIn = false)
     {
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("INSERT INTO `MemberLoginStatus`(`memberID`, `cookieID`, `keepLoggedIn`, `loginDate`, `usageTime`) VALUES (:memberID,:cookieID,:keepLoggedIn,NOW(),NOW());");
-            $sth->bindParam("memberID", $memberID);
+            $sth = $dbh->prepare("INSERT INTO `EmployeeLoginStatus`(`employeeID `, `cookieID`, `keepLoggedIn`, `loginDatetime`, `usageTime`) VALUES (:employeeID ,:cookieID,:keepLoggedIn,NOW(),NOW());");
+            $sth->bindParam("employeeID ", $employeeID );
             $cookieID = password_hash($cookieID, PASSWORD_DEFAULT);
             $sth->bindParam("cookieID", $cookieID);
             $sth->bindParam("keepLoggedIn", $keepLoggedIn);
@@ -21,7 +21,7 @@ class MemberLoginStatusDAO_PDO implements MemberLoginStatusDAO
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return 0;
+            return -1;
         }
         $dbh = null;
         return $id;
@@ -35,7 +35,7 @@ class MemberLoginStatusDAO_PDO implements MemberLoginStatusDAO
                 $dbh = Config::getDBConnect();
             }
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `logoutDate`=NOW() WHERE `loginID`=:loginID;"
+            $sth = $dbh->prepare("UPDATE `EmployeeLoginStatus` SET `logoutDatetime`=NOW() WHERE `loginID`=:loginID;"
             );
             $sth->bindParam("loginID", $id);
             $sth->execute();
@@ -51,14 +51,14 @@ class MemberLoginStatusDAO_PDO implements MemberLoginStatusDAO
     }
 
     //登出使用者所有裝置
-    public function doLogoutByMemberID($id)
+    public function doLogoutByEmployeeID ($id)
     {
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `logoutDate`=NOW() WHERE `memberID`=:memberID;"
+            $sth = $dbh->prepare("UPDATE `EmployeeLoginStatus` SET `logoutDatetime`=NOW() WHERE `employeeID `=:employeeID;"
             );
-            $sth->bindParam("memberID", $id);
+            $sth->bindParam("employeeID", $id);
             $sth->execute();
             $dbh->commit();
             $sth = null;
@@ -77,7 +77,7 @@ class MemberLoginStatusDAO_PDO implements MemberLoginStatusDAO
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `usageTime`=NOW() WHERE `loginID`=:loginID;");
+            $sth = $dbh->prepare("UPDATE `EmployeeLoginStatus` SET `usageTime`=NOW() WHERE `loginID`=:loginID;");
             $sth->bindParam("loginID", $id);
             $sth->execute();
             $dbh->commit();
@@ -96,11 +96,11 @@ class MemberLoginStatusDAO_PDO implements MemberLoginStatusDAO
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT `loginID`, `memberID`, `cookieID`,
-                    `keepLoggedIn`, `loginDate`, `usageTime`,
-                    `logoutDate`, (DATE_ADD(`usageTime`,INTERVAL 30 MINUTE) <= NOW()) AS `timeOut`
-                FROM `MemberLoginStatus` WHERE
-                `loginID`=:loginID && IF(`logoutDate`,FALSE,TRUE);"
+            $sth = $dbh->prepare("SELECT `loginID`, `employeeID `, `cookieID`,
+                    `keepLoggedIn`, `loginDatetime`, `usageTime`,
+                    `logoutDatetime`, (DATE_ADD(`usageTime`,INTERVAL 30 MINUTE) <= NOW()) AS `timeOut`
+                FROM `EmployeeLoginStatus` WHERE
+                `loginID`=:loginID && IF(`logoutDatetime`,FALSE,TRUE);"
             );
             $sth->bindParam("loginID", $id);
             $sth->execute();

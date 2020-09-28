@@ -1,16 +1,16 @@
 <?php
-require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/employeeLoginStatus/EmployeeLoginStatusDAO_Interface.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/memberLoginStatus/MemberLoginStatusDAO_Interface.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/config.php";
-class EmployeeLoginStatusDAO_PDO implements EmployeeLoginStatusDAO
+class MemberLoginStatusDAO implements MemberLoginStatusDAO_Interface
 {
     //登入
-    public function doLogin($employeeID , $cookieID, $keepLoggedIn = false)
+    public function doLogin($memberID, $cookieID, $keepLoggedIn = false)
     {
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("INSERT INTO `EmployeeLoginStatus`(`employeeID `, `cookieID`, `keepLoggedIn`, `loginDate`, `usageTime`) VALUES (:employeeID ,:cookieID,:keepLoggedIn,NOW(),NOW());");
-            $sth->bindParam("employeeID ", $employeeID );
+            $sth = $dbh->prepare("INSERT INTO `MemberLoginStatus`(`memberID`, `cookieID`, `keepLoggedIn`, `loginDate`, `usageTime`) VALUES (:memberID,:cookieID,:keepLoggedIn,NOW(),NOW());");
+            $sth->bindParam("memberID", $memberID);
             $cookieID = password_hash($cookieID, PASSWORD_DEFAULT);
             $sth->bindParam("cookieID", $cookieID);
             $sth->bindParam("keepLoggedIn", $keepLoggedIn);
@@ -21,7 +21,7 @@ class EmployeeLoginStatusDAO_PDO implements EmployeeLoginStatusDAO
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return -1;
+            return 0;
         }
         $dbh = null;
         return $id;
@@ -35,7 +35,7 @@ class EmployeeLoginStatusDAO_PDO implements EmployeeLoginStatusDAO
                 $dbh = Config::getDBConnect();
             }
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `EmployeeLoginStatus` SET `logoutDate`=NOW() WHERE `loginID`=:loginID;"
+            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `logoutDate`=NOW() WHERE `loginID`=:loginID;"
             );
             $sth->bindParam("loginID", $id);
             $sth->execute();
@@ -51,14 +51,14 @@ class EmployeeLoginStatusDAO_PDO implements EmployeeLoginStatusDAO
     }
 
     //登出使用者所有裝置
-    public function doLogoutByEmployeeID ($id)
+    public function doLogoutByMemberID($id)
     {
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `EmployeeLoginStatus` SET `logoutDate`=NOW() WHERE `employeeID `=:employeeID;"
+            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `logoutDate`=NOW() WHERE `memberID`=:memberID;"
             );
-            $sth->bindParam("employeeID", $id);
+            $sth->bindParam("memberID", $id);
             $sth->execute();
             $dbh->commit();
             $sth = null;
@@ -77,7 +77,7 @@ class EmployeeLoginStatusDAO_PDO implements EmployeeLoginStatusDAO
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `EmployeeLoginStatus` SET `usageTime`=NOW() WHERE `loginID`=:loginID;");
+            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `usageTime`=NOW() WHERE `loginID`=:loginID;");
             $sth->bindParam("loginID", $id);
             $sth->execute();
             $dbh->commit();
@@ -96,10 +96,10 @@ class EmployeeLoginStatusDAO_PDO implements EmployeeLoginStatusDAO
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT `loginID`, `employeeID `, `cookieID`,
+            $sth = $dbh->prepare("SELECT `loginID`, `memberID`, `cookieID`,
                     `keepLoggedIn`, `loginDate`, `usageTime`,
                     `logoutDate`, (DATE_ADD(`usageTime`,INTERVAL 30 MINUTE) <= NOW()) AS `timeOut`
-                FROM `EmployeeLoginStatus` WHERE
+                FROM `MemberLoginStatus` WHERE
                 `loginID`=:loginID && IF(`logoutDate`,FALSE,TRUE);"
             );
             $sth->bindParam("loginID", $id);

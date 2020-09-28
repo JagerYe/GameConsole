@@ -1,5 +1,5 @@
 <?php
-interface CommodityDAO
+interface CommodityDAO_Interface
 {
     public function insert($name, $price, $quantity, $text = "", $status = false);
     public function update($id, $name, $price, $quantity, $text, $status);

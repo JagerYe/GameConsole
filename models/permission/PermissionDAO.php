@@ -1,7 +1,7 @@
 <?php
-require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/member/MemberDAO_Interface.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/permission/PermissionDAO_Interface.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/config.php";
-class MemberDAO_PDO implements MemberDAO
+class PermissionDAO implements PermissionDAO_Interface
 {
     //新增會員
     public function insert($account, $password, $name, $email, $phone, $address = null)

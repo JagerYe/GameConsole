@@ -1,7 +1,7 @@
 <?php
 require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/commodity/CommodityDAO_Interface.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/config.php";
-class CommodityDAO_PDO implements CommodityDAO
+class CommodityDAO implements CommodityDAO_Interface
 {
     //新增
     public function insert($name, $price, $quantity, $text = "", $status = false)
@@ -9,7 +9,7 @@ class CommodityDAO_PDO implements CommodityDAO
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("INSERT INTO `Commodities`(`name`, `price`, `quantity`, `text`, `status`, `creationDate`)
+            $sth = $dbh->prepare("INSERT INTO `Commodities`(`name`, `price`, `quantity`, `text`, `status`, `creationDatetime`)
                 VALUES (:name,:price,:quantity,:text,:status,NOW());");
             $sth->bindParam("name", $name);
             $sth->bindParam("price", $price);
@@ -34,7 +34,7 @@ class CommodityDAO_PDO implements CommodityDAO
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `Commodities` SET `name`=:name,`price`=:price,`quantity`=:quantity,`text`=:text,`status`=:status,`changeDate`=NOW() WHERE `id`=:id");
+            $sth = $dbh->prepare("UPDATE `Commodities` SET `name`=:name,`price`=:price,`quantity`=:quantity,`text`=:text,`status`=:status,`changeDatetime`=NOW() WHERE `id`=:id");
             $sth->bindParam("id", $id);
             $sth->bindParam("name", $name);
             $sth->bindParam("price", $price);
@@ -59,7 +59,7 @@ class CommodityDAO_PDO implements CommodityDAO
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `Commodities` SET `image`=LOAD_FILE(:image),`changeDate`=NOW() WHERE `id`=:id;");
+            $sth = $dbh->prepare("UPDATE `Commodities` SET `image`=LOAD_FILE(:image),`changeDatetime`=NOW() WHERE `id`=:id;");
             $sth->bindParam("id", $id);
             $sth->bindParam("image", $img);
             $sth->execute();
@@ -82,7 +82,7 @@ class CommodityDAO_PDO implements CommodityDAO
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT `id`, `name`, `price`, `quantity`, `text`, `status`, `creationDate`, `changeDate` FROM `Commodities` WHERE `id`=:id;");
+            $sth = $dbh->prepare("SELECT `id`, `name`, `price`, `quantity`, `text`, `status`, `creationDatetime`, `changeDatetime` FROM `Commodities` WHERE `id`=:id;");
             $sth->bindParam("id", $id);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_ASSOC);
@@ -118,7 +118,7 @@ class CommodityDAO_PDO implements CommodityDAO
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT `id`, `name`, `price`, `quantity`, `text`, `status`, `creationDate`, `changeDate` FROM `Commodities`
+            $sth = $dbh->prepare("SELECT `id`, `name`, `price`, `quantity`, `text`, `status`, `creationDatetime`, `changeDatetime` FROM `Commodities`
                 WHERE `id`<IFNULL(:id, (~0 >> 32)) ORDER BY `id` DESC LIMIT 5;"
             );
             $sth->bindParam("id", $id);

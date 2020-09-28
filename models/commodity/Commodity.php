@@ -6,8 +6,8 @@ class Commodity implements \JsonSerializable
     private $_quantity;
     private $_name;
     private $_status;
-    private $_creationDate;
-    private $_changeDate;
+    private $_creationDatetime;
+    private $_changeDatetime;
 
     public function getId()
     {
@@ -74,23 +74,23 @@ class Commodity implements \JsonSerializable
         return true;
     }
 
-    public function getCreationDate()
+    public function getCreationDatetime()
     {
-        return $this->_creationDate;
+        return $this->_creationDatetime;
     }
-    public function setCreationDate($creationDate)
+    public function setCreationDatetime($creationDatetime)
     {
-        $this->_creationDate = $creationDate;
+        $this->_creationDatetime = $creationDatetime;
         return true;
     }
 
-    public function getChangeDate()
+    public function getChangeDatetime()
     {
-        return $this->_changeDate;
+        return $this->_changeDatetime;
     }
-    public function setChangeDate($changeDate)
+    public function setChangeDatetime($changeDatetime)
     {
-        $this->_changeDate = $changeDate;
+        $this->_changeDatetime = $changeDatetime;
         return true;
     }
 

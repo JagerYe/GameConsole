@@ -1,5 +1,5 @@
 <?php
-interface MemberLoginStatusDAO
+interface MemberLoginStatusDAO_Interface
 {
     public function doLogin($memberID, $cookieID, $keepLoggedIn = false);
     public function doLogoutByID($id, $dbh = null);

@@ -1,24 +1,26 @@
 <?php
-require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/employee/EmployeeDAO_Interface.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/member/MemberDAO_Interface.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/config.php";
-class EmployeeDAO_PDO implements EmployeeDAO
+class MemberDAO implements MemberDAO_Interface
 {
     //新增會員
-    public function insert($account, $password, $name, $email)
+    public function insert($account, $password, $name, $email, $phone, $address = null)
     {
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("INSERT INTO `Employees`(`account`, `password`, `name`, `email`, `creationDate`)
+            $sth = $dbh->prepare("INSERT INTO `Members`(`account`, `password`, `name`, `email`, `phone`, `address`, `status`, `creationDatetime`)
                 VALUES(
-                    (SELECT :account WHERE (SELECT COUNT(`account`) FROM `Employees` AS m WHERE `account`=:account) = 0),
-                    :password, :name, :email, NOW()
+                    (SELECT :account WHERE (SELECT COUNT(`account`) FROM `Members` AS m WHERE `account`=:account) = 0),
+                    :password, :name, :email, :phone, :address, true, NOW()
             );");
             $sth->bindParam("account", $account);
             $password = password_hash($password, PASSWORD_DEFAULT);
             $sth->bindParam("password", $password);
             $sth->bindParam("name", $name);
             $sth->bindParam("email", $email);
+            $sth->bindParam("phone", $phone);
+            $sth->bindParam("address", $address);
             $sth->execute();
             $dbh->commit();
             $sth = null;
@@ -32,20 +34,26 @@ class EmployeeDAO_PDO implements EmployeeDAO
     }
 
     //更新會員
-    public function update($id, $name, $email)
+    public function update($id, $name, $email, $phone, $status, $address = null)
     {
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `Employees` SET
+            $sth = $dbh->prepare("UPDATE `Members` SET
                     `name`=:name,
                     `email`=:email,
-                    `changeDate`=NOW()
+                    `phone`=:phone,
+                    `address`=:address,
+                    `status`=:status,
+                    `changeDatetime`=NOW()
                 WHERE `id`=:id;"
             );
             $sth->bindParam("id", $id);
             $sth->bindParam("name", $name);
             $sth->bindParam("email", $email);
+            $sth->bindParam("phone", $phone);
+            $sth->bindParam("address", $address);
+            $sth->bindParam("status", $status);
             $sth->execute();
             $dbh->commit();
             $sth = null;
@@ -64,7 +72,7 @@ class EmployeeDAO_PDO implements EmployeeDAO
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `Employees` SET `password`=:password,`changeDate`=NOW()
+            $sth = $dbh->prepare("UPDATE `Members` SET `password`=:password,`changeDatetime`=NOW()
                                     WHERE `id`=:id;");
             $password = password_hash($password, PASSWORD_DEFAULT);
             $sth->bindParam("id", $id);
@@ -81,11 +89,11 @@ class EmployeeDAO_PDO implements EmployeeDAO
         return true;
     }
 
-    public function getOneEmployeeByAccount($account)
+    public function getOneMemberByAccount($account)
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT `id`, `account`, `name`, `email`, `creationDate`, `changeDate` FROM `Employees` WHERE `account`=:account;");
+            $sth = $dbh->prepare("SELECT `id`, `account`, `name`, `email`, `phone`, `address`, `status`, `creationDatetime`, `changeDatetime` FROM `Members` WHERE `account`=:account;");
             $sth->bindParam("account", $account);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_ASSOC);
@@ -98,11 +106,11 @@ class EmployeeDAO_PDO implements EmployeeDAO
         return $request;
     }
 
-    public function getOneEmployeeByID($id)
+    public function getOneMemberByID($id)
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT `id`, `account`, `name`, `email`, `creationDate`, `changeDate` FROM `Employees` WHERE `id`=:id;");
+            $sth = $dbh->prepare("SELECT `id`, `account`, `name`, `email`, `phone`, `address`, `status`, `creationDatetime`, `changeDatetime` FROM `Members` WHERE `id`=:id;");
             $sth->bindParam("id", $id);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_ASSOC);
@@ -115,11 +123,11 @@ class EmployeeDAO_PDO implements EmployeeDAO
         return $request;
     }
 
-    public function getAll()
+    public function getALL()
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT `id`, `account`, `name`, `email`, `creationDate`, `changeDate` FROM `Employees`;");
+            $sth = $dbh->prepare("SELECT `id`, `account`, `name`, `email`, `phone`, `address`, `status`, `creationDatetime`, `changeDatetime` FROM `Members`;");
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_ASSOC);
             $sth = null;
@@ -135,7 +143,7 @@ class EmployeeDAO_PDO implements EmployeeDAO
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT COUNT(`id`) AS `check`, `id` FROM `employees` WHERE `account`=:account;");
+            $sth = $dbh->prepare("SELECT COUNT(`id`) AS `check`, `id` FROM `members` WHERE `account`=:account;");
             $sth->bindParam("account", $account);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_ASSOC);
@@ -143,7 +151,7 @@ class EmployeeDAO_PDO implements EmployeeDAO
                 throw new Exception("帳號密碼錯誤");
             }
 
-            $sth = $dbh->prepare("SELECT `password` FROM `employees` WHERE `id`=:id");
+            $sth = $dbh->prepare("SELECT `password` FROM `members` WHERE `id`=:id");
             $sth->bindParam("id", $id);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_NUM);
@@ -156,12 +164,12 @@ class EmployeeDAO_PDO implements EmployeeDAO
         return password_verify($password, $request['0']);
     }
 
-    public function checkEmployeeExist($id)
+    public function checkMemberExist($id)
     {
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("SELECT COUNT(*) FROM `Employees` WHERE `account` = :account;");
+            $sth = $dbh->prepare("SELECT COUNT(*) FROM `Members` WHERE `account` = :account;");
             $sth->bindParam("account", $id);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_NUM);
