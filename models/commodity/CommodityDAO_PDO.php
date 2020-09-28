@@ -1,7 +1,7 @@
 <?php
-require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/commodities/CommoditiesDAO_Interface.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/commodity/CommodityDAO_Interface.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/config.php";
-class CommoditiesDAO_PDO implements CommoditiesDAO
+class CommodityDAO_PDO implements CommodityDAO
 {
     //新增
     public function insert($name, $price, $quantity, $text = "", $status = false)

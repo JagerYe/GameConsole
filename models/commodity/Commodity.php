@@ -1,5 +1,5 @@
 <?php
-class Commodities implements \JsonSerializable
+class Commodity implements \JsonSerializable
 {
     private $_id;
     private $_price;
