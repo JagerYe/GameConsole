@@ -1,9 +1,9 @@
 <?php
 class MemberLoginStatus implements \JsonSerializable
 {
-    private $_loginid;
-    private $_memberid;
-    private $_cookieid;
+    private $_loginID;
+    private $_memberID;
+    private $_cookieID;
     private $_keepLoggedIn;
     private $_loginDate;
     private $_usageTime;
@@ -11,40 +11,40 @@ class MemberLoginStatus implements \JsonSerializable
 
     public function getLoginID()
     {
-        return $this->_loginid;
+        return $this->_loginID;
     }
-    public function setLoginID($loginid)
+    public function setLoginID($loginID)
     {
-        if (!preg_match("/\d/", $loginid)) {
+        if (!preg_match("/\d/", $loginID)) {
             throw new Exception("LOGINID格式錯誤");
         }
-        $this->_loginid = $loginid;
+        $this->_loginID = $loginID;
         return true;
     }
 
     public function getMemberID()
     {
-        return $this->_memberid;
+        return $this->_memberID;
     }
-    public function setMemberID($memberid)
+    public function setMemberID($memberID)
     {
-        if (!preg_match("/\d/", $memberid)) {
+        if (!preg_match("/\d/", $memberID)) {
             throw new Exception("會員ID格式錯誤");
         }
-        $this->_memberid = $memberid;
+        $this->_memberID = $memberID;
         return true;
     }
 
     public function getCookieID()
     {
-        return $this->_cookieid;
+        return $this->_cookieID;
     }
-    public function setCookieID($cookieid)
+    public function setCookieID($cookieID)
     {
-        if (!preg_match("/\w+/", $cookieid)) {
+        if (!preg_match("/\w+/", $cookieID)) {
             throw new Exception("CookieID格式錯誤");
         }
-        $this->_cookieid = $cookieid;
+        $this->_cookieID = $cookieID;
         return true;
     }
 

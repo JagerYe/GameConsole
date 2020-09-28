@@ -1,9 +1,9 @@
 <?php
 class EmployeeLoginStatus implements \JsonSerializable
 {
-    private $_loginid;
-    private $_employeeid;
-    private $_cookieid;
+    private $_loginID;
+    private $_employeeID;
+    private $_cookieID;
     private $_keepLoggedIn;
     private $_loginDate;
     private $_usageTime;
@@ -11,40 +11,40 @@ class EmployeeLoginStatus implements \JsonSerializable
 
     public function getLoginID()
     {
-        return $this->_loginid;
+        return $this->_loginID;
     }
-    public function setLoginID($loginid)
+    public function setLoginID($loginID)
     {
-        if (!preg_match("/\d/", $loginid)) {
+        if (!preg_match("/\d/", $loginID)) {
             throw new Exception("LOGINID格式錯誤");
         }
-        $this->_loginid = $loginid;
+        $this->_loginID = $loginID;
         return true;
     }
 
     public function getEmployeeID()
     {
-        return $this->_employeeid;
+        return $this->_employeeID;
     }
-    public function setEmployeeID($employeeid)
+    public function setEmployeeID($employeeID)
     {
-        if (!preg_match("/\d/", $employeeid)) {
+        if (!preg_match("/\d/", $employeeID)) {
             throw new Exception("會員ID格式錯誤");
         }
-        $this->_employeeid = $employeeid;
+        $this->_employeeID = $employeeID;
         return true;
     }
 
     public function getCookieID()
     {
-        return $this->_cookieid;
+        return $this->_cookieID;
     }
-    public function setCookieID($cookieid)
+    public function setCookieID($cookieID)
     {
-        if (!preg_match("/\w+/", $cookieid)) {
+        if (!preg_match("/\w+/", $cookieID)) {
             throw new Exception("CookieID格式錯誤");
         }
-        $this->_cookieid = $cookieid;
+        $this->_cookieID = $cookieID;
         return true;
     }
 
