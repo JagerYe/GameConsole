@@ -115,6 +115,22 @@ class EmployeeDAO_PDO implements EmployeeDAO
         return $request;
     }
 
+    public function getAll()
+    {
+        try {
+            $dbh = Config::getDBConnect();
+            $sth = $dbh->prepare("SELECT `id`, `account`, `name`, `email`, `creationDate`, `changeDate` FROM `Employees`;");
+            $sth->execute();
+            $request = $sth->fetch(PDO::FETCH_ASSOC);
+            $sth = null;
+        } catch (PDOException $err) {
+            $dbh = null;
+            return false;
+        }
+        $dbh = null;
+        return $request;
+    }
+
     public function doLogin($account, $password)
     {
         try {

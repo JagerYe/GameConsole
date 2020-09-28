@@ -123,6 +123,22 @@ class MemberDAO_PDO implements MemberDAO
         return $request;
     }
 
+    public function getALL()
+    {
+        try {
+            $dbh = Config::getDBConnect();
+            $sth = $dbh->prepare("SELECT `id`, `account`, `name`, `email`, `phone`, `address`, `status`, `creationDate`, `changeDate` FROM `Members`;");
+            $sth->execute();
+            $request = $sth->fetch(PDO::FETCH_ASSOC);
+            $sth = null;
+        } catch (PDOException $err) {
+            $dbh = null;
+            return false;
+        }
+        $dbh = null;
+        return $request;
+    }
+
     public function doLogin($account, $password)
     {
         try {

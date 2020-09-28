@@ -1,10 +1,12 @@
 <?php
 interface EmployeeDAO
 {
-    // public function insertEmployee($id,$password);
-    // public function updateEmployee($employees);
-    // public function deleteEmployeeByID($id);
-    // public function getOneEmployeeByID($id);
-    // public function getAllEmployees();
-    // public function doLogin($id,$password);
+    public function insert($account, $password, $name, $email);
+    public function update($id, $name, $email);
+    public function updatePassword($id, $password);
+    public function getOneEmployeeByAccount($account);
+    public function getOneEmployeeByID($id);
+    public function getAll();
+    public function doLogin($account, $password);
+    public function checkEmployeeExist($id);
 }
