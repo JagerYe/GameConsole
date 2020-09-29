@@ -6,69 +6,68 @@ USE `GameConsole`;
 DROP TABLE IF EXISTS `Members`;
 CREATE TABLE `Members`(
     `id` INT NOT NULL AUTO_INCREMENT,
-    `account` VARCHAR(20) NOT NULL,-- 帳號
-    `password` TEXT NOT NULL,-- 密碼
-    `name` VARCHAR(20) NOT NULL,-- 姓名
-    `email` VARCHAR(50) NOT NULL,-- 信箱
-    `phone` VARCHAR(20) NOT NULL,-- 電話
-    `address` TEXT,-- 地址
-    `status` BOOLEAN NOT NULL,-- 停權狀態 True可使用，False不可使用
-    `creationDatetime` DATETIME NOT NULL,-- 創立時間
-    `changeDatetime` DATETIME,-- 更動資料時間
+    `account` VARCHAR(20) NOT NULL,
+    `password` TEXT NOT NULL,
+    `name` VARCHAR(20) NOT NULL,
+    `email` VARCHAR(50) NOT NULL,
+    `phone` VARCHAR(20) NOT NULL,
+    `address` TEXT,
+    `status` BOOLEAN NOT NULL COMMENT '啟用為TRUE，停用為FALSE',
+    `creationDatetime` DATETIME NOT NULL,
+    `changeDatetime` DATETIME,
     PRIMARY KEY(`id`)
-) ENGINE = INNODB DEFAULT CHARSET = utf8;
+) ENGINE = INNODB DEFAULT CHARSET = utf8 COMMENT '會員';
 
 DROP TABLE IF EXISTS `MemberLoginStatus`;
 CREATE TABLE `MemberLoginStatus`(
     `loginID` INT NOT NULL AUTO_INCREMENT,
     `memberID` INT NOT NULL,
-    `cookieID` TEXT NOT NULL,
-    `keepLoggedIn` BOOLEAN NOT NULL,-- 是否要保持登入
-    `loginDatetime` DATETIME NOT NULL,
-    `usageDatetime` DATETIME,
-    `logoutDatetime` DATETIME,
+    `cookieID` TEXT,
+    `keepLoggedIn` BOOLEAN NOT NULL COMMENT '是否為保持登入',
+    `loginDatetime` DATETIME NOT NULL COMMENT '登入時間',
+    `usageDatetime` DATETIME COMMENT '最後一次使用時間',
+    `logoutDatetime` DATETIME COMMENT '登出時間',
     PRIMARY KEY(`loginID`),
     FOREIGN KEY(`memberID`) REFERENCES `Members`(`id`)
-) ENGINE = INNODB DEFAULT CHARSET = utf8;
+) ENGINE = INNODB DEFAULT CHARSET = utf8 COMMENT '會員登入紀錄';
 
 DROP TABLE IF EXISTS `Commodities`;
 CREATE TABLE `Commodities`(
     `id` INT NOT NULL AUTO_INCREMENT,
-    `name` TEXT NOT NULL,
+    `name` TEXT NOT NULL COMMENT '商品名稱',
     `price` INT NOT NULL,
-    `quantity` INT NOT NULL,
-    `status` BOOLEAN NOT NULL,
-    `text` TEXT,
+    `quantity` INT NOT NULL COMMENT '商品庫存',
+    `status` BOOLEAN NOT NULL COMMENT '商品上下架狀態',
+    `text` TEXT COMMENT '商品介紹內文',
     `image` BLOB,
     `creationDatetime` DATETIME NOT NULL,
     `changeDatetime` DATETIME,
     PRIMARY KEY(`id`)
-) ENGINE = INNODB DEFAULT CHARSET = utf8;
+) ENGINE = INNODB DEFAULT CHARSET = utf8 COMMENT '商品';
 
 DROP TABLE IF EXISTS `Orders`;
 CREATE TABLE `Orders`(
     `orderID` INT NOT NULL AUTO_INCREMENT,
     `memberID` INT NOT NULL,
-    `address` TEXT NOT NULL,
+    `address` TEXT NOT NULL COMMENT '當次寄送的地址',
     `creationDatetime` DATETIME NOT NULL,
     `changeDatetime` DATETIME,
     PRIMARY KEY(`orderID`),
     FOREIGN KEY(`memberID`) REFERENCES `Members`(`id`)
-) ENGINE = INNODB DEFAULT CHARSET = utf8;
+) ENGINE = INNODB DEFAULT CHARSET = utf8 COMMENT '訂單';
 
 DROP TABLE IF EXISTS `OrderDetails`;
 CREATE TABLE `OrderDetails`(
     `orderID` INT NOT NULL,
     `commodityID` INT NOT NULL,
-    `price` INT NOT NULL,
-    `quantity` INT NOT NULL,
+    `price` INT NOT NULL COMMENT '當時價格',
+    `quantity` INT NOT NULL COMMENT '購買數量',
     `creationDatetime` DATETIME NOT NULL,
     `changeDatetime` DATETIME,
     PRIMARY KEY(`orderID`,`commodityID`),
     FOREIGN KEY(`orderID`) REFERENCES `Orders`(`orderID`),
     FOREIGN KEY(`commodityID`) REFERENCES `Commodities`(`id`)
-) ENGINE = INNODB DEFAULT CHARSET = utf8;
-ALTER TABLE `GameConsole`.`OrderDetails` ADD INDEX `orderID` (`orderID`);
+) ENGINE = INNODB DEFAULT CHARSET = utf8 COMMENT '訂單明細';
 
 DROP TABLE IF EXISTS `Employees`;
 CREATE TABLE `Employees`(
@@ -80,20 +79,20 @@ CREATE TABLE `Employees`(
     `creationDatetime` DATETIME NOT NULL,
     `changeDatetime` DATETIME,
     PRIMARY KEY(`id`)
-) ENGINE = INNODB DEFAULT CHARSET = utf8;
+) ENGINE = INNODB DEFAULT CHARSET = utf8 COMMENT '員工';
 
 DROP TABLE IF EXISTS `EmployeeLoginStatus`;
 CREATE TABLE `EmployeeLoginStatus`(
     `loginID` INT NOT NULL AUTO_INCREMENT,
     `employeeID` INT NOT NULL,
-    `cookieID` TEXT NOT NULL,
-    `keepLoggedIn` BOOLEAN NOT NULL,
-    `loginDatetime` DATETIME NOT NULL,
-    `usageDatetime` DATETIME,
-    `logoutDatetime` DATETIME,
+    `cookieID` TEXT,
+    `keepLoggedIn` BOOLEAN NOT NULL COMMENT '是否保持登入',
+    `loginDatetime` DATETIME NOT NULL COMMENT '登入時間',
+    `usageDatetime` DATETIME COMMENT '最後使用時間',
+    `logoutDatetime` DATETIME COMMENT '登出時間',
     PRIMARY KEY(`loginID`),
     FOREIGN KEY(`employeeID`) REFERENCES `Employees`(`id`)
-) ENGINE = INNODB DEFAULT CHARSET = utf8;
+) ENGINE = INNODB DEFAULT CHARSET = utf8 COMMENT '員工登入紀錄';
 
 DROP TABLE IF EXISTS `Permissions`;
 CREATE TABLE `Permissions`(
@@ -102,7 +101,7 @@ CREATE TABLE `Permissions`(
     `creationDatetime` DATETIME NOT NULL,
     `changeDatetime` DATETIME,
     PRIMARY KEY(`id`)
-) ENGINE = INNODB DEFAULT CHARSET = utf8;
+) ENGINE = INNODB DEFAULT CHARSET = utf8 COMMENT = '權限';
 
 DROP TABLE IF EXISTS `PermissionControl`;
 CREATE TABLE `PermissionControl`(
@@ -112,7 +111,7 @@ CREATE TABLE `PermissionControl`(
     PRIMARY KEY(`employeeID`,`permissionID`),
     FOREIGN KEY(`employeeID`) REFERENCES `Employees`(`id`),
     FOREIGN KEY(`permissionID`) REFERENCES `Permissions`(`id`)
-) ENGINE = INNODB DEFAULT CHARSET = utf8;
+) ENGINE = INNODB DEFAULT CHARSET = utf8 COMMENT '權限及員工對照表';
 
 INSERT INTO `Members`(`account`, `password`, `name`, `email`, `phone`, `address`, `status`, `creationDatetime`) VALUES
 ('m01','123456','a','a@s.s','1234567890','aca',true,NOW()),
