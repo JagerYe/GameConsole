@@ -7,11 +7,10 @@ class OrderDetailDAO implements OrderDetailDAO_Interface
     public function insert($orderID, $orderDetails, $dbh)
     {
         $sqlStr = "INSERT INTO `OrderDetails`(`orderID`, `commodityID`, `price`, `quantity`, `creationDatetime`) VALUES ";
-        $arrSize = sizeof($orderDetails);
-        for ($i = 0; $i < $arrSize; $i++) {
-            $sqlStr += "(:orderID{$i},:commodityID{$i},:price{$i},:quantity{$i},NOW())";
-            $sqlStr += ($i >= ($arrSize - 1)) ? ';' : ',';
+        foreach ($orderDetails as $key => $value) {
+            $sqlStr .= "(:orderID{$key},:commodityID{$key},:price{$key},:quantity{$key},NOW()),";
         }
+        substr_replace($sqlStr, ';', -1, 1);
         try {
             $sth = $dbh->prepare($sqlStr);
 
