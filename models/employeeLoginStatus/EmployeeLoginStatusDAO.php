@@ -4,16 +4,24 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/config.php";
 class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
 {
     //登入
-    public function doLogin($employeeID , $cookieID, $keepLoggedIn = false)
+    public function insert($empID)
     {
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("INSERT INTO `EmployeeLoginStatus`(`employeeID `, `cookieID`, `keepLoggedIn`, `loginDatetime`, `usageTime`) VALUES (:employeeID ,:cookieID,:keepLoggedIn,NOW(),NOW());");
-            $sth->bindParam("employeeID ", $employeeID );
-            $cookieID = password_hash($cookieID, PASSWORD_DEFAULT);
-            $sth->bindParam("cookieID", $cookieID);
-            $sth->bindParam("keepLoggedIn", $keepLoggedIn);
+            $sth = $dbh->prepare("INSERT INTO `EmployeeLoginStatus`(`empID`, `loginDatetime`, `usageDatetime`)
+                VALUES (:empID,NOW(),NOW())");
+
+            $sth->bindParam("empID ", $empID);
+            $sth->execute();
+            $id = $dbh->lastInsertId();
+
+            $cookieID = hash('sha256', $id); //給使用者
+            $updateCookieID = password_hash($cookieID, PASSWORD_DEFAULT); //存放DB
+
+            $sth = $dbh->prepare("UPDATE `EmployeeLoginStatus` SET `cookieID`=:cookieID WHERE `loginID`=:loginID;");
+            $sth->bindParam("loginID", $id);
+            $sth->bindParam("cookieID", $updateCookieID);
             $sth->execute();
             $dbh->commit();
             $id = $dbh->lastInsertId();
@@ -21,22 +29,21 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return -1;
+            return "";
         }
         $dbh = null;
-        return $id;
+        return $cookieID;
     }
 
     //登出
-    public function doLogoutByID($id, $dbh = null)
+    public function deleteByID($id, $dbh = null)
     {
         try {
             if ($dbh === null) {
                 $dbh = Config::getDBConnect();
             }
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `EmployeeLoginStatus` SET `logoutDatetime`=NOW() WHERE `loginID`=:loginID;"
-            );
+            $sth = $dbh->prepare("UPDATE `EmployeeLoginStatus` SET `logoutDatetime`=NOW() WHERE `loginID`=:loginID;");
             $sth->bindParam("loginID", $id);
             $sth->execute();
             $dbh->commit();
@@ -51,14 +58,13 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
     }
 
     //登出使用者所有裝置
-    public function doLogoutByEmployeeID ($id)
+    public function deleteByEmpID($id)
     {
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `EmployeeLoginStatus` SET `logoutDatetime`=NOW() WHERE `employeeID `=:employeeID;"
-            );
-            $sth->bindParam("employeeID", $id);
+            $sth = $dbh->prepare("UPDATE `EmployeeLoginStatus` SET `logoutDatetime`=NOW() WHERE `empID `=:empID;");
+            $sth->bindParam("empID", $id);
             $sth->execute();
             $dbh->commit();
             $sth = null;
@@ -96,17 +102,16 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT `loginID`, `employeeID `, `cookieID`,
-                    `keepLoggedIn`, `loginDatetime`, `usageTime`,
-                    `logoutDatetime`, (DATE_ADD(`usageTime`,INTERVAL 30 MINUTE) <= NOW()) AS `timeOut`
+            $sth = $dbh->prepare("SELECT `loginID`, `empID `, `cookieID`,
+                    `loginDatetime`, `usageTime`, `logoutDatetime`,
+                    (DATE_ADD(`usageTime`,INTERVAL 30 MINUTE) <= NOW()) AS `timeOut`
                 FROM `EmployeeLoginStatus` WHERE
-                `loginID`=:loginID && IF(`logoutDatetime`,FALSE,TRUE);"
-            );
+                `loginID`=:loginID && IF(`logoutDatetime`,FALSE,TRUE);");
             $sth->bindParam("loginID", $id);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_ASSOC);
-            if (!$request['keepLoggedIn'] && $request['timeOut']) {
-                $this->doLogoutByID($id, $dbh);
+            if ($request['timeOut']) {
+                $this->deleteByID($id, $dbh);
                 throw new Exception("超過時間");
             }
             $sth = null;

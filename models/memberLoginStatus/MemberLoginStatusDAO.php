@@ -4,16 +4,15 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/config.php";
 class MemberLoginStatusDAO implements MemberLoginStatusDAO_Interface
 {
     //登入
-    public function doLogin($memberID, $cookieID, $keepLoggedIn = false)
+    public function doLogin($memberID, $cookieID)
     {
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("INSERT INTO `MemberLoginStatus`(`memberID`, `cookieID`, `keepLoggedIn`, `loginDate`, `usageTime`) VALUES (:memberID,:cookieID,:keepLoggedIn,NOW(),NOW());");
+            $sth = $dbh->prepare("INSERT INTO `MemberLoginStatus`(`memberID`, `cookieID`, `loginDate`, `usageTime`) VALUES (:memberID,:cookieID,NOW(),NOW());");
             $sth->bindParam("memberID", $memberID);
             $cookieID = password_hash($cookieID, PASSWORD_DEFAULT);
             $sth->bindParam("cookieID", $cookieID);
-            $sth->bindParam("keepLoggedIn", $keepLoggedIn);
             $sth->execute();
             $dbh->commit();
             $id = $dbh->lastInsertId();
@@ -35,8 +34,7 @@ class MemberLoginStatusDAO implements MemberLoginStatusDAO_Interface
                 $dbh = Config::getDBConnect();
             }
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `logoutDate`=NOW() WHERE `loginID`=:loginID;"
-            );
+            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `logoutDate`=NOW() WHERE `loginID`=:loginID;");
             $sth->bindParam("loginID", $id);
             $sth->execute();
             $dbh->commit();
@@ -56,8 +54,7 @@ class MemberLoginStatusDAO implements MemberLoginStatusDAO_Interface
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `logoutDate`=NOW() WHERE `memberID`=:memberID;"
-            );
+            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `logoutDate`=NOW() WHERE `memberID`=:memberID;");
             $sth->bindParam("memberID", $id);
             $sth->execute();
             $dbh->commit();
@@ -97,15 +94,14 @@ class MemberLoginStatusDAO implements MemberLoginStatusDAO_Interface
         try {
             $dbh = Config::getDBConnect();
             $sth = $dbh->prepare("SELECT `loginID`, `memberID`, `cookieID`,
-                    `keepLoggedIn`, `loginDate`, `usageTime`,
-                    `logoutDate`, (DATE_ADD(`usageTime`,INTERVAL 30 MINUTE) <= NOW()) AS `timeOut`
+                    `loginDate`, `usageTime`, `logoutDate`,
+                    (DATE_ADD(`usageTime`,INTERVAL 30 MINUTE) <= NOW()) AS `timeOut`
                 FROM `MemberLoginStatus` WHERE
-                `loginID`=:loginID && IF(`logoutDate`,FALSE,TRUE);"
-            );
+                `loginID`=:loginID && IF(`logoutDate`,FALSE,TRUE);");
             $sth->bindParam("loginID", $id);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_ASSOC);
-            if (!$request['keepLoggedIn'] && $request['timeOut']) {
+            if ($request['timeOut']) {
                 $this->doLogoutByID($id, $dbh);
                 throw new Exception("超過時間");
             }

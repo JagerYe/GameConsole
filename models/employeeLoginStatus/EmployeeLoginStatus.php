@@ -2,9 +2,8 @@
 class EmployeeLoginStatus implements \JsonSerializable
 {
     private $_loginID;
-    private $_employeeID;
+    private $_empID;
     private $_cookieID;
-    private $_keepLoggedIn;
     private $_loginDate;
     private $_usageTime;
     private $_logoutDate;
@@ -22,16 +21,16 @@ class EmployeeLoginStatus implements \JsonSerializable
         return true;
     }
 
-    public function getEmployeeID()
+    public function getEmpID()
     {
-        return $this->_employeeID;
+        return $this->_empID;
     }
-    public function setEmployeeID($employeeID)
+    public function setEmpID($empID)
     {
-        if (!preg_match("/\d/", $employeeID)) {
+        if (!preg_match("/\d/", $empID)) {
             throw new Exception("會員ID格式錯誤");
         }
-        $this->_employeeID = $employeeID;
+        $this->_empID = $empID;
         return true;
     }
 
@@ -45,19 +44,6 @@ class EmployeeLoginStatus implements \JsonSerializable
             throw new Exception("CookieID格式錯誤");
         }
         $this->_cookieID = $cookieID;
-        return true;
-    }
-
-    public function getKeepLoggedIn()
-    {
-        return $this->_keepLoggedIn;
-    }
-    public function setKeepLoggedIn($keepLoggedIn)
-    {
-        if (!is_bool($keepLoggedIn)) {
-            throw new Exception("保持登入格式錯誤");
-        }
-        $this->_keepLoggedIn = $keepLoggedIn;
         return true;
     }
 

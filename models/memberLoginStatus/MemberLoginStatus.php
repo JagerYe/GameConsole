@@ -4,7 +4,6 @@ class MemberLoginStatus implements \JsonSerializable
     private $_loginID;
     private $_memberID;
     private $_cookieID;
-    private $_keepLoggedIn;
     private $_loginDate;
     private $_usageTime;
     private $_logoutDate;
@@ -45,19 +44,6 @@ class MemberLoginStatus implements \JsonSerializable
             throw new Exception("CookieID格式錯誤");
         }
         $this->_cookieID = $cookieID;
-        return true;
-    }
-
-    public function getKeepLoggedIn()
-    {
-        return $this->_keepLoggedIn;
-    }
-    public function setKeepLoggedIn($keepLoggedIn)
-    {
-        if (!is_bool($keepLoggedIn)) {
-            throw new Exception("保持登入格式錯誤");
-        }
-        $this->_keepLoggedIn = $keepLoggedIn;
         return true;
     }
 

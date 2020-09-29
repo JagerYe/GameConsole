@@ -12,8 +12,7 @@ class EmployeeDAO implements EmployeeDAO_Interface
             $sth = $dbh->prepare("INSERT INTO `Employees`(`account`, `password`, `name`, `email`, `creationDatetime`)
                 VALUES(
                     (SELECT :account WHERE (SELECT COUNT(`account`) FROM `Employees` AS m WHERE `account`=:account) = 0),
-                    :password, :name, :email, NOW()
-            );");
+                    :password, :name, :email, NOW());");
             $sth->bindParam("account", $account);
             $password = password_hash($password, PASSWORD_DEFAULT);
             $sth->bindParam("password", $password);
@@ -41,8 +40,7 @@ class EmployeeDAO implements EmployeeDAO_Interface
                     `name`=:name,
                     `email`=:email,
                     `changeDatetime`=NOW()
-                WHERE `id`=:id;"
-            );
+                WHERE `id`=:id;");
             $sth->bindParam("id", $id);
             $sth->bindParam("name", $name);
             $sth->bindParam("email", $email);
@@ -143,6 +141,24 @@ class EmployeeDAO implements EmployeeDAO_Interface
                 throw new Exception("帳號密碼錯誤");
             }
 
+            $check = $this->checkPassword($request['id'], $password, $dbh);
+            $sth = null;
+        } catch (Exception $err) {
+            if ($dbh !== null) {
+                $dbh = null;
+            }
+            return false;
+        }
+        $dbh = null;
+        return $check;
+    }
+
+    public function checkPassword($id, $password, $dbh = null)
+    {
+        try {
+            if ($dbh === null) {
+                $dbh = Config::getDBConnect();
+            }
             $sth = $dbh->prepare("SELECT `password` FROM `employees` WHERE `id`=:id");
             $sth->bindParam("id", $id);
             $sth->execute();
@@ -152,7 +168,6 @@ class EmployeeDAO implements EmployeeDAO_Interface
             $dbh = null;
             return false;
         }
-        $dbh = null;
         return password_verify($password, $request['0']);
     }
 
@@ -171,5 +186,4 @@ class EmployeeDAO implements EmployeeDAO_Interface
         }
         return $request['0'] > 0;
     }
-
 }

@@ -1,20 +1,20 @@
 <?php
 class PermissionControl implements \JsonSerializable
 {
-    private $_employeeID;
+    private $_empID;
     private $_permissionID;
     private $_creationDate;
 
-    public function getEmployeeID()
+    public function getEmpID()
     {
-        return $this->_employeeID;
+        return $this->_empID;
     }
-    public function setEmployeeID($employeeID)
+    public function setEmpID($empID)
     {
-        if (!preg_match("/\d/", $employeeID)) {
+        if (!preg_match("/\d/", $empID)) {
             throw new Exception("員工 ID  格式錯誤");
         }
-        $this->_employeeID = $employeeID;
+        $this->_empID = $empID;
         return true;
     }
 

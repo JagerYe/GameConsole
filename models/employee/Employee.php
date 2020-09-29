@@ -8,7 +8,6 @@ class Employee implements \JsonSerializable
     private $_email;
     private $_creationDate;
     private $_changeDate;
-    private $_emailRule = "/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/";
 
     public function getId()
     {
@@ -68,8 +67,8 @@ class Employee implements \JsonSerializable
     }
     public function setEmail($email)
     {
-
-        if (!preg_match($this->_emailRule, $email)) {
+        $emailRule = "/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/";
+        if (!preg_match($emailRule, $email)) {
             throw new Exception("email格式錯誤");
         }
         $this->_email = $email;

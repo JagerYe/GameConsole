@@ -12,7 +12,7 @@ CREATE TABLE `Members`(
     `email` VARCHAR(50) NOT NULL,
     `phone` VARCHAR(20) NOT NULL,
     `address` TEXT,
-    `status` BOOLEAN NOT NULL COMMENT '啟用為TRUE，停用為FALSE',
+    `status` INT NOT NULL COMMENT '停用為1，啟用為1',
     `creationDatetime` DATETIME NOT NULL,
     `changeDatetime` DATETIME,
     PRIMARY KEY(`id`)
@@ -23,7 +23,6 @@ CREATE TABLE `MemberLoginStatus`(
     `loginID` INT NOT NULL AUTO_INCREMENT,
     `memberID` INT NOT NULL,
     `cookieID` TEXT,
-    `keepLoggedIn` BOOLEAN NOT NULL COMMENT '是否為保持登入',
     `loginDatetime` DATETIME NOT NULL COMMENT '登入時間',
     `usageDatetime` DATETIME COMMENT '最後一次使用時間',
     `logoutDatetime` DATETIME COMMENT '登出時間',
@@ -37,7 +36,7 @@ CREATE TABLE `Commodities`(
     `name` TEXT NOT NULL COMMENT '商品名稱',
     `price` INT NOT NULL,
     `quantity` INT NOT NULL COMMENT '商品庫存',
-    `status` BOOLEAN NOT NULL COMMENT '商品上下架狀態',
+    `status` INT NOT NULL COMMENT '商品上下架狀態，下架為1，上架為2',
     `text` TEXT COMMENT '商品介紹內文',
     `image` BLOB,
     `creationDatetime` DATETIME NOT NULL,
@@ -84,14 +83,13 @@ CREATE TABLE `Employees`(
 DROP TABLE IF EXISTS `EmployeeLoginStatus`;
 CREATE TABLE `EmployeeLoginStatus`(
     `loginID` INT NOT NULL AUTO_INCREMENT,
-    `employeeID` INT NOT NULL,
+    `empID` INT NOT NULL,
     `cookieID` TEXT,
-    `keepLoggedIn` BOOLEAN NOT NULL COMMENT '是否保持登入',
     `loginDatetime` DATETIME NOT NULL COMMENT '登入時間',
     `usageDatetime` DATETIME COMMENT '最後使用時間',
     `logoutDatetime` DATETIME COMMENT '登出時間',
     PRIMARY KEY(`loginID`),
-    FOREIGN KEY(`employeeID`) REFERENCES `Employees`(`id`)
+    FOREIGN KEY(`empID`) REFERENCES `Employees`(`id`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8 COMMENT '員工登入紀錄';
 
 DROP TABLE IF EXISTS `Permissions`;
@@ -105,11 +103,11 @@ CREATE TABLE `Permissions`(
 
 DROP TABLE IF EXISTS `PermissionControl`;
 CREATE TABLE `PermissionControl`(
-    `employeeID` INT NOT NULL,
+    `empID` INT NOT NULL,
     `permissionID` INT NOT NULL,
     `creationDatetime` DATETIME NOT NULL,
-    PRIMARY KEY(`employeeID`,`permissionID`),
-    FOREIGN KEY(`employeeID`) REFERENCES `Employees`(`id`),
+    PRIMARY KEY(`empID`,`permissionID`),
+    FOREIGN KEY(`empID`) REFERENCES `Employees`(`id`),
     FOREIGN KEY(`permissionID`) REFERENCES `Permissions`(`id`)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8 COMMENT '權限及員工對照表';
 
@@ -118,7 +116,7 @@ INSERT INTO `Members`(`account`, `password`, `name`, `email`, `phone`, `address`
 ('m02','123456','a','a@s.s','1234567890','aca',true,NOW()),
 ('m03','123456','a','a@s.s','1234567890','aca',true,NOW());
 
-INSERT INTO `MemberLoginStatus`(`memberID`, `cookieID`, `keepLoggedIn`, `loginDatetime`) VALUES (1,'11235',false,NOW());
+INSERT INTO `MemberLoginStatus`(`memberID`, `cookieID`, `loginDatetime`) VALUES (1,'11235',NOW());
 
 INSERT INTO `Commodities`(`name`, `price`, `quantity`, `status`, `creationDatetime`) VALUES
 ('aa',100,100,TRUE,NOW()),
