@@ -12,7 +12,7 @@ CREATE TABLE `Members`(
     `email` VARCHAR(50) NOT NULL,
     `phone` VARCHAR(20) NOT NULL,
     `address` TEXT,
-    `status` INT NOT NULL COMMENT '停用為1，啟用為1',
+    `status` INT NOT NULL COMMENT '停用為1，啟用為2',
     `creationDatetime` DATETIME NOT NULL,
     `changeDatetime` DATETIME,
     PRIMARY KEY(`id`)
@@ -22,6 +22,7 @@ DROP TABLE IF EXISTS `MemberLoginStatus`;
 CREATE TABLE `MemberLoginStatus`(
     `loginID` INT NOT NULL AUTO_INCREMENT,
     `memberID` INT NOT NULL,
+    `isKeep` BOOLEAN NOT NULL COMMENT '不保持登入為0，保持登入為1',
     `cookieID` TEXT,
     `loginDatetime` DATETIME NOT NULL COMMENT '登入時間',
     `usageDatetime` DATETIME COMMENT '最後一次使用時間',
@@ -84,6 +85,7 @@ DROP TABLE IF EXISTS `EmployeeLoginStatus`;
 CREATE TABLE `EmployeeLoginStatus`(
     `loginID` INT NOT NULL AUTO_INCREMENT,
     `empID` INT NOT NULL,
+    `isKeep` BOOLEAN NOT NULL COMMENT '不保持登入為0，保持登入為1',
     `cookieID` TEXT,
     `loginDatetime` DATETIME NOT NULL COMMENT '登入時間',
     `usageDatetime` DATETIME COMMENT '最後使用時間',
@@ -116,7 +118,7 @@ INSERT INTO `Members`(`account`, `password`, `name`, `email`, `phone`, `address`
 ('m02','123456','a','a@s.s','1234567890','aca',true,NOW()),
 ('m03','123456','a','a@s.s','1234567890','aca',true,NOW());
 
-INSERT INTO `MemberLoginStatus`(`memberID`, `cookieID`, `loginDatetime`) VALUES (1,'11235',NOW());
+INSERT INTO `MemberLoginStatus`(`memberID`, `isKeep`, `cookieID`, `loginDatetime`) VALUES (1,TRUE,'11235',NOW());
 
 INSERT INTO `Commodities`(`name`, `price`, `quantity`, `status`, `creationDatetime`) VALUES
 ('aa',100,100,TRUE,NOW()),

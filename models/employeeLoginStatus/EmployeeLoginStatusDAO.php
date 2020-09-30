@@ -4,15 +4,15 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/config.php";
 class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
 {
     //登入
-    public function insert($empID)
+    public function insert($empID, $saveTime, $isKeep)
     {
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("INSERT INTO `EmployeeLoginStatus`(`empID`, `loginDatetime`, `usageDatetime`)
-                VALUES (:empID,NOW(),NOW())");
+            $sth = $dbh->prepare("INSERT INTO `EmployeeLoginStatus`(`empID`, `isKeep`, `loginDatetime`, `usageDatetime`) VALUES (:empID,:isKeep,NOW(),NOW());");
 
-            $sth->bindParam("empID ", $empID);
+            $sth->bindParam("empID", $empID);
+            $sth->bindParam("isKeep", $isKeep, PDO::PARAM_BOOL);
             $sth->execute();
             $id = $dbh->lastInsertId();
 
@@ -24,19 +24,21 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
             $sth->bindParam("cookieID", $updateCookieID);
             $sth->execute();
             $dbh->commit();
-            $id = $dbh->lastInsertId();
+            setcookie('cookieID', $cookieID, $saveTime, "/");
+            setcookie('loginID', $id, $saveTime, "/");
+
             $sth = null;
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return "";
+            throw new Exception("登入發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
-        return $cookieID;
+        return true;
     }
 
     //登出
-    public function deleteByID($id, $dbh = null)
+    public function setLogoutByID($id, $dbh = null)
     {
         try {
             if ($dbh === null) {
@@ -51,14 +53,14 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return false;
+            throw new Exception("登出發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
     }
 
     //登出使用者所有裝置
-    public function deleteByEmpID($id)
+    public function setLogoutByEmpID($id)
     {
         try {
             $dbh = Config::getDBConnect();
@@ -71,7 +73,7 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return false;
+            throw new Exception("登出發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
@@ -83,7 +85,7 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `EmployeeLoginStatus` SET `usageTime`=NOW() WHERE `loginID`=:loginID;");
+            $sth = $dbh->prepare("UPDATE `EmployeeLoginStatus` SET `usageDatetime`=NOW() WHERE `loginID`=:loginID;");
             $sth->bindParam("loginID", $id);
             $sth->execute();
             $dbh->commit();
@@ -91,7 +93,7 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return false;
+            throw new Exception("更新時間發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
@@ -102,24 +104,27 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT `loginID`, `empID `, `cookieID`,
-                    `loginDatetime`, `usageTime`, `logoutDatetime`,
-                    (DATE_ADD(`usageTime`,INTERVAL 30 MINUTE) <= NOW()) AS `timeOut`
+            $sth = $dbh->prepare("SELECT `loginID`, `empID`, `cookieID`,
+                `loginDatetime`, `usageDatetime`, `logoutDatetime`,
+                (DATE_ADD(`usageDatetime`,INTERVAL 30 MINUTE) <= NOW()) AS `timeOut`
                 FROM `EmployeeLoginStatus` WHERE
                 `loginID`=:loginID && IF(`logoutDatetime`,FALSE,TRUE);");
             $sth->bindParam("loginID", $id);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_ASSOC);
+            if($request===false){
+                throw new Exception("尚未登入");
+            }
             if ($request['timeOut']) {
-                $this->deleteByID($id, $dbh);
+                $this->setLogoutByID($id, $dbh);
                 throw new Exception("超過時間");
             }
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return false;
+            throw new Exception("確認狀態發生錯誤\r\n" . $err->getMessage());
         } catch (Exception $err) {
-            return false;
+            throw new Exception($err->getMessage());
         }
         $dbh = null;
         return password_verify($cookieID, $request['cookieID']);

@@ -24,7 +24,7 @@ class EmployeeDAO implements EmployeeDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return false;
+            throw new Exception("新增發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
@@ -50,7 +50,7 @@ class EmployeeDAO implements EmployeeDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return false;
+            throw new Exception("更新發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
@@ -73,7 +73,7 @@ class EmployeeDAO implements EmployeeDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return false;
+            throw new Exception("更新密碼發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
@@ -90,7 +90,7 @@ class EmployeeDAO implements EmployeeDAO_Interface
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return null;
+            throw new Exception("取得資料發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return $request;
@@ -107,7 +107,7 @@ class EmployeeDAO implements EmployeeDAO_Interface
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return null;
+            throw new Exception("取得資料發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return $request;
@@ -123,7 +123,7 @@ class EmployeeDAO implements EmployeeDAO_Interface
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return null;
+            throw new Exception("取得資料發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return $request;
@@ -147,7 +147,7 @@ class EmployeeDAO implements EmployeeDAO_Interface
             if ($dbh !== null) {
                 $dbh = null;
             }
-            return false;
+            throw new Exception("登入發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return $check;
@@ -166,12 +166,12 @@ class EmployeeDAO implements EmployeeDAO_Interface
             $sth = null;
         } catch (Exception $err) {
             $dbh = null;
-            return false;
+            throw new Exception("確認密碼發生錯誤\r\n" . $err->getMessage());
         }
         return password_verify($password, $request['0']);
     }
 
-    public function checkEmployeeExist($id)
+    public function checkAccountExist($id)
     {
         try {
             $dbh = Config::getDBConnect();
@@ -182,7 +182,7 @@ class EmployeeDAO implements EmployeeDAO_Interface
             $request = $sth->fetch(PDO::FETCH_NUM);
         } catch (Exception $err) {
             $dbh = null;
-            return false;
+            throw new Exception("確認帳號是否重複發生錯誤\r\n" . $err->getMessage());
         }
         return $request['0'] > 0;
     }

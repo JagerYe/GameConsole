@@ -25,7 +25,7 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return false;
+            throw new Exception("新增發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
@@ -80,13 +80,13 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return false;
+            throw new Exception("移除發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
     }
 
-    //刪除
+    //刪除單一使用者所有權限，離職時使用
     public function deleteByEmpID($empID)
     {
         try {
@@ -102,7 +102,7 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return false;
+            throw new Exception("移除發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
@@ -124,7 +124,7 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return null;
+            throw new Exception("取得資料發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return $request;
@@ -146,7 +146,7 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return null;
+            throw new Exception("取得資料發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return $request;

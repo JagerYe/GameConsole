@@ -26,9 +26,9 @@ class OrderDAO implements OrderDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return 0;
+            throw new Exception("新增發生錯誤\r\n" . $err->getMessage());
         } catch (Exception $err) {
-            return 0;
+            throw new Exception($err->getMessage());
         }
         $dbh = null;
         return $id;
@@ -53,7 +53,7 @@ class OrderDAO implements OrderDAO_Interface
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return null;
+            throw new Exception("取得資料發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return $request;

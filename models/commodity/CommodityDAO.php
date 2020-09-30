@@ -22,7 +22,7 @@ class CommodityDAO implements CommodityDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return false;
+            throw new Exception("新增發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
@@ -47,7 +47,7 @@ class CommodityDAO implements CommodityDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return false;
+            throw new Exception("更新發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
@@ -68,7 +68,7 @@ class CommodityDAO implements CommodityDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return false;
+            throw new Exception("更新圖片發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
@@ -89,7 +89,7 @@ class CommodityDAO implements CommodityDAO_Interface
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return null;
+            throw new Exception("取得單一商品發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return $request;
@@ -107,7 +107,7 @@ class CommodityDAO implements CommodityDAO_Interface
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return null;
+            throw new Exception("取得圖片發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return $request['0'];
@@ -127,7 +127,7 @@ class CommodityDAO implements CommodityDAO_Interface
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return false;
+            throw new Exception("取得商品發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return $request;

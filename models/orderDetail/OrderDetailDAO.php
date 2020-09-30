@@ -50,7 +50,7 @@ class OrderDetailDAO implements OrderDetailDAO_Interface
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return null;
+            throw new Exception("取得資料發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return $request;

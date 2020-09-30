@@ -8,5 +8,5 @@ interface EmployeeDAO_Interface
     public function getOneEmployeeByID($id);
     public function getAll();
     public function doLogin($account, $password);
-    public function checkEmployeeExist($id);
+    public function checkAccountExist($id);
 }

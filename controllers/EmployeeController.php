@@ -23,8 +23,25 @@ class EmployeeController extends Controller
         return $returnStr;
     }
 
+    //確認身份
+    private function checkIdentity()
+    {
+        $empLoginDAO = EmployeeLoginStatusService::getDAO();
+        if (!isset($_COOKIE['loginID']) || !isset($_COOKIE['cookieID'])) {
+            return false;
+        }
+        try {
+            if ($empLoginDAO->checkIsLogin($_COOKIE['loginID'], $_COOKIE['cookieID'])) {
+                return $empLoginDAO->updateUsingByID($_COOKIE['loginID']);
+            }
+        } catch (Exception $err) {
+            throw new Exception($err->getMessage());
+        }
+        return false;
+    }
+
     //新增
-    public function insertByObj($str, $requestMethod)
+    public function insert($str, $requestMethod)
     {
         if ($requestMethod !== 'POST') {
             return false;
@@ -51,6 +68,12 @@ class EmployeeController extends Controller
             ))) {
                 throw new Exception('新增發生錯誤');
             }
+
+            $to = $employee->getEmail();
+            $subject = '註冊成功';
+            $message = "註冊成功\r\n" . ((!$passwordIsset) ? "密碼：{$employee->getPassword()}" : "");
+            $headers = "From:ggInInDer@mail.chungyo.net\r\n";
+            mail($to, $subject, $message, $headers);
 
             $this->success = true;
         } catch (Exception $err) {
@@ -139,24 +162,25 @@ class EmployeeController extends Controller
     public function login($str, $requestMethod)
     {
         $jsonObj = json_decode($str);
+        $employeeDAO = EmployeeService::getDAO();
         try {
-            if ($requestMethod !== 'POST' || !(EmployeeService::getDAO()->doLogin($jsonObj->account, $jsonObj->password))) {
+            if ($requestMethod !== 'POST' || !($employeeDAO->doLogin($jsonObj->account, $jsonObj->password))) {
                 throw new Exception('帳密錯誤');
             }
 
-            $employee = EmployeeService::getDAO()->getOneEmployeeByAccount($jsonObj->account);
-
-            if (($cookieID = EmployeeLoginStatusService::getDAO()->insert(
-                $employee['id'],
-                isset($jsonObj->keepLoggedIn) ? $jsonObj->keepLoggedIn : false
-            )) === "") {
-                throw new Exception('登入錯誤');
+            if (!isset($jsonObj->isKeep)) {
+                $jsonObj->isKeep = false;
             }
 
-            $saveTime = time() + (($jsonObj->keepLoggedIn) ? (60 * 60 * 24 * 365) : (60 * 30));
-            setcookie('empID', $employee['id'], $saveTime);
-            setcookie('empName', $employee['name'], $saveTime);
-            setcookie('cookieID', $cookieID);
+            $employee = $employeeDAO->getOneEmployeeByAccount($jsonObj->account);
+            $saveTime = time() + (($jsonObj->isKeep) ? (60 * 60 * 24 * 365) : (60 * 30));
+
+            EmployeeLoginStatusService::getDAO()->insert($employee['id'], $saveTime, $jsonObj->isKeep);
+
+
+            setcookie('empID', $employee['id'], $saveTime, "/");
+            setcookie('empName', $employee['name'], $saveTime, "/");
+
 
             $this->success = true;
             $this->result = true;
@@ -171,43 +195,98 @@ class EmployeeController extends Controller
         );
     }
 
-    // public function getSessionUserName()
-    // {
-    //     if (isset($_SESSION['userName'])) {
-    //         return $_SESSION['userName'];
-    //     }
-    //     return 'false';
-    // }
+    public function logout()
+    {
 
-    // public function getSessionUserID()
-    // {
-    //     if (isset($_SESSION['userID'])) {
-    //         return $_SESSION['userID'];
-    //     }
-    //     return 'false';
-    // }
+        try {
+            if (!isset($_COOKIE['loginID'])) {
+                throw new Exception('並未登入');
+            }
 
-    // public function logout()
-    // {
-    //     unset($_SESSION['userAccount']);
-    //     unset($_SESSION['userName']);
-    //     unset($_SESSION['userID']);
-    // }
+            if ($this->result = EmployeeLoginStatusService::getDAO()->setLogoutByID($_COOKIE['loginID'])) {
+                setcookie('empID', null, -1, "/");
+                setcookie('empName', null, -1, "/");
+                setcookie('cookieID', null, -1, "/");
+                setcookie('loginID', null, -1, "/");
+                $this->success = true;
+            }
+        } catch (Exception $err) {
+            $this->success = false;
+        }
 
-    // public function checkEmployeeExist($id)
-    // {
-    //     return EmployeeService::getDAO()->checkEmployeeExist($id);
-    // }
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
 
-    // public function getEmployeeSelfData()
-    // {
-    //     return json_encode(EmployeeService::getDAO()->getOneEmployeeByID($_SESSION['userID']));
-    // }
+    public function logoutOneEmployeeAll($id)
+    {
+        try {
+            $this->result = EmployeeLoginStatusService::getDAO()->setLogoutByEmpID($id);
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->success = false;
+        }
 
-    // public function getUserImg($id)
-    // {
-    //     return EmployeeService::getDAO()->getImgByID($id);
-    // }
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
+    //前端取得是否登入用
+    public function checkIsLogin()
+    {
+        try {
+            $this->result = $this->checkIdentity();
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
+    //確認帳號是否存在
+    public function checkAccountExist($account)
+    {
+        try {
+            $this->result = EmployeeService::getDAO()->checkAccountExist($account);
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
+    public function getLoginView()
+    {
+        $smarty = SmartyConfig::getSmarty();
+        $smarty->display('login.html');
+    }
+
+    public function getUpdateSelfView()
+    {
+        $smarty = SmartyConfig::getSmarty();
+        $isLogin = $this->checkIdentity();
+        if ($isLogin) {
+            $smarty->assign('emp', EmployeeService::getDAO()->getOneEmployeeByID($_COOKIE['empID']));
+        }
+        $smarty->assign('isLogin', $isLogin);
+        $smarty->display('pageBack/updateSelfData.html');
+    }
 
     // public function getCreateView()
     // {
@@ -215,11 +294,7 @@ class EmployeeController extends Controller
     //     $smarty->display('registered.html');
     // }
 
-    // public function getLoginView()
-    // {
-    //     $smarty = SmartyConfig::getSmarty();
-    //     $smarty->display('login.html');
-    // }
+
 
     // public function getUpdateView()
     // {

@@ -1,4 +1,27 @@
-<!DOCTYPE html>
+<?php
+/* Smarty version 3.1.34-dev-7, created on 2020-09-30 10:03:35
+  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/login.html' */
+
+/* @var Smarty_Internal_Template $_smarty_tpl */
+if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
+  'version' => '3.1.34-dev-7',
+  'unifunc' => 'content_5f743bd7bb6e57_97708036',
+  'has_nocache_code' => false,
+  'file_dependency' => 
+  array (
+    'd46723ce962173c4179d4efd7c18dd503616e1b1' => 
+    array (
+      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/login.html',
+      1 => 1601453013,
+      2 => 'file',
+    ),
+  ),
+  'includes' => 
+  array (
+  ),
+),false)) {
+function content_5f743bd7bb6e57_97708036 (Smarty_Internal_Template $_smarty_tpl) {
+?><!DOCTYPE html>
 <html>
 
 <head>
@@ -8,7 +31,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<link rel="icon" href="/GameConsole/views/img/logo.png">
 
-	<title>GAME休閒館</title>
+	<title>遊戲機硬體交易網站</title>
 
 	<link rel="canonical" href="https://getbootstrap.com/docs/4.1/examples/sign-in/">
 
@@ -18,18 +41,26 @@
 	<link href="/GameConsole/views/css/signin.css" rel="stylesheet">
 	<!-- Custom styles for this template -->
 
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+	<?php echo '<script'; ?>
+ src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
 		integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-		crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+		crossorigin="anonymous"><?php echo '</script'; ?>
+>
+	<?php echo '<script'; ?>
+ src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
 		integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-		crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+		crossorigin="anonymous"><?php echo '</script'; ?>
+>
+	<?php echo '<script'; ?>
+ src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
 		integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
-		crossorigin="anonymous"></script>
+		crossorigin="anonymous"><?php echo '</script'; ?>
+>
 
 	<!-- ajax -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<?php echo '<script'; ?>
+ src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"><?php echo '</script'; ?>
+>
 </head>
 <style>
 	form {
@@ -40,7 +71,8 @@
 		height: 50%;
 	}
 </style>
-<script>
+<?php echo '<script'; ?>
+>
 	//檢查是否要登出
 	function checkIsLogOut() {
 		$("body").css("display", "none");
@@ -87,7 +119,8 @@
 			});
 		});
 	});
-</script>
+<?php echo '</script'; ?>
+>
 
 <body class="text-center">
 	<form class="form-signin" method="post">
@@ -104,4 +137,5 @@
 
 </body>
 
-</html>
+</html><?php }
+}

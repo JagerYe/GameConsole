@@ -27,7 +27,7 @@ class MemberDAO implements MemberDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return false;
+            throw new Exception("新增發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
@@ -60,7 +60,7 @@ class MemberDAO implements MemberDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return false;
+            throw new Exception("更新發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
@@ -83,7 +83,7 @@ class MemberDAO implements MemberDAO_Interface
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            return false;
+            throw new Exception("更新密碼發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
@@ -100,7 +100,7 @@ class MemberDAO implements MemberDAO_Interface
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return null;
+            throw new Exception("取得資料發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return $request;
@@ -117,7 +117,7 @@ class MemberDAO implements MemberDAO_Interface
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return null;
+            throw new Exception("取得資料發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return $request;
@@ -133,7 +133,7 @@ class MemberDAO implements MemberDAO_Interface
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
-            return null;
+            throw new Exception("取得資料發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return $request;
@@ -158,7 +158,7 @@ class MemberDAO implements MemberDAO_Interface
             $sth = null;
         } catch (Exception $err) {
             $dbh = null;
-            return false;
+            throw new Exception("登入發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return password_verify($password, $request['0']);
@@ -175,7 +175,7 @@ class MemberDAO implements MemberDAO_Interface
             $request = $sth->fetch(PDO::FETCH_NUM);
         } catch (Exception $err) {
             $dbh = null;
-            return false;
+            throw new Exception("確認帳號是否存在發生錯誤\r\n" . $err->getMessage());
         }
         return $request['0'] > 0;
     }
