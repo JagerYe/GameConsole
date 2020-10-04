@@ -92,7 +92,7 @@ class EmployeeController extends Controller
     {
         //驗證
         $jsonObj = json_decode($str);
-        // if (!isset($_SESSION['empID']) || $requestMethod !== 'PUT' || $_SESSION['userID'] !== $jsonObj->userID) {
+        // if (!isset($_COOKIE['empID']) || $requestMethod !== 'PUT' || $_COOKIE['userID'] !== $jsonObj->userID) {
         //     return false;
         // }
 
@@ -110,7 +110,7 @@ class EmployeeController extends Controller
             ))) {
                 throw new Exception('更新發生錯誤');
             }
-            $_SESSION['userName'] = $employee->getName();
+            $_COOKIE['empName'] = $employee->getName();
             $this->success = true;
         } catch (Exception $err) {
             $this->success = false;
@@ -132,16 +132,16 @@ class EmployeeController extends Controller
             $employee->setPassword($jsonObj->password);
 
             //驗證
-            // if ((!isset($_SESSION['userID'])) || ($requestMethod !== 'PUT') || ($employee->getUserPassword() !== $jsonObj->userPasswordAgain)) {
+            // if ((!isset($_COOKIE['userID'])) || ($requestMethod !== 'PUT') || ($employee->getUserPassword() !== $jsonObj->userPasswordAgain)) {
             //     return false;
             // }
 
             $employeeDAO = EmployeeService::getDAO();
-            if (!$employeeDAO->checkPassword($_SESSION['empID'], $jsonObj->oldPassword)) {
+            if (!$employeeDAO->checkPassword($_COOKIE['empID'], $jsonObj->oldPassword)) {
                 throw new Exception('密碼錯誤');
             }
             if (!($this->result = $employeeDAO->updatePassword(
-                $_SESSION['empID'],
+                $_COOKIE['empID'],
                 $employee->getPassword()
             ))) {
                 throw new Exception('更新失敗');
@@ -274,7 +274,7 @@ class EmployeeController extends Controller
     public function getLoginView()
     {
         $smarty = SmartyConfig::getSmarty();
-        $smarty->display('login.html');
+        $smarty->display('pageBack/login.html');
     }
 
     public function getUpdateSelfView()
@@ -285,6 +285,8 @@ class EmployeeController extends Controller
             $smarty->assign('emp', EmployeeService::getDAO()->getOneEmployeeByID($_COOKIE['empID']));
         }
         $smarty->assign('isLogin', $isLogin);
+        $smarty->assign('name', $_COOKIE['empName']);
+        $smarty->assign('isUpdate', true);
         $smarty->display('pageBack/updateSelfData.html');
     }
 
@@ -299,11 +301,11 @@ class EmployeeController extends Controller
     // public function getUpdateView()
     // {
     //     $smarty = SmartyConfig::getSmarty();
-    //     if ($isLogin = isset($_SESSION['userID'])) {
-    //         $employee = EmployeeService::getDAO()->getOneEmployeeByID($_SESSION['userID']);
+    //     if ($isLogin = isset($_COOKIE['userID'])) {
+    //         $employee = EmployeeService::getDAO()->getOneEmployeeByID($_COOKIE['userID']);
     //         $smarty->assign('employee', $employee);
-    //         $smarty->assign('userName', $_SESSION['userName']);
-    //         $smarty->assign('userID', $_SESSION['userID']);
+    //         $smarty->assign('userName', $_COOKIE['userName']);
+    //         $smarty->assign('userID', $_COOKIE['userID']);
     //     }
 
     //     $smarty->assign('isLogin', $isLogin);
@@ -316,9 +318,9 @@ class EmployeeController extends Controller
     // {
     //     $smarty = SmartyConfig::getSmarty();
 
-    //     if ($isLogin = isset($_SESSION['userID'])) {
-    //         $smarty->assign('userID', $_SESSION['userID']);
-    //         $smarty->assign('userName', $_SESSION['userName']);
+    //     if ($isLogin = isset($_COOKIE['userID'])) {
+    //         $smarty->assign('userID', $_COOKIE['userID']);
+    //         $smarty->assign('userName', $_COOKIE['userName']);
     //     }
 
     //     $smarty->assign('isLogin', $isLogin);

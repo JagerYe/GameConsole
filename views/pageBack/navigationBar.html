@@ -17,10 +17,9 @@
                 <li id="showUserName"><a
                         href={{( isset($isUpdate) && $isUpdate ) ? "#" : "/GameConsole/employee/getUpdateSelfView"}}>{{$name}}</a>
                 </li>
-                <li><a href="/GameConsole/member/getLoginView" id="showLogin">登出</a></li>
+                <li><a href="/GameConsole/employee/getLoginView" id="showLogin">登出</a></li>
                 {{else}}
-                <li><a href="/GameConsole/member/getLoginView" id="showLogin">登入</a></li>
-                <li id="showRegistered"><a href="/GameConsole/member/getCreateView">註冊</a></li>
+                <li><a href="/GameConsole/employee/getLoginView" id="showLogin">登入</a></li>
                 {{/if}}
             </ul>
         </div>
