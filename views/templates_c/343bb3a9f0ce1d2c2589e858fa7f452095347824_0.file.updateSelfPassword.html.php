@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-04 12:33:15
-  from 'C:\xampp\htdocs\GameConsole\views\pageBack\updateSelfData.html' */
+/* Smarty version 3.1.34-dev-7, created on 2020-10-05 11:51:40
+  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/updateSelfPassword.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f79a4eb2beea7_95241007',
+  'unifunc' => 'content_5f7aecac632104_37325361',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
-    '2ec1bc0b882d5f291cd569f187dc8ebacc14ad27' => 
+    '343bb3a9f0ce1d2c2589e858fa7f452095347824' => 
     array (
-      0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageBack\\updateSelfData.html',
-      1 => 1601807552,
+      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/updateSelfPassword.html',
+      1 => 1601878344,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f79a4eb2beea7_95241007 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f7aecac632104_37325361 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!doctype html>
 <html lang="en">
 
@@ -100,38 +100,39 @@ function content_5f79a4eb2beea7_95241007 (Smarty_Internal_Template $_smarty_tpl)
  src="/GameConsole/views/js/title.js"><?php echo '</script'; ?>
 >
 <?php echo '<script'; ?>
+ src="/GameConsole/views/js/jsonFormat.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
 >
 	let id = '<?php echo $_smarty_tpl->tpl_vars['isLogin']->value ? $_smarty_tpl->tpl_vars['emp']->value["id"] : -1;?>
 ';
-	if (id < 0) {
+	if (id < 0 || !Number.isInteger(parseInt(id))) {
 		window.location.href = "/GameConsole/employee/getLoginView";
 	}
 
-	//確認姓名並得到錯誤訊息內容
-	function getCheckNameMessage(value) {
-		let checkMessage = $('#nameCheckMessage');
-		let input = $('#name');
-		let returnStr = '請輸入姓名\r\n';
-
+	//確認得到錯誤訊息內容
+	function getCheckMessage(fun, value) {
+		let checkMessage = $(`#${(fun === 'passwordAgain') ? 'password' : fun}CheckMessage`);
+		let input = $(`#user${fun.substr(0, 1).toUpperCase() + fun.substr(1, fun.length - 1)}`);
+		let returnStr = "";
+		let again = false;
+		let rule = passwordRule;
 		checkMessage.empty();
 		input.removeClass('borderBottomRed');
-		if (value.trim().length <= 0) {
-			checkMessage.text(returnStr);
-			input.addClass('borderBottomRed');
-			return returnStr;
+		switch (fun) {
+			case 'oldPassword':
+				returnStr = '舊密碼輸入錯誤\r\n';
+				break;
+			case 'password':
+				returnStr = '密碼格式錯誤！\r\n';
+				break;
+			case 'passwordAgain':
+				returnStr = '兩次密碼不一致！\r\n';
+				again = ($("#userPassword").val() !== value);
+				break;
 		}
-		return "";
-	}
 
-	//確認信箱並得到錯誤訊息內容
-	function getCheckEmailMessage(value) {
-		let checkMessage = $('#emailCheckMessage');
-		let input = $('#email');
-		let returnStr = '信箱格式錯誤\r\n';
-
-		checkMessage.empty();
-		input.removeClass('borderBottomRed');
-		if (!value.match(emailRule)) {
+		if (!value.match(rule) || again) {
 			checkMessage.text(returnStr);
 			input.addClass('borderBottomRed');
 			return returnStr;
@@ -144,48 +145,54 @@ function content_5f79a4eb2beea7_95241007 (Smarty_Internal_Template $_smarty_tpl)
 ')
 
 		//格式檢查
-		$("#name").change(function () {
-			getCheckNameMessage(this.value);
+		$("#userOldPassword").change(function () {
+			getCheckMessage('oldPassword', this.value);
 		});
 
-		$("#email").change(function () {
-			getCheckEmailMessage(this.value);
+		//確認格式
+		$("#userPassword").change(function () {
+			getCheckMessage('password', this.value);
+		});
+
+		//確認一致
+		$("#userPasswordAgain").change(function () {
+			getCheckMessage('passwordAgain', this.value);
 		});
 
 		//送出按鈕事件
 		$("#btnSub").click(() => {
 
 			//包裝
-			let employee = {
-				"id": id,
-				"name": $("#name").val(),
-				"email": $("#email").val()
-			};
+			let data = {
+				"password": $("#userPassword").val(),
+				"passwordAgain": $("#userPasswordAgain").val(),
+				"oldPassword": $("#userOldPassword").val()
+			}
 
 			//檢查
 			let errMessage = "";
-			errMessage += getCheckNameMessage(employee.name);
-			errMessage += getCheckEmailMessage(employee.email);
+			errMessage += getCheckMessage('oldPassword', data.oldPassword);
+			errMessage += getCheckMessage('password', data.password);
+			errMessage += getCheckMessage('passwordAgain', data.passwordAgain);
 			if (errMessage.length > 0) {
 				alert(errMessage);
 				return;
 			}
 
 			//送出
-			let subData = {
-				employee: JSON.stringify(employee)
-			}
 			$.ajax({
 				type: "PUT",
-				url: "/GameConsole/employee/update",
-				data: subData
+				url: "/GameConsole/employee/updateSelfPassword",
+				data: { 0: JSON.stringify(data) }
 			}).then(function (e) {
-				let json = JSON.parse(e);
+				let json = JSON.parse(organizeFormat(e));
 				if (json.result === true) {
-					alert("更新成功");
-					history.go(0);
+					alert("更新成功，請再重新登入");
+					window.location.href = "/GameConsole/employee/getLoginView";
+				} else if (json.success === false) {
+					alert(json.errMessage);
 				} else {
-					alert("更新失敗，將重新整理頁面");
+					alert("發生不明錯誤");
 				}
 			});
 		});
@@ -201,38 +208,37 @@ function content_5f79a4eb2beea7_95241007 (Smarty_Internal_Template $_smarty_tpl)
 	<main role="main" class="container">
 		<div class="card bg-light">
 			<article class="card-body mx-auto">
-				<h4 class="card-title mt-3 text-center">更新會員資料</h4>
+				<h4 class="card-title mt-3 text-center">更新自己密碼</h4>
 
 				<form>
 					<div id="mainShow">
+						<div class="form-group input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+							</div>
+							<input id="userOldPassword" class="form-control" placeholder="請輸入舊密碼" type="password">
+						</div> <!-- form-group// -->
+						<p class="form-group errMas" id="oldPasswordCheckMessage"></p>
 
 						<div class="form-group input-group">
 							<div class="input-group-prepend">
-								<span class="input-group-text"> <i class="fa fa-user"></i> </span>
+								<span class="input-group-text"> <i class="fa fa-lock"></i> </span>
 							</div>
-							<input id="name" class="form-control" placeholder="請輸入姓名" type="text"
-								value="<?php echo $_smarty_tpl->tpl_vars['emp']->value['name'];?>
-">
-						</div>
-						<p class="form-group errMas" id="nameCheckMessage"></p>
-						<!-- form-group// -->
+							<input id="userPassword" class="form-control" placeholder="請輸入密碼" type="password">
+						</div> <!-- form-group// -->
 
 						<div class="form-group input-group">
 							<div class="input-group-prepend">
-								<span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
+								<span class="input-group-text"> <i class="fa fa-lock"></i> </span>
 							</div>
-							<input id="email" class="form-control" placeholder="請輸入Email" type="email"
-								value="<?php echo $_smarty_tpl->tpl_vars['emp']->value['email'];?>
-">
-						</div>
-						<p class="form-group errMas" id="emailCheckMessage"></p>
-						<!-- form-group// -->
-
+							<input id="userPasswordAgain" class="form-control" placeholder="請輸入密碼" type="password">
+						</div> <!-- form-group// -->
+						<p class="form-group errMas" id="passwordCheckMessage"></p>
 					</div>
 
 					<div class="form-group">
 						<button type="button" id="btnSub" class="btn btn-primary btn-block">更新</button>
-						<a class="btn btn-primary btn-block" href="/GameConsole/employee/getUpdatePasswordView">變更密碼</a>
+						<a href="/MessageBoard/member/getUpdateView" class="btn btn-primary btn-block">變更其他資料</a>
 					</div> <!-- form-group// -->
 				</form>
 			</article>

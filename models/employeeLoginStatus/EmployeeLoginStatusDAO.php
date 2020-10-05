@@ -100,11 +100,11 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
     }
 
     //登入狀態
-    public function checkIsLogin($id, $cookieID)
+    public function getLoginData($id)
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT `loginID`, `empID`, `cookieID`,
+            $sth = $dbh->prepare("SELECT `loginID`, `isKeep`, `empID`, `cookieID`,
                 `loginDatetime`, `usageDatetime`, `logoutDatetime`,
                 (DATE_ADD(`usageDatetime`,INTERVAL 30 MINUTE) <= NOW()) AS `timeOut`
                 FROM `EmployeeLoginStatus` WHERE
@@ -112,13 +112,13 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
             $sth->bindParam("loginID", $id);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_ASSOC);
-            if($request===false){
-                throw new Exception("尚未登入");
-            }
-            if ($request['timeOut']) {
-                $this->setLogoutByID($id, $dbh);
-                throw new Exception("超過時間");
-            }
+            // if($request===false){
+            //     throw new Exception("尚未登入");
+            // }
+            // if ($request['timeOut']) {
+            //     $this->setLogoutByID($id, $dbh);
+            //     throw new Exception("超過時間");
+            // }
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
@@ -127,6 +127,7 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
             throw new Exception($err->getMessage());
         }
         $dbh = null;
-        return password_verify($cookieID, $request['cookieID']);
+        // return password_verify($cookieID, $request['cookieID']);
+        return $request;
     }
 }

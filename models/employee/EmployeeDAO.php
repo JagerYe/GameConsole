@@ -119,7 +119,7 @@ class EmployeeDAO implements EmployeeDAO_Interface
             $dbh = Config::getDBConnect();
             $sth = $dbh->prepare("SELECT `id`, `account`, `name`, `email`, `creationDatetime`, `changeDatetime` FROM `Employees`;");
             $sth->execute();
-            $request = $sth->fetch(PDO::FETCH_ASSOC);
+            $request = $sth->fetchAll(PDO::FETCH_ASSOC);
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;

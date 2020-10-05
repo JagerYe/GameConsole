@@ -21,12 +21,26 @@ try {
     $sth->bindParam("name", $name);
     $sth->bindParam("email", $email);
     $sth->execute();
+
+    $sth = $dbh->prepare("SELECT `id`, (SELECT COUNT(*) FROM `Permissions`) AS 'permissionsSize'
+        FROM `Employees` WHERE `account`=:account;");
+    $sth->bindParam("account", $account);
+    $sth->execute();
+    $request = $sth->fetch(PDO::FETCH_ASSOC);
+
+    $sqlStr = "INSERT INTO `PermissionControl`(`empID`, `permissionID`, `creationDatetime`) VALUES";
+    for ($i = 1; $i <= $request['permissionsSize']; $i++) {
+        $sqlStr .= "(:id,$i,NOW()),";
+    }
+    $sqlStr = substr_replace($sqlStr, ';', -1, 1);
+    $sth = $dbh->prepare($sqlStr);
+    $sth->bindParam("id", $request['id']);
+    $sth->execute();
     $dbh->commit();
-    $row = $sth->rowCount();
 } catch (PDOException $err) {
     $dbh->rollBack();
     $dbh = null;
     echo $err->getMessage();
 }
 
-echo '成功實行' . $row . '筆';
+echo '成功實行';

@@ -4,11 +4,13 @@ class EmployeeController extends Controller
 {
     private $success = false;
     private $result = null;
+    private $saveTime = 0;
 
     public function __construct()
     {
         $this->requireDAO("employee");
         $this->requireDAO("employeeLoginStatus");
+        $this->requireDAO("permissionControl");
     }
 
     //取得初始隨機密碼
@@ -27,13 +29,26 @@ class EmployeeController extends Controller
     private function checkIdentity()
     {
         $empLoginDAO = EmployeeLoginStatusService::getDAO();
-        if (!isset($_COOKIE['loginID']) || !isset($_COOKIE['cookieID'])) {
+        if (!isset($_COOKIE['loginID']) || !isset($_COOKIE['cookieID']) || !isset($_COOKIE['empID'])) {
             return false;
         }
         try {
-            if ($empLoginDAO->checkIsLogin($_COOKIE['loginID'], $_COOKIE['cookieID'])) {
-                return $empLoginDAO->updateUsingByID($_COOKIE['loginID']);
+            $loginData = $empLoginDAO->getLoginData($_COOKIE['loginID']);
+            if ($loginData === false || $_COOKIE['empID'] !== $loginData['empID'] || !password_verify($_COOKIE['cookieID'], $loginData['cookieID'])) {
+                throw new Exception("登入錯誤");
             }
+            if ($loginData['timeOut']) {
+                $this->logout(true);
+                throw new Exception("超過時間，請重新登入");
+            }
+
+            $this->saveTime = time() + (($loginData['isKeep']) ? (60 * 60 * 24 * 365) : (60 * 30));
+            setcookie('empID', $_COOKIE['empID'], $this->saveTime, "/");
+            setcookie('empName', $_COOKIE['empName'], $this->saveTime, "/");
+            setcookie('loginID', $_COOKIE['loginID'], $this->saveTime, "/");
+            setcookie('cookieID', $_COOKIE['cookieID'], $this->saveTime, "/");
+
+            return $empLoginDAO->updateUsingByID($_COOKIE['loginID']);
         } catch (Exception $err) {
             throw new Exception($err->getMessage());
         }
@@ -43,13 +58,19 @@ class EmployeeController extends Controller
     //新增
     public function insert($str, $requestMethod)
     {
-        if ($requestMethod !== 'POST') {
-            return false;
-        }
 
-        $jsonObj = json_decode($str);
-        $employee = new Employee();
         try {
+
+            //驗證
+            if ($requestMethod !== 'POST') {
+                throw new Exception("請求方式錯誤");
+            }
+            if (!$this->checkIdentity()) {
+                throw new Exception("確認身份發生錯誤");
+            }
+
+            $jsonObj = json_decode($str);
+            $employee = new Employee();
             $employee->setAccount($jsonObj->account);
             $passwordIsset = isset($jsonObj->password);
             if ($passwordIsset) {
@@ -90,14 +111,17 @@ class EmployeeController extends Controller
     //更新
     public function update($str, $requestMethod)
     {
-        //驗證
-        $jsonObj = json_decode($str);
-        // if (!isset($_COOKIE['empID']) || $requestMethod !== 'PUT' || $_COOKIE['userID'] !== $jsonObj->userID) {
-        //     return false;
-        // }
-
-        $employee = new Employee();
         try {
+            //驗證
+            if ($requestMethod !== 'PUT') {
+                throw new Exception("請求方式錯誤");
+            }
+            if (!$this->checkIdentity()) {
+                throw new Exception("確認身份發生錯誤");
+            }
+
+            $jsonObj = json_decode($str);
+            $employee = new Employee();
             $employee->setId($jsonObj->id);
             $employee->setName($jsonObj->name);
             $employee->setEmail($jsonObj->email);
@@ -110,7 +134,7 @@ class EmployeeController extends Controller
             ))) {
                 throw new Exception('更新發生錯誤');
             }
-            $_COOKIE['empName'] = $employee->getName();
+            setcookie('empName', $employee->getName(), $this->saveTime, "/");
             $this->success = true;
         } catch (Exception $err) {
             $this->success = false;
@@ -132,9 +156,15 @@ class EmployeeController extends Controller
             $employee->setPassword($jsonObj->password);
 
             //驗證
-            // if ((!isset($_COOKIE['userID'])) || ($requestMethod !== 'PUT') || ($employee->getUserPassword() !== $jsonObj->userPasswordAgain)) {
-            //     return false;
-            // }
+            if ($requestMethod !== 'PUT') {
+                throw new Exception("請求方式錯誤");
+            }
+            if (!$this->checkIdentity()) {
+                throw new Exception("確認身份發生錯誤");
+            }
+            if ($employee->getPassword() !== $jsonObj->passwordAgain) {
+                throw new Exception("兩次密碼錯誤");
+            }
 
             $employeeDAO = EmployeeService::getDAO();
             if (!$employeeDAO->checkPassword($_COOKIE['empID'], $jsonObj->oldPassword)) {
@@ -173,13 +203,13 @@ class EmployeeController extends Controller
             }
 
             $employee = $employeeDAO->getOneEmployeeByAccount($jsonObj->account);
-            $saveTime = time() + (($jsonObj->isKeep) ? (60 * 60 * 24 * 365) : (60 * 30));
+            $this->saveTime = time() + (($jsonObj->isKeep) ? (60 * 60 * 24 * 365) : (60 * 30));
 
-            EmployeeLoginStatusService::getDAO()->insert($employee['id'], $saveTime, $jsonObj->isKeep);
+            EmployeeLoginStatusService::getDAO()->insert($employee['id'], $this->saveTime, $jsonObj->isKeep);
 
 
-            setcookie('empID', $employee['id'], $saveTime, "/");
-            setcookie('empName', $employee['name'], $saveTime, "/");
+            setcookie('empID', $employee['id'], $this->saveTime, "/");
+            setcookie('empName', $employee['name'], $this->saveTime, "/");
 
 
             $this->success = true;
@@ -195,7 +225,7 @@ class EmployeeController extends Controller
         );
     }
 
-    public function logout()
+    public function logout($isTimeOut = false)
     {
 
         try {
@@ -214,11 +244,13 @@ class EmployeeController extends Controller
             $this->success = false;
         }
 
-        return Result::getResultJson(
-            $this->success,
-            $this->result,
-            isset($err) ? $err->getMessage() : null
-        );
+        if (!$isTimeOut) {
+            return Result::getResultJson(
+                $this->success,
+                $this->result,
+                isset($err) ? $err->getMessage() : null
+            );
+        }
     }
 
     public function logoutOneEmployeeAll($id)
@@ -271,24 +303,91 @@ class EmployeeController extends Controller
         );
     }
 
+    //登入頁面
     public function getLoginView()
     {
         $smarty = SmartyConfig::getSmarty();
         $smarty->display('pageBack/login.html');
     }
 
+    //更新自己資料頁面
     public function getUpdateSelfView()
     {
         $smarty = SmartyConfig::getSmarty();
-        $isLogin = $this->checkIdentity();
+
+        try {
+            $isLogin = $this->checkIdentity();
+        } catch (Exception $err) {
+            $isLogin = false;
+        }
         if ($isLogin) {
+
+            //權限處理
+            $permissions = PermissionControlService::getDAO()->getOneByID($_COOKIE['empID']);
+            $this->smartyAssignPermission($permissions, $smarty);
+
             $smarty->assign('emp', EmployeeService::getDAO()->getOneEmployeeByID($_COOKIE['empID']));
+            $smarty->assign('name', $_COOKIE['empName']);
         }
         $smarty->assign('isLogin', $isLogin);
-        $smarty->assign('name', $_COOKIE['empName']);
         $smarty->assign('isUpdate', true);
         $smarty->display('pageBack/updateSelfData.html');
     }
+
+    //取得更新自己密碼頁面
+    public function getUpdateSelfPasswordView()
+    {
+        $smarty = SmartyConfig::getSmarty();
+
+        try {
+            $isLogin = $this->checkIdentity();
+        } catch (Exception $err) {
+            $isLogin = false;
+        }
+        if ($isLogin) {
+
+            //權限處理
+            $permissions = PermissionControlService::getDAO()->getOneByID($_COOKIE['empID']);
+            $this->smartyAssignPermission($permissions, $smarty);
+
+            $smarty->assign('emp', EmployeeService::getDAO()->getOneEmployeeByID($_COOKIE['empID']));
+            $smarty->assign('name', $_COOKIE['empName']);
+        }
+        $smarty->assign('isLogin', $isLogin);
+        $smarty->assign('isUpdate', true);
+
+        $smarty->display('pageBack/updateSelfPassword.html');
+    }
+
+    public function getEmployeeListView()
+    {
+        $smarty = SmartyConfig::getSmarty();
+
+        try {
+            $isLogin = $this->checkIdentity();
+        } catch (Exception $err) {
+            $isLogin = false;
+        }
+
+        if ($isLogin) {
+
+            //權限處理
+            $permissions = PermissionControlService::getDAO()->getOneByID($_COOKIE['empID']);
+            $this->smartyAssignPermission($permissions, $smarty);
+
+            $smarty->assign('emp', EmployeeService::getDAO()->getOneEmployeeByID($_COOKIE['empID']));
+            $smarty->assign('name', $_COOKIE['empName']);
+        }
+        $smarty->assign('isLogin', $isLogin);
+
+        $smarty->assign('employees', EmployeeService::getDAO()->getAll());
+
+        $smarty->display('pageBack/employeeList.html');
+    }
+
+
+
+
 
     // public function getCreateView()
     // {
@@ -314,18 +413,5 @@ class EmployeeController extends Controller
     //     $smarty->display('updateEmployeeData.html');
     // }
 
-    // public function getUpdatePasswordView()
-    // {
-    //     $smarty = SmartyConfig::getSmarty();
 
-    //     if ($isLogin = isset($_COOKIE['userID'])) {
-    //         $smarty->assign('userID', $_COOKIE['userID']);
-    //         $smarty->assign('userName', $_COOKIE['userName']);
-    //     }
-
-    //     $smarty->assign('isLogin', $isLogin);
-    //     $smarty->assign('isUpdate', true);
-
-    //     $smarty->display('updateEmployeePassword.html');
-    // }
 }

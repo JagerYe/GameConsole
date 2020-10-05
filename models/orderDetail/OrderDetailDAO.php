@@ -10,7 +10,7 @@ class OrderDetailDAO implements OrderDetailDAO_Interface
         foreach ($orderDetails as $key => $value) {
             $sqlStr .= "(:orderID{$key},:commodityID{$key},:price{$key},:quantity{$key},NOW()),";
         }
-        substr_replace($sqlStr, ';', -1, 1);
+        $sqlStr = substr_replace($sqlStr, ';', -1, 1);
         try {
             $sth = $dbh->prepare($sqlStr);
 
@@ -41,8 +41,7 @@ class OrderDetailDAO implements OrderDetailDAO_Interface
             $dbh = Config::getDBConnect();
             $sth = $dbh->prepare("SELECT * FROM `Orders`
                 WHERE `orderID`=:orderID && `commodityID`=<IFNULL(:commodityID,(~0 >> 32))
-                ORDER BY `commodityID` DESC LIMIT 5;"
-            );
+                ORDER BY `commodityID` DESC LIMIT 5;");
             $sth->bindParam("orderID", $orderID);
             $sth->bindParam("commodityID", $commodityID);
             $sth->execute();

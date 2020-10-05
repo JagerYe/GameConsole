@@ -12,6 +12,20 @@
             <a class="navbar-brand" href="/GameConsole/employee/getUpdateSelfView">Game休閒館</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                {{if isset($empSee) && $empSee}}
+                <li><a href="/GameConsole/employee/getEmployeeListView">員工{{(isset($empUse) && $empUse)?'管理':'檢視'}}</a>
+                </li>
+                {{/if}}
+                {{if isset($comSee) && $comSee}}
+                <li><a
+                        href="/GameConsole/commodity/getCommoditieListView">商品{{(isset($comUse) && $comUse)?'管理':'檢視'}}</a>
+                </li>
+                {{/if}}
+                {{if isset($memSee) && $memSee}}
+                <li><a href="/GameConsole/member/getMemberListView">員工{{(isset($memUse) && $memUse)?'管理':'檢視'}}</a></li>
+                {{/if}}
+            </ul>
             <ul class="nav navbar-nav navbar-right">
                 {{if $isLogin === true}}
                 <li id="showUserName"><a

@@ -40,6 +40,7 @@
 		height: 50%;
 	}
 </style>
+<script src="/GameConsole/views/js/jsonFormat.js"></script>
 <script>
 	//檢查是否要登出
 	function checkIsLogOut() {
@@ -49,7 +50,7 @@
 			url: "/GameConsole/employee/checkIsLogin"
 		}).then(function (e) {
 			console.log(e);
-			let json = JSON.parse(e);
+			let json = JSON.parse(organizeFormat(e));
 			if (json.result === false) {
 				$("body").css("display", "inline");
 			} else {
@@ -81,8 +82,10 @@
 				let json = JSON.parse(e);
 				if (json.result === true) {
 					window.location.href = "/GameConsole/employee/getUpdateSelfView";
-				} else {
+				} else if (json.success === false) {
 					alert(json.errMessage);
+				} else {
+					alert("發生不明錯誤");
 				}
 			});
 		});

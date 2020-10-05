@@ -5,5 +5,5 @@ interface EmployeeLoginStatusDAO_Interface
     public function setLogoutByID($id, $dbh = null);
     public function setLogoutByEmpID($id);
     public function updateUsingByID($id);
-    public function checkIsLogin($id, $cookieID);
+    public function getLoginData($id);
 }

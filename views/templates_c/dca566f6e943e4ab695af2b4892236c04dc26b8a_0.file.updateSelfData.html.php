@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-09-30 10:29:11
+/* Smarty version 3.1.34-dev-7, created on 2020-10-05 11:51:30
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/updateSelfData.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7441d7950098_42542012',
+  'unifunc' => 'content_5f7aeca270eff2_07458201',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'dca566f6e943e4ab695af2b4892236c04dc26b8a' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/updateSelfData.html',
-      1 => 1601454323,
+      1 => 1601868920,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f7441d7950098_42542012 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f7aeca270eff2_07458201 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!doctype html>
 <html lang="en">
 
@@ -93,27 +93,27 @@ function content_5f7441d7950098_42542012 (Smarty_Internal_Template $_smarty_tpl)
 	}
 </style>
 
-<!-- <?php echo '<script'; ?>
+<?php echo '<script'; ?>
  src="/GameConsole/views/js/rule.js"><?php echo '</script'; ?>
 >
 <?php echo '<script'; ?>
  src="/GameConsole/views/js/title.js"><?php echo '</script'; ?>
 >
 <?php echo '<script'; ?>
+ src="/GameConsole/views/js/jsonFormat.js"><?php echo '</script'; ?>
 >
-	let userID = '<?php echo $_smarty_tpl->tpl_vars['isLogin']->value ? $_smarty_tpl->tpl_vars['userID']->value : -1;?>
+<?php echo '<script'; ?>
+>
+	let id = '<?php echo $_smarty_tpl->tpl_vars['isLogin']->value ? $_smarty_tpl->tpl_vars['emp']->value["id"] : -1;?>
 ';
-	if (userID < 0) {
-		window.location.href = "/GameConsole/member/getLoginView";
+	if (id < 0 || !Number.isInteger(parseInt(id))) {
+		window.location.href = "/GameConsole/employee/getLoginView";
 	}
 
-	let updateData = false;
-	let updateImg = false;
-	let updateErr = false;
-
+	//確認姓名並得到錯誤訊息內容
 	function getCheckNameMessage(value) {
 		let checkMessage = $('#nameCheckMessage');
-		let input = $('#userName');
+		let input = $('#name');
 		let returnStr = '請輸入姓名\r\n';
 
 		checkMessage.empty();
@@ -126,9 +126,10 @@ function content_5f7441d7950098_42542012 (Smarty_Internal_Template $_smarty_tpl)
 		return "";
 	}
 
+	//確認信箱並得到錯誤訊息內容
 	function getCheckEmailMessage(value) {
 		let checkMessage = $('#emailCheckMessage');
-		let input = $('#userEmail');
+		let input = $('#email');
 		let returnStr = '信箱格式錯誤\r\n';
 
 		checkMessage.empty();
@@ -141,162 +142,58 @@ function content_5f7441d7950098_42542012 (Smarty_Internal_Template $_smarty_tpl)
 		return "";
 	}
 
-	function getCheckPhoneMessage(value) {
-		let checkMessage = $('#phoneCheckMessage');
-		let input = $('#userPhone');
-		let returnStr = '電話號碼格式錯誤\r\n';
-
-		checkMessage.empty();
-		input.removeClass('borderBottomRed');
-		if (!value.match(phoneRule)) {
-			checkMessage.text(returnStr);
-			input.addClass('borderBottomRed');
-			return returnStr;
-		}
-		return "";
-	}
-
-	function getCheckPasswordMessage(value) {
-		let checkMessage = $('#passwordCheckMessage');
-		let input = $('#userPassword');
-		let returnStr = '請輸入密碼\r\n';
-
-		checkMessage.empty();
-		input.removeClass('borderBottomRed');
-		if (!value.match(passwordRule)) {
-			checkMessage.text(returnStr);
-			input.addClass('borderBottomRed');
-			return returnStr;
-		}
-		return "";
-	}
-
-	function getCheckImage(value) {
-		return value && value.type.match(imageTypeRule);
-	}
-
-	function checkUpdateOk() {
-		if (updateErr) {
-			history.go(0);
-		}
-		if (updateData && updateImg) {
-			alert("更新成功");
-		} else {
-			setTimeout(checkUpdateOk, 10);
-		}
-		history.go(0);
-	}
-
 	$(window).ready(() => {
 		$('body').css('display', '<?php echo $_smarty_tpl->tpl_vars['isLogin']->value ? 'inline' : 'none';?>
 ')
 
 		//格式檢查
-		$("#userName").change(function () {
+		$("#name").change(function () {
 			getCheckNameMessage(this.value);
 		});
 
-		$("#userEmail").change(function () {
+		$("#email").change(function () {
 			getCheckEmailMessage(this.value);
-		});
-
-		$("#userPhone").change(function () {
-			getCheckPhoneMessage(this.value);
-		});
-
-		$("#userPassword").change(function () {
-			getCheckPasswordMessage(this.value);
-		});
-
-		$("#clearImage").click(() => {
-			$("#inputImage").val("");
-			$("#userImage").attr('src', `/GameConsole/member/getUserImg?id=${userID}`);
-		});
-
-		$("#inputImage").change(function () {
-			if (this.files && getCheckImage(this.files[0])) {
-				let reader = new FileReader();
-				reader.onload = function (e) {
-					$("#userImage").attr('src', e.target.result);
-				}
-				// reader.readAsDataURL(this);
-				reader.readAsDataURL(this.files[0]);
-			} else {
-				alert("請選擇正確的檔案格式");
-				$("#userImage").attr('src', `/GameConsole/member/getUserImg?id=${userID}`);
-			}
 		});
 
 		//送出按鈕事件
 		$("#btnSub").click(() => {
 
 			//包裝
-			let member = {
-				"userID": userID,
-				"userName": $("#userName").val(),
-				"userEmail": $("#userEmail").val(),
-				"userPhone": $("#userPhone").val(),
-				"userPassword": $("#userPassword").val()
+			let employee = {
+				"id": id,
+				"name": $("#name").val(),
+				"email": $("#email").val()
 			};
 
-
+			//檢查
 			let errMessage = "";
-			errMessage += getCheckNameMessage(member.userName);
-			errMessage += getCheckEmailMessage(member.userEmail);;
-			errMessage += getCheckPhoneMessage(member.userPhone);;
-			errMessage += getCheckPasswordMessage(member.userPassword);;
+			errMessage += getCheckNameMessage(employee.name);
+			errMessage += getCheckEmailMessage(employee.email);
 			if (errMessage.length > 0) {
 				alert(errMessage);
 				return;
 			}
 
 			//送出
-			let subData = {
-				member: JSON.stringify(member)
-			}
 			$.ajax({
 				type: "PUT",
-				url: "/GameConsole/member/update",
-				data: subData
+				url: "/GameConsole/employee/update",
+				data: { 0: JSON.stringify(employee) }
 			}).then(function (e) {
-				if (e === "1") {
-					updateData = true;
+				let json = JSON.parse(organizeFormat(e));
+				if (json.result === true) {
+					alert("更新成功");
+					history.go(0);
+				} else if (json.success === false) {
+					alert(json.errMessage);
 				} else {
-					updateErr = true;
-					alert("更新失敗，將重新整理頁面");
+					alert("發生不明錯誤");
 				}
 			});
-
-			if ((img = $("#inputImage").get(0).files[0]) && getCheckImage(img)) {
-				let putData = new FormData();
-				putData.append("userID", userID);
-				putData.append("password", $("#userPassword").val());
-				putData.append("img", img);
-				$.ajax({
-					type: "POST",
-					url: "/GameConsole/member/updateSelfImage",
-					data: putData,
-					cache: false,
-					contentType: false,
-					processData: false
-				}).then(function (e) {
-					if (e === '1') {
-						updateImg = true;
-					} else {
-						updateErr = true;
-						alert('圖片上傳失敗');
-					}
-				});
-			} else {
-				updateImg = true;
-			}
-
-			setTimeout(checkUpdateOk, 10);
 		});
-
 	});
 <?php echo '</script'; ?>
-> -->
+>
 
 <body>
 	<?php if ($_smarty_tpl->tpl_vars['isLogin']->value) {?>
@@ -306,7 +203,7 @@ function content_5f7441d7950098_42542012 (Smarty_Internal_Template $_smarty_tpl)
 	<main role="main" class="container">
 		<div class="card bg-light">
 			<article class="card-body mx-auto">
-				<h4 class="card-title mt-3 text-center">更新會員資料</h4>
+				<h4 class="card-title mt-3 text-center">更新自己資料</h4>
 
 				<form>
 					<div id="mainShow">
@@ -315,7 +212,7 @@ function content_5f7441d7950098_42542012 (Smarty_Internal_Template $_smarty_tpl)
 							<div class="input-group-prepend">
 								<span class="input-group-text"> <i class="fa fa-user"></i> </span>
 							</div>
-							<input id="userName" class="form-control" placeholder="請輸入姓名" type="text"
+							<input id="name" class="form-control" placeholder="請輸入姓名" type="text"
 								value="<?php echo $_smarty_tpl->tpl_vars['emp']->value['name'];?>
 ">
 						</div>
@@ -326,7 +223,7 @@ function content_5f7441d7950098_42542012 (Smarty_Internal_Template $_smarty_tpl)
 							<div class="input-group-prepend">
 								<span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
 							</div>
-							<input id="userEmail" class="form-control" placeholder="請輸入Email" type="email"
+							<input id="email" class="form-control" placeholder="請輸入Email" type="email"
 								value="<?php echo $_smarty_tpl->tpl_vars['emp']->value['email'];?>
 ">
 						</div>
@@ -337,7 +234,8 @@ function content_5f7441d7950098_42542012 (Smarty_Internal_Template $_smarty_tpl)
 
 					<div class="form-group">
 						<button type="button" id="btnSub" class="btn btn-primary btn-block">更新</button>
-						<a class="btn btn-primary btn-block" href="/GameConsole/member/getUpdatePasswordView">變更密碼</a>
+						<a class="btn btn-primary btn-block"
+							href="/GameConsole/employee/getUpdateSelfPasswordView">變更密碼</a>
 					</div> <!-- form-group// -->
 				</form>
 			</article>
