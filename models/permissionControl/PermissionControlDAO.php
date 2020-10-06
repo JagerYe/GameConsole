@@ -4,52 +4,63 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/config.php";
 class PermissionControlDAO implements PermissionControlDAO_Interface
 {
     //新增單一員工權限
-    public function insertOneEmployeePermissions($empID, $permissionIDArr)
+    public function insertOneEmployeePermissions($empID, $insertList, $dbh = null)
     {
         $sqlStr = "INSERT INTO `PermissionControl`(`empID`, `permissionID`, `creationDatetime`) VALUES ";
-        // foreach ($permissionIDArr as $key => $permissionID) {
-        //     $sqlStr .= "(:empID,:permission{$key},NOW()),";
-        // }
-        for ($i = 0; $i < count($permissionIDArr); $i++) {
-            $sqlStr .= "(:empID,:permission{$i},NOW()),";
+        foreach ($insertList as $key => $permissionID) {
+            $sqlStr .= "(:empID,:permissionID{$key},NOW()),";
         }
+        unset($permissionID);
+        // for ($i = 0; $i < count($insertList); $i++) {
+        //     $sqlStr .= "(:empID,:permissionID{$i},NOW()),";
+        // }
         $sqlStr = substr_replace($sqlStr, ';', -1, 1);
         try {
-            $dbh = Config::getDBConnect();
-            $dbh->beginTransaction();
+            $haveDbh = true;
+            if ($dbh === null) {
+                $haveDbh = false;
+                $dbh = Config::getDBConnect();
+                $dbh->beginTransaction();
+            }
+
             $sth = $dbh->prepare($sqlStr);
 
             $sth->bindParam("empID", $empID);
-            // foreach ($permissionIDArr as $key1 => $value) {
 
-            //     $sth->bindParam("permission{$key1}", $value);
+            //那個該死的&才能正確指向值 
+            foreach ($insertList as $key1 => &$value) {
+                $sth->bindParam("permissionID{$key1}", $value);
+            }
+            unset($value);
+
+
+
+            // for ($i = 0; $i < count($insertList); $i++) {
+
+            //     $sth->bindParam("permissionID{$i}", $insertList[$i]);
             // }
 
-
-
-            for ($i = 0; $i < count($permissionIDArr); $i++) {
-
-                $sth->bindParam("permission{$i}", $permissionIDArr[$i]);
-            }
-
             $sth->execute();
-            $dbh->commit();
             $sth = null;
+            if ($haveDbh === false) {
+                $dbh->commit();
+                $dbh = null;
+            }
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
             throw new Exception("新增發生錯誤\r\n" . $err->getMessage());
         }
-        $dbh = null;
+
         return true;
     }
 
     // //新增多位員工權限
-    // public function insertSomeEmployeePermissions($empIDArr, $permissionIDArr)
+    // public function insertSomeEmployeePermissions($empIDArr, $insertList)
     // {
     //     $sqlStr = "INSERT INTO `PermissionControl`(`empID`, `permissionID`, `creationDatetime`) VALUES ";
     //     foreach ($empIDArr as $key1 => $empID) {
-    //         foreach ($permissionIDArr as $key2 => $permissionID) {
+    //         foreach ($insertList as $key2 => $permissionID) {
     //             $sqlStr .= "(:empID{$key1},:permissionID{$key1}_{$key2},NOW()),";
     //         }
     //     }
@@ -60,7 +71,7 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
     //         $sth = $dbh->prepare($sqlStr);
     //         foreach ($empIDArr as $key1 => $empID) {
     //             $sth->bindParam("empID{$key1}", $empID);
-    //             foreach ($permissionIDArr as $key2 => $permissionID) {
+    //             foreach ($insertList as $key2 => $permissionID) {
     //                 $sth->bindParam("permissionID{$key1}_{$key2}", $permissionID);
     //             }
     //         }
@@ -77,10 +88,47 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
     //     return true;
     // }
 
+    //更新
+    public function update($empID, $deleteList, $insertList)
+    {
+        $sqlStr = "DELETE FROM `PermissionControl` WHERE `empID`=:empID && `empID`!=1 && (";
+        $countRow = count($deleteList);
+        for ($i = 0; $i < $countRow; $i++) {
+            $sqlStr .= " `permissionID`=:permissionID{$i} ||";
+        }
+        $sqlStr = substr_replace($sqlStr, ');', -2, 2);
+        try {
+            $dbh = Config::getDBConnect();
+            $dbh->beginTransaction();
+
+            if ($countRow >= 1) {
+                $sth = $dbh->prepare($sqlStr);
+                $sth->bindParam("empID", $empID);
+                for ($i = 0; $i < $countRow; $i++) {
+                    $sth->bindParam("permissionID{$i}", $deleteList[$i]);
+                }
+                $sth->execute();
+            }
+
+            if (count($insertList) >= 1) {
+                $this->insertOneEmployeePermissions($empID, $insertList, $dbh);
+            }
+
+            $dbh->commit();
+            $sth = null;
+        } catch (PDOException $err) {
+            $dbh->rollBack();
+            $dbh = null;
+            throw new Exception("更新發生錯誤\r\n" . $err->getMessage());
+        }
+        $dbh = null;
+        return true;
+    }
+
     //刪除單位使用者部份功能
     public function delete($empID, $permissionID)
     {
-        $sqlStr = "DELETE FROM `PermissionControl` WHERE `empID`=:empID && (";
+        $sqlStr = "DELETE FROM `PermissionControl` WHERE `empID`=:empID && `empID`!=1 && (";
         for ($i = 0; $i < count($permissionID); $i++) {
             $sqlStr .= " `permissionID`=:permissionID{$i} ||";
         }
@@ -94,6 +142,7 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
                 $sth->bindParam("permissionID{$i}", $permissionID[$i]);
             }
             $sth->execute();
+            $row = $sth->rowCount();
             $dbh->commit();
             $sth = null;
         } catch (PDOException $err) {
@@ -102,7 +151,7 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
             throw new Exception("移除發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
-        return true;
+        return $row >= 1;
     }
 
     //刪除單一使用者所有權限，離職時使用

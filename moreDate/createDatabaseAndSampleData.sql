@@ -142,8 +142,3 @@ INSERT INTO `Permissions`(`name`, `creationDatetime`, `funtionName`) VALUES
 ('商品管理',NOW(), null),
 ('會員檢視',NOW(), 'getMemberListView'),
 ('會員管理',NOW(), null);
-
-INSERT INTO `Employees`(`account`, `password`, `name`, `email`, `creationDatetime`) VALUES
-('aa','123456','a1','1@b.c',NOW()),
-('bb','123456','a2','2@b.c',NOW()),
-('cc','123456','a3','3@b.c',NOW());

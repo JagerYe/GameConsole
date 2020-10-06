@@ -79,10 +79,10 @@ class PermissionController extends Controller
             }
 
             $oldPermission = $permissionControlDAO->getOneByID($jsonObj->empID);
-            $deleteID = null; //待刪除清單
-            foreach ($oldPermission as $item) {
+
+            foreach ($oldPermission as $itemOld) {
                 for ($i = 0; $i < count($jsonObj->permissions); $i++) {
-                    if ($item['permissionID'] === $jsonObj->permissions[$i]) {
+                    if (isset($jsonObj->permissions[$i]) && $itemOld['permissionID'] === $jsonObj->permissions[$i]) {
                         //如果有就不動作
                         unset($jsonObj->permissions[$i]);
                         continue 2;
@@ -90,22 +90,28 @@ class PermissionController extends Controller
                 }
 
                 //找完新清單還保留的就刪除
-                $deleteID[] = $item['permissionID'];
+                $deleteID[] = $itemOld['permissionID'];
             }
 
-            $success=0;
-            if(count($deleteID)>0){
-                $success++;
-                $permissionControlDAO->delete($jsonObj->empID,$deleteID);
+            $deleteID = isset($deleteID) ? $deleteID : array();
+            $insertID = isset($jsonObj->permissions) ? $jsonObj->permissions : array();
+            if (!($this->result = $permissionControlDAO->update($jsonObj->empID, $deleteID, $insertID))) {
+                throw new Exception('更新失敗');
             }
 
-            if (!($this->result = $permissionControlDAO->insertOneEmployeePermissions(
-                $jsonObj->empID,
-                $jsonObj->permissions
-            ))) {
-                throw new Exception('新增發生錯誤');
-            }
+            // if (isset($deleteID)) {
+            //     if (!$permissionControlDAO->delete($jsonObj->empID, $deleteID)) {
+            //         throw new Exception('更新失敗');
+            //     }
+            // }
 
+            // if (!$permissionControlDAO->insertOneEmployeePermissions(
+            //     $jsonObj->empID,
+            //     $jsonObj->permissions
+            // )) {
+            //     throw new Exception('新增發生錯誤');
+            // }
+            // $this->result = true;
             $this->success = true;
         } catch (Exception $err) {
             $this->success = false;

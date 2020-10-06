@@ -193,8 +193,8 @@ class EmployeeController extends Controller
         );
     }
 
-    public function getOneByID(){
-        
+    public function getOneByID()
+    {
     }
 
     public function login($str, $requestMethod)
@@ -387,7 +387,7 @@ class EmployeeController extends Controller
                 $smarty->assign('name', $_COOKIE['empName']);
                 $smarty->assign('isLogin', $isLogin);
                 $smarty->assign('employees', EmployeeService::getDAO()->getAll());
-                $smarty->assign('permissions',PermissionService::getDAO()->getAll());
+                $smarty->assign('permissions', PermissionService::getDAO()->getAll());
                 $smarty->display('pageBack/employeeList.html');
                 return;
             }
