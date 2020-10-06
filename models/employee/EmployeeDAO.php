@@ -19,7 +19,9 @@ class EmployeeDAO implements EmployeeDAO_Interface
             $sth->bindParam("name", $name);
             $sth->bindParam("email", $email);
             $sth->execute();
+            $id = $dbh->lastInsertId();
             $dbh->commit();
+
             $sth = null;
         } catch (PDOException $err) {
             $dbh->rollBack();
@@ -27,7 +29,7 @@ class EmployeeDAO implements EmployeeDAO_Interface
             throw new Exception("新增發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
-        return true;
+        return $id;
     }
 
     //更新會員

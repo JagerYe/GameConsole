@@ -38,7 +38,8 @@
         right: 30px;
         background-color: black;
         max-height: 30px;
-        max-width: 10px;
+        max-width: 30px;
+        width: 20px;
     }
 
     .updateBtn {
@@ -60,9 +61,12 @@
 <script src="/GameConsole/views/js/jsonFormat.js"></script>
 <script src="/GameConsole/views/js/title.js"></script>
 <script src="/GameConsole/views/js/rule.js"></script>
+<script src="/GameConsole/views/js/viewModels/employeeViewModel.js"></script>
 <script>
-    let empUse = '{{$empUse}}';
-    let updatePermissionID = -1;
+    let empUse = '{{isset($empUse)&&$empUse}}';
+    let empSee = '{{isset($empSee)&&$empSee}}';
+    let updatePermissionEmpID = -1;
+    let empPermissions = new Array();
     $(window).ready(() => {
         //回最頂按鈕
         $(".topImgBtn").click(() => {
@@ -71,6 +75,11 @@
             }, 1000);
         });
 
+        //阻止無觀看權限者
+        if (empSee !== '1') {
+            window.location.href = "/GameConsole/index/getBackIndexView";
+        }
+
         //阻止無權限使用者修改
         if (empUse !== '1') {
             $('input').click(() => {
@@ -78,15 +87,39 @@
             });
         }
 
-        //權限按鈕
-        $(".updatePermission").click(function () {
-            updatePermissionID = $(this).parent().parent().children().html();
-            console.log($(this).parent().parent().children().html());
-        });
+        //權限顯示按鈕
+        updateListener();
 
         //修改權限送出
-        $("#updateCloseBtn").click(() => {
+        $("#updateSubBtn").click(() => {
+            empPermissions = new Array();
+            $('input[class="creatEmpPermission"]:checked').each(function () {
+                empPermissions.push(this.value);
+            });
+            let permission = {
+                'empID': updatePermissionEmpID,
+                'permissions': empPermissions
+            };
 
+            $.ajax({
+                type: "PUT",
+                url: "/GameConsole/permission/updateEmpPermission",
+                data: { 0: JSON.stringify(permission) }
+            }).then(function (e) {
+                console.log(e);
+            });
+        });
+
+        //下列為新增欄位用
+
+        //新增按鈕
+        $("#creatEmployeeBtn").click(() => {
+            $("#account").removeClass('borderBottomRed').val("");
+            $("#name").removeClass('borderBottomRed').val("");
+            $("#email").removeClass('borderBottomRed').val("");
+            $(".errMessage").empty();
+            $(".creatEmpPermission").prop('checked', false);
+            empPermissions = new Array();
         });
 
         //帳號欄位檢查
@@ -94,7 +127,7 @@
             getCheckAccountMessage(this.value);
         });
 
-        //帳號欄位檢查
+        //姓名欄位檢查
         $("#name").change(function () {
             getCheckNameMessage(this.value);
         });
@@ -105,10 +138,95 @@
         });
 
         //新增員工送出
-        $("#updateCloseBtn").click(() => {
+        $("#createSubBtn").click(() => {
+            let employee = {
+                'account': $("#account").val(),
+                'name': $("#name").val(),
+                'email': $("#email").val()
+            };
 
+            let errMessage = "";
+            errMessage += getCheckAccountMessage(employee.account);
+            errMessage += getCheckNameMessage(employee.name);
+            errMessage += getCheckEmailMessage(employee.email);
+            if (errMessage.length > 0) {
+                alert(errMessage);
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/GameConsole/employee/insert",
+                data: { 0: JSON.stringify(employee) }
+            }).then(function (e) {
+                e = organizeFormat(e);
+                console.log(organizeFormat(e));
+                let json = JSON.parse(e);
+                if (json.result.result === true) {
+                    alert('新增成功');
+
+                    let date = new Date();
+                    $('#createCloseBtn').trigger('click');
+                    $('#dataShow').append(getEmployeeListView(
+                        json.result.id,
+                        employee.account,
+                        employee.name,
+                        employee.email,
+                        (new Date()).toLocaleString()
+                    ));
+                    updateListener();
+
+                    //新增權限
+                    $('input[class="creatEmpPermission"]:checked').each(function () {
+                        empPermissions.push(this.value);
+                    });
+                    if (empPermissions.length >= 1) {
+                        let permission = {
+                            'empID': json.result.id,
+                            'permissions': empPermissions
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/GameConsole/permission/insert",
+                            data: { 0: JSON.stringify(permission) }
+                        });
+                    }
+                } else if (json.success === false) {
+                    alert(json.errMessage);
+                } else {
+                    alert('發生不明錯誤');
+                }
+
+            });
         });
+
     });
+
+    //重設Btn監聽器
+    function updateListener() {
+        //權限按鈕
+        $(".updatePermissionBtn").click(function () {
+            $(".updatePermission").prop('checked', false);
+            updatePermissionEmpID = $(this).parent().parent().children().html();
+            console.log($(this).parent().parent().children().html());
+            $.ajax({
+                type: "GET",
+                url: `/GameConsole/permission/getOneEmpPermissionList?ID=${updatePermissionEmpID}`
+            }).then(function (e) {
+                e = organizeFormat(e);
+                console.log(e);
+                let json = JSON.parse(e);
+                if (json.result.result === true) {
+
+                    json.result.data.forEach(item => {
+                        $(`.updatePermission[value=${item.permissionID}]`).prop('checked', true);
+                    });
+
+                }
+            });
+        });
+    }
 
     //確認帳號並得到錯誤訊息內容
     function getCheckAccountMessage(value) {
@@ -118,6 +236,22 @@
 
         checkMessage.empty();
         input.removeClass('borderBottomRed');
+
+        //檢查重複
+        $.ajax({
+            type: "GET",
+            url: `/GameConsole/employee/checkAccountExist?id=${value}`
+        }).then(function (e) {
+            e = organizeFormat(e);
+            let json = JSON.parse(e);
+
+            if (json.result === true) {
+                checkMessage.append("<br>此帳號有人使用<br>");
+                input.addClass('borderBottomRed');
+            }
+        });
+
+        //檢查格式
         if (!value.match(accountRule)) {
             checkMessage.text(returnStr);
             input.addClass('borderBottomRed');
@@ -157,6 +291,7 @@
         }
         return "";
     }
+
 </script>
 
 <body>
@@ -186,22 +321,24 @@
                 </tr>
             </thead>
 
-            {{foreach $employees as $emp}}
-            <tbody id="emp{{$emp['id']}}">
-                <tr>
+
+            <tbody id="dataShow">
+                {{foreach $employees as $emp}}
+                <tr id="emp{{$emp['id']}}">
                     <td>{{$emp['id']}}</td>
                     <td>{{$emp['account']}}</td>
                     <td>{{$emp['name']}}</td>
                     <td>{{$emp['email']}}</td>
                     <td>{{$emp['creationDatetime']}}</td>
                     <td>{{$emp['changeDatetime']}}</td>
-                    <td><button class="btn btn-info width100Percentage updatePermission" type="button"
+                    <td><button class="btn btn-info width100Percentage updatePermissionBtn" type="button"
                             data-toggle="modal" data-target="#updatePermissionModal">
                             {{(isset($empUse) && $empUse) ? '修改' : '檢視'}}權限
                         </button></td>
                 </tr>
+                {{/foreach}}
             </tbody>
-            {{/foreach}}
+
 
 
         </table>
@@ -223,13 +360,12 @@
                     </div>
                     <div class="modal-body">
                         <!--身-->
-                        <label><input type="checkbox" name="" id="" value="1">員工檢視</label>
-                        <label><input type="checkbox" name="" id="" value="1">員工管理</label>
-                        <label><input type="checkbox" name="" id="" value="1">商品檢視</label>
-                        <label><input type="checkbox" name="" id="" value="1">商品管理</label>
-                        <label><input type="checkbox" name="" id="" value="1">會員檢視</label>
-                        <label><input type="checkbox" name="" id="" value="1">會員管理</label>
+                        {{foreach $permissions as $permission}}
+                        <label><input type="checkbox" class="updatePermission"
+                                value="{{$permission['id']}}">{{$permission['name']}}</label>
+                        {{/foreach}}
                     </div>
+                    {{if (isset($empUse)&&$empUse)}}
                     <div class="modal-footer">
                         <!--底-->
                         <button type="button" class="btn btn-default" data-dismiss="modal"
@@ -238,6 +374,7 @@
                         <button type="button" class="btn btn-primary" id="updateSubBtn">更新</button>
                         <!--送出-->
                     </div>
+                    {{/if}}
                 </div>
             </div>
         </div>
@@ -286,26 +423,22 @@
                                 <tr>
                                     <td>權限</td>
                                     <td>
-                                        <label><input type="checkbox" name="permission[]" id="1" value="1">員工檢視</label>
-                                        <label><input type="checkbox" name="permission[]" id="2"
-                                                value="2">員工管理</label><br>
-                                        <label><input type="checkbox" name="permission[]" id="3" value="3">商品檢視</label>
-                                        <label><input type="checkbox" name="permission[]" id="4"
-                                                value="4">商品管理</label><br>
-                                        <label><input type="checkbox" name="permission[]" id="5" value="5">會員檢視</label>
-                                        <label><input type="checkbox" name="permission[]" id="6" value="6">會員管理</label>
+                                        {{foreach $permissions as $permission}}
+                                        <label><input type="checkbox" class="creatEmpPermission"
+                                                value="{{$permission['id']}}">{{$permission['name']}}</label>
+                                        {{/foreach}}
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    {{if $empUse}}
+                    {{if (isset($empUse)&&$empUse)}}
                     <div class="modal-footer">
                         <!--底-->
                         <button type="button" class="btn btn-default" data-dismiss="modal"
-                            id="updateCloseBtn">取消</button>
+                            id="createCloseBtn">取消</button>
                         <!--取消按鈕-->
-                        <button type="button" class="btn btn-primary" id="updateSubBtn">更新</button>
+                        <button type="button" class="btn btn-primary" id="createSubBtn">新增</button>
                         <!--送出-->
                     </div>
                     {{/if}}

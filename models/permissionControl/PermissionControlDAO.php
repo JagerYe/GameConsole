@@ -7,18 +7,31 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
     public function insertOneEmployeePermissions($empID, $permissionIDArr)
     {
         $sqlStr = "INSERT INTO `PermissionControl`(`empID`, `permissionID`, `creationDatetime`) VALUES ";
-        foreach ($permissionIDArr as $key => $permissionID) {
-            $sqlStr .= "(:empID,:permissionID{$key},NOW()),";
+        // foreach ($permissionIDArr as $key => $permissionID) {
+        //     $sqlStr .= "(:empID,:permission{$key},NOW()),";
+        // }
+        for ($i = 0; $i < count($permissionIDArr); $i++) {
+            $sqlStr .= "(:empID,:permission{$i},NOW()),";
         }
-        substr_replace($sqlStr, ';', -1, 1);
+        $sqlStr = substr_replace($sqlStr, ';', -1, 1);
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
             $sth = $dbh->prepare($sqlStr);
+
             $sth->bindParam("empID", $empID);
-            foreach ($permissionIDArr as $key => $permissionID) {
-                $sth->bindParam("permissionID{$key}", $permissionID);
+            // foreach ($permissionIDArr as $key1 => $value) {
+
+            //     $sth->bindParam("permission{$key1}", $value);
+            // }
+
+
+
+            for ($i = 0; $i < count($permissionIDArr); $i++) {
+
+                $sth->bindParam("permission{$i}", $permissionIDArr[$i]);
             }
+
             $sth->execute();
             $dbh->commit();
             $sth = null;
@@ -64,16 +77,22 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
     //     return true;
     // }
 
-    //刪除
+    //刪除單位使用者部份功能
     public function delete($empID, $permissionID)
     {
+        $sqlStr = "DELETE FROM `PermissionControl` WHERE `empID`=:empID && (";
+        for ($i = 0; $i < count($permissionID); $i++) {
+            $sqlStr .= " `permissionID`=:permissionID{$i} ||";
+        }
+        $sqlStr = substr_replace($sqlStr, ');', -2, 2);
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("DELETE FROM `PermissionControl` WHERE `empID`=:empID && `permissionID`=:permissionID;"
-            );
+            $sth = $dbh->prepare($sqlStr);
             $sth->bindParam("empID", $empID);
-            $sth->bindParam("permissionID", $permissionID);
+            for ($i = 0; $i < count($permissionID); $i++) {
+                $sth->bindParam("permissionID{$i}", $permissionID[$i]);
+            }
             $sth->execute();
             $dbh->commit();
             $sth = null;
@@ -92,8 +111,7 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("DELETE FROM `PermissionControl` WHERE `empID`=:empID;"
-            );
+            $sth = $dbh->prepare("DELETE FROM `PermissionControl` WHERE `empID`=:empID;");
             $sth->bindParam("empID", $empID);
             $sth->bindParam("permissionID", $permissionID);
             $sth->execute();
@@ -116,8 +134,7 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
             $sth = $dbh->prepare("SELECT `empID`, `permissionID`, pc.`creationDatetime`, `name` AS 'permissionName'
                 FROM `PermissionControl` AS pc
                 INNER JOIN `Permissions` AS p ON p.id=pc.permissionID
-                WHERE `empID`>IFNULL(:empID, -1) ORDER BY `empID` LIMIT 5;"
-            );
+                WHERE `empID`>IFNULL(:empID, -1) ORDER BY `empID` LIMIT 5;");
             $sth->bindParam("empID", $startID);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_ASSOC);
@@ -139,8 +156,7 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
                 `name` AS 'permissionName', `funtionName`
                 FROM `PermissionControl` AS pc
                 INNER JOIN `Permissions` AS p ON p.id=pc.permissionID
-                WHERE `empID`=:empID;"
-            );
+                WHERE `empID`=:empID;");
             $sth->bindParam("empID", $empID);
             $sth->execute();
             $request = $sth->fetchAll(PDO::FETCH_ASSOC);
@@ -151,5 +167,25 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
         }
         $dbh = null;
         return $request;
+    }
+
+    //確認權限
+    public function checkHavePermissionByEmpID($empID, $permissionID)
+    {
+        try {
+            $dbh = Config::getDBConnect();
+            $sth = $dbh->prepare("SELECT COUNT(*) FROM `PermissionControl`
+                WHERE `empID`=:empID && `permissionID`=:permissionID;");
+            $sth->bindParam("empID", $empID);
+            $sth->bindParam("permissionID", $permissionID);
+            $sth->execute();
+            $request = $sth->fetchAll(PDO::FETCH_NUM);
+            $sth = null;
+        } catch (PDOException $err) {
+            $dbh = null;
+            throw new Exception("取得資料發生錯誤\r\n" . $err->getMessage());
+        }
+        $dbh = null;
+        return $request !== false && (int)$request['0'] === 1;
     }
 }

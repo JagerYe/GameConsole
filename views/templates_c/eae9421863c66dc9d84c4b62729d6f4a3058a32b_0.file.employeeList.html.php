@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-05 12:20:37
+/* Smarty version 3.1.34-dev-7, created on 2020-10-06 12:09:58
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/employeeList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7af3750abe60_47962593',
+  'unifunc' => 'content_5f7c427681e2e7_64247564',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'eae9421863c66dc9d84c4b62729d6f4a3058a32b' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/employeeList.html',
-      1 => 1601893235,
+      1 => 1601978992,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f7af3750abe60_47962593 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f7c427681e2e7_64247564 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -70,7 +70,8 @@ function content_5f7af3750abe60_47962593 (Smarty_Internal_Template $_smarty_tpl)
         right: 30px;
         background-color: black;
         max-height: 30px;
-        max-width: 10px;
+        max-width: 30px;
+        width: 20px;
     }
 
     .updateBtn {
@@ -99,10 +100,16 @@ function content_5f7af3750abe60_47962593 (Smarty_Internal_Template $_smarty_tpl)
  src="/GameConsole/views/js/rule.js"><?php echo '</script'; ?>
 >
 <?php echo '<script'; ?>
+ src="/GameConsole/views/js/viewModels/employeeViewModel.js"><?php echo '</script'; ?>
 >
-    let empUse = '<?php echo $_smarty_tpl->tpl_vars['empUse']->value;?>
+<?php echo '<script'; ?>
+>
+    let empUse = '<?php echo (isset($_smarty_tpl->tpl_vars['empUse']->value)) && $_smarty_tpl->tpl_vars['empUse']->value;?>
 ';
-    let updatePermissionID = -1;
+    let empSee = '<?php echo (isset($_smarty_tpl->tpl_vars['empSee']->value)) && $_smarty_tpl->tpl_vars['empSee']->value;?>
+';
+    let updatePermissionEmpID = -1;
+    let empPermissions = new Array();
     $(window).ready(() => {
         //回最頂按鈕
         $(".topImgBtn").click(() => {
@@ -111,6 +118,11 @@ function content_5f7af3750abe60_47962593 (Smarty_Internal_Template $_smarty_tpl)
             }, 1000);
         });
 
+        //阻止無觀看權限者
+        if (empSee !== '1') {
+            window.location.href = "/GameConsole/index/getBackIndexView";
+        }
+
         //阻止無權限使用者修改
         if (empUse !== '1') {
             $('input').click(() => {
@@ -118,15 +130,39 @@ function content_5f7af3750abe60_47962593 (Smarty_Internal_Template $_smarty_tpl)
             });
         }
 
-        //權限按鈕
-        $(".updatePermission").click(function () {
-            updatePermissionID = $(this).parent().parent().children().html();
-            console.log($(this).parent().parent().children().html());
-        });
+        //權限顯示按鈕
+        updateListener();
 
         //修改權限送出
-        $("#updateCloseBtn").click(() => {
+        $("#updateSubBtn").click(() => {
+            empPermissions = new Array();
+            $('input[class="creatEmpPermission"]:checked').each(function () {
+                empPermissions.push(this.value);
+            });
+            let permission = {
+                'empID': updatePermissionEmpID,
+                'permissions': empPermissions
+            };
 
+            $.ajax({
+                type: "PUT",
+                url: "/GameConsole/permission/updateEmpPermission",
+                data: { 0: JSON.stringify(permission) }
+            }).then(function (e) {
+                console.log(e);
+            });
+        });
+
+        //下列為新增欄位用
+
+        //新增按鈕
+        $("#creatEmployeeBtn").click(() => {
+            $("#account").removeClass('borderBottomRed').val("");
+            $("#name").removeClass('borderBottomRed').val("");
+            $("#email").removeClass('borderBottomRed').val("");
+            $(".errMessage").empty();
+            $(".creatEmpPermission").prop('checked', false);
+            empPermissions = new Array();
         });
 
         //帳號欄位檢查
@@ -134,7 +170,7 @@ function content_5f7af3750abe60_47962593 (Smarty_Internal_Template $_smarty_tpl)
             getCheckAccountMessage(this.value);
         });
 
-        //帳號欄位檢查
+        //姓名欄位檢查
         $("#name").change(function () {
             getCheckNameMessage(this.value);
         });
@@ -145,10 +181,95 @@ function content_5f7af3750abe60_47962593 (Smarty_Internal_Template $_smarty_tpl)
         });
 
         //新增員工送出
-        $("#updateCloseBtn").click(() => {
+        $("#createSubBtn").click(() => {
+            let employee = {
+                'account': $("#account").val(),
+                'name': $("#name").val(),
+                'email': $("#email").val()
+            };
 
+            let errMessage = "";
+            errMessage += getCheckAccountMessage(employee.account);
+            errMessage += getCheckNameMessage(employee.name);
+            errMessage += getCheckEmailMessage(employee.email);
+            if (errMessage.length > 0) {
+                alert(errMessage);
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/GameConsole/employee/insert",
+                data: { 0: JSON.stringify(employee) }
+            }).then(function (e) {
+                e = organizeFormat(e);
+                console.log(organizeFormat(e));
+                let json = JSON.parse(e);
+                if (json.result.result === true) {
+                    alert('新增成功');
+
+                    let date = new Date();
+                    $('#createCloseBtn').trigger('click');
+                    $('#dataShow').append(getEmployeeListView(
+                        json.result.id,
+                        employee.account,
+                        employee.name,
+                        employee.email,
+                        (new Date()).toLocaleString()
+                    ));
+                    updateListener();
+
+                    //新增權限
+                    $('input[class="creatEmpPermission"]:checked').each(function () {
+                        empPermissions.push(this.value);
+                    });
+                    if (empPermissions.length >= 1) {
+                        let permission = {
+                            'empID': json.result.id,
+                            'permissions': empPermissions
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/GameConsole/permission/insert",
+                            data: { 0: JSON.stringify(permission) }
+                        });
+                    }
+                } else if (json.success === false) {
+                    alert(json.errMessage);
+                } else {
+                    alert('發生不明錯誤');
+                }
+
+            });
         });
+
     });
+
+    //重設Btn監聽器
+    function updateListener() {
+        //權限按鈕
+        $(".updatePermissionBtn").click(function () {
+            $(".updatePermission").prop('checked', false);
+            updatePermissionEmpID = $(this).parent().parent().children().html();
+            console.log($(this).parent().parent().children().html());
+            $.ajax({
+                type: "GET",
+                url: `/GameConsole/permission/getOneEmpPermissionList?ID=${updatePermissionEmpID}`
+            }).then(function (e) {
+                e = organizeFormat(e);
+                console.log(e);
+                let json = JSON.parse(e);
+                if (json.result.result === true) {
+
+                    json.result.data.forEach(item => {
+                        $(`.updatePermission[value=${item.permissionID}]`).prop('checked', true);
+                    });
+
+                }
+            });
+        });
+    }
 
     //確認帳號並得到錯誤訊息內容
     function getCheckAccountMessage(value) {
@@ -158,6 +279,22 @@ function content_5f7af3750abe60_47962593 (Smarty_Internal_Template $_smarty_tpl)
 
         checkMessage.empty();
         input.removeClass('borderBottomRed');
+
+        //檢查重複
+        $.ajax({
+            type: "GET",
+            url: `/GameConsole/employee/checkAccountExist?id=${value}`
+        }).then(function (e) {
+            e = organizeFormat(e);
+            let json = JSON.parse(e);
+
+            if (json.result === true) {
+                checkMessage.append("<br>此帳號有人使用<br>");
+                input.addClass('borderBottomRed');
+            }
+        });
+
+        //檢查格式
         if (!value.match(accountRule)) {
             checkMessage.text(returnStr);
             input.addClass('borderBottomRed');
@@ -197,6 +334,7 @@ function content_5f7af3750abe60_47962593 (Smarty_Internal_Template $_smarty_tpl)
         }
         return "";
     }
+
 <?php echo '</script'; ?>
 >
 
@@ -228,15 +366,16 @@ function content_5f7af3750abe60_47962593 (Smarty_Internal_Template $_smarty_tpl)
                 </tr>
             </thead>
 
-            <?php
+
+            <tbody id="dataShow">
+                <?php
 $_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['employees']->value, 'emp');
 $_smarty_tpl->tpl_vars['emp']->do_else = true;
 if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['emp']->value) {
 $_smarty_tpl->tpl_vars['emp']->do_else = false;
 ?>
-            <tbody id="emp<?php echo $_smarty_tpl->tpl_vars['emp']->value['id'];?>
+                <tr id="emp<?php echo $_smarty_tpl->tpl_vars['emp']->value['id'];?>
 ">
-                <tr>
                     <td><?php echo $_smarty_tpl->tpl_vars['emp']->value['id'];?>
 </td>
                     <td><?php echo $_smarty_tpl->tpl_vars['emp']->value['account'];?>
@@ -249,16 +388,17 @@ $_smarty_tpl->tpl_vars['emp']->do_else = false;
 </td>
                     <td><?php echo $_smarty_tpl->tpl_vars['emp']->value['changeDatetime'];?>
 </td>
-                    <td><button class="btn btn-info width100Percentage updatePermission" type="button"
+                    <td><button class="btn btn-info width100Percentage updatePermissionBtn" type="button"
                             data-toggle="modal" data-target="#updatePermissionModal">
                             <?php echo (isset($_smarty_tpl->tpl_vars['empUse']->value)) && $_smarty_tpl->tpl_vars['empUse']->value ? '修改' : '檢視';?>
 權限
                         </button></td>
                 </tr>
-            </tbody>
-            <?php
+                <?php
 }
 $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
+            </tbody>
+
 
 
         </table>
@@ -280,13 +420,21 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
                     </div>
                     <div class="modal-body">
                         <!--身-->
-                        <label><input type="checkbox" name="" id="" value="1">員工檢視</label>
-                        <label><input type="checkbox" name="" id="" value="1">員工管理</label>
-                        <label><input type="checkbox" name="" id="" value="1">商品檢視</label>
-                        <label><input type="checkbox" name="" id="" value="1">商品管理</label>
-                        <label><input type="checkbox" name="" id="" value="1">會員檢視</label>
-                        <label><input type="checkbox" name="" id="" value="1">會員管理</label>
+                        <?php
+$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['permissions']->value, 'permission');
+$_smarty_tpl->tpl_vars['permission']->do_else = true;
+if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['permission']->value) {
+$_smarty_tpl->tpl_vars['permission']->do_else = false;
+?>
+                        <label><input type="checkbox" class="updatePermission"
+                                value="<?php echo $_smarty_tpl->tpl_vars['permission']->value['id'];?>
+"><?php echo $_smarty_tpl->tpl_vars['permission']->value['name'];?>
+</label>
+                        <?php
+}
+$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
                     </div>
+                    <?php if (((isset($_smarty_tpl->tpl_vars['empUse']->value)) && $_smarty_tpl->tpl_vars['empUse']->value)) {?>
                     <div class="modal-footer">
                         <!--底-->
                         <button type="button" class="btn btn-default" data-dismiss="modal"
@@ -295,6 +443,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
                         <button type="button" class="btn btn-primary" id="updateSubBtn">更新</button>
                         <!--送出-->
                     </div>
+                    <?php }?>
                 </div>
             </div>
         </div>
@@ -343,26 +492,31 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
                                 <tr>
                                     <td>權限</td>
                                     <td>
-                                        <label><input type="checkbox" name="permission[]" id="1" value="1">員工檢視</label>
-                                        <label><input type="checkbox" name="permission[]" id="2"
-                                                value="2">員工管理</label><br>
-                                        <label><input type="checkbox" name="permission[]" id="3" value="3">商品檢視</label>
-                                        <label><input type="checkbox" name="permission[]" id="4"
-                                                value="4">商品管理</label><br>
-                                        <label><input type="checkbox" name="permission[]" id="5" value="5">會員檢視</label>
-                                        <label><input type="checkbox" name="permission[]" id="6" value="6">會員管理</label>
+                                        <?php
+$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['permissions']->value, 'permission');
+$_smarty_tpl->tpl_vars['permission']->do_else = true;
+if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['permission']->value) {
+$_smarty_tpl->tpl_vars['permission']->do_else = false;
+?>
+                                        <label><input type="checkbox" class="creatEmpPermission"
+                                                value="<?php echo $_smarty_tpl->tpl_vars['permission']->value['id'];?>
+"><?php echo $_smarty_tpl->tpl_vars['permission']->value['name'];?>
+</label>
+                                        <?php
+}
+$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <?php if ($_smarty_tpl->tpl_vars['empUse']->value) {?>
+                    <?php if (((isset($_smarty_tpl->tpl_vars['empUse']->value)) && $_smarty_tpl->tpl_vars['empUse']->value)) {?>
                     <div class="modal-footer">
                         <!--底-->
                         <button type="button" class="btn btn-default" data-dismiss="modal"
-                            id="updateCloseBtn">取消</button>
+                            id="createCloseBtn">取消</button>
                         <!--取消按鈕-->
-                        <button type="button" class="btn btn-primary" id="updateSubBtn">更新</button>
+                        <button type="button" class="btn btn-primary" id="createSubBtn">新增</button>
                         <!--送出-->
                     </div>
                     <?php }?>

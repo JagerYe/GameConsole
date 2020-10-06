@@ -11,6 +11,7 @@ class EmployeeController extends Controller
         $this->requireDAO("employee");
         $this->requireDAO("employeeLoginStatus");
         $this->requireDAO("permissionControl");
+        $this->requireDAO('permission');
     }
 
     //取得初始隨機密碼
@@ -26,7 +27,7 @@ class EmployeeController extends Controller
     }
 
     //確認身份
-    private function checkIdentity()
+    public function checkIdentity()
     {
         $empLoginDAO = EmployeeLoginStatusService::getDAO();
         if (!isset($_COOKIE['loginID']) || !isset($_COOKIE['cookieID']) || !isset($_COOKIE['empID'])) {
@@ -58,9 +59,7 @@ class EmployeeController extends Controller
     //新增
     public function insert($str, $requestMethod)
     {
-
         try {
-
             //驗證
             if ($requestMethod !== 'POST') {
                 throw new Exception("請求方式錯誤");
@@ -68,12 +67,14 @@ class EmployeeController extends Controller
             if (!$this->checkIdentity()) {
                 throw new Exception("確認身份發生錯誤");
             }
+            if (!PermissionControlService::getDAO()->checkHavePermissionByEmpID($_COOKIE['empID'], 2)) {
+                throw new Exception("無此權限");
+            }
 
             $jsonObj = json_decode($str);
             $employee = new Employee();
             $employee->setAccount($jsonObj->account);
-            $passwordIsset = isset($jsonObj->password);
-            if ($passwordIsset) {
+            if (isset($jsonObj->password)) {
                 $employee->setPassword($jsonObj->password);
             } else {
                 $employee->setPassword($this->getInitPassword());
@@ -81,21 +82,24 @@ class EmployeeController extends Controller
             $employee->setName($jsonObj->name);
             $employee->setEmail($jsonObj->email);
 
-            if (!($this->result = EmployeeService::getDAO()->insert(
+            if (($this->result['id'] = EmployeeService::getDAO()->insert(
                 $employee->getAccount(),
                 $employee->getPassword(),
                 $employee->getName(),
                 $employee->getEmail()
-            ))) {
+            )) <= 0) {
                 throw new Exception('新增發生錯誤');
             }
 
             $to = $employee->getEmail();
             $subject = '註冊成功';
-            $message = "註冊成功\r\n" . ((!$passwordIsset) ? "密碼：{$employee->getPassword()}" : "");
-            $headers = "From:ggInInDer@mail.chungyo.net\r\n";
+            $message =  "帳號：{$employee->getAccount()}\r\n" . "密碼：{$employee->getPassword()}";
+            $headers = "From:ggInInDer@mail.chungyo.net";
             mail($to, $subject, $message, $headers);
 
+
+
+            $this->result['result'] = true;
             $this->success = true;
         } catch (Exception $err) {
             $this->success = false;
@@ -189,6 +193,10 @@ class EmployeeController extends Controller
         );
     }
 
+    public function getOneByID(){
+        
+    }
+
     public function login($str, $requestMethod)
     {
         $jsonObj = json_decode($str);
@@ -227,7 +235,6 @@ class EmployeeController extends Controller
 
     public function logout($isTimeOut = false)
     {
-
         try {
             if (!isset($_COOKIE['loginID'])) {
                 throw new Exception('並未登入');
@@ -373,16 +380,20 @@ class EmployeeController extends Controller
 
             //權限處理
             $permissions = PermissionControlService::getDAO()->getOneByID($_COOKIE['empID']);
-            $this->smartyAssignPermission($permissions, $smarty);
+            $empSee = $this->smartyAssignPermission($permissions, $smarty, 1);
 
-            $smarty->assign('emp', EmployeeService::getDAO()->getOneEmployeeByID($_COOKIE['empID']));
-            $smarty->assign('name', $_COOKIE['empName']);
+            if ($empSee) {
+                $smarty->assign('emp', EmployeeService::getDAO()->getOneEmployeeByID($_COOKIE['empID']));
+                $smarty->assign('name', $_COOKIE['empName']);
+                $smarty->assign('isLogin', $isLogin);
+                $smarty->assign('employees', EmployeeService::getDAO()->getAll());
+                $smarty->assign('permissions',PermissionService::getDAO()->getAll());
+                $smarty->display('pageBack/employeeList.html');
+                return;
+            }
         }
-        $smarty->assign('isLogin', $isLogin);
 
-        $smarty->assign('employees', EmployeeService::getDAO()->getAll());
-
-        $smarty->display('pageBack/employeeList.html');
+        $this->getUpdateSelfView();
     }
 
 
