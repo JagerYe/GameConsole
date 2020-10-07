@@ -8,6 +8,7 @@ class Commodity implements \JsonSerializable
     private $_status;
     private $_creationDatetime;
     private $_changeDatetime;
+    private $_imageType;
 
     public function getId()
     {
@@ -71,6 +72,19 @@ class Commodity implements \JsonSerializable
             throw new Exception("狀態格式錯誤");
         }
         $this->_status = $status;
+        return true;
+    }
+
+    public function getImageType()
+    {
+        return $this->_imageType;
+    }
+    public function setImageType($imagetype)
+    {
+        if (!preg_match("/image.*/", $imagetype)) {
+            throw new Exception("上傳檔案格式錯誤");
+        }
+        $this->_imageType = $imagetype;
         return true;
     }
 

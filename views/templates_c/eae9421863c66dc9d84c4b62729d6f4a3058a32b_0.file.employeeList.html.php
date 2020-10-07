@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-06 12:09:58
+/* Smarty version 3.1.34-dev-7, created on 2020-10-07 09:47:29
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/employeeList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7c427681e2e7_64247564',
+  'unifunc' => 'content_5f7d7291c0ab26_36620834',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'eae9421863c66dc9d84c4b62729d6f4a3058a32b' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/employeeList.html',
-      1 => 1601978992,
+      1 => 1602056737,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f7c427681e2e7_64247564 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f7d7291c0ab26_36620834 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -136,7 +136,7 @@ function content_5f7c427681e2e7_64247564 (Smarty_Internal_Template $_smarty_tpl)
         //修改權限送出
         $("#updateSubBtn").click(() => {
             empPermissions = new Array();
-            $('input[class="creatEmpPermission"]:checked').each(function () {
+            $('input[class="updatePermission"]:checked').each(function () {
                 empPermissions.push(this.value);
             });
             let permission = {
@@ -150,6 +150,14 @@ function content_5f7c427681e2e7_64247564 (Smarty_Internal_Template $_smarty_tpl)
                 data: { 0: JSON.stringify(permission) }
             }).then(function (e) {
                 console.log(e);
+                let json = JSON.parse(e);
+                if (json.success === false) {
+                    alert(json.errMessage);
+                } else if (json.result === true) {
+                    alert("更新成功");
+                } else {
+                    alert("發生意外錯誤");
+                }
             });
         });
 
@@ -205,7 +213,9 @@ function content_5f7c427681e2e7_64247564 (Smarty_Internal_Template $_smarty_tpl)
                 e = organizeFormat(e);
                 console.log(organizeFormat(e));
                 let json = JSON.parse(e);
-                if (json.result.result === true) {
+                if (json.success === false) {
+                    alert(json.errMessage);
+                } else if (json.result.result === true) {
                     alert('新增成功');
 
                     let date = new Date();
@@ -235,8 +245,6 @@ function content_5f7c427681e2e7_64247564 (Smarty_Internal_Template $_smarty_tpl)
                             data: { 0: JSON.stringify(permission) }
                         });
                     }
-                } else if (json.success === false) {
-                    alert(json.errMessage);
                 } else {
                     alert('發生不明錯誤');
                 }
@@ -260,7 +268,9 @@ function content_5f7c427681e2e7_64247564 (Smarty_Internal_Template $_smarty_tpl)
                 e = organizeFormat(e);
                 console.log(e);
                 let json = JSON.parse(e);
-                if (json.result.result === true) {
+                if (json.success === false) {
+                    alert(json.errMessage);
+                } else if (json.result.result === true) {
 
                     json.result.data.forEach(item => {
                         $(`.updatePermission[value=${item.permissionID}]`).prop('checked', true);
@@ -288,7 +298,9 @@ function content_5f7c427681e2e7_64247564 (Smarty_Internal_Template $_smarty_tpl)
             e = organizeFormat(e);
             let json = JSON.parse(e);
 
-            if (json.result === true) {
+            if (json.success === false) {
+                alert(json.errMessage);
+            } else if (json.result === true) {
                 checkMessage.append("<br>此帳號有人使用<br>");
                 input.addClass('borderBottomRed');
             }

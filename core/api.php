@@ -41,7 +41,6 @@ class Api
                 parse_str(file_get_contents('php://input'), $values);
                 break;
         }
-        $values[] = $requestMethod;
 
         if (isset($_FILES['img'])) {
             $filePath = $_FILES['img']['tmp_name'];
@@ -50,6 +49,8 @@ class Api
             $values[] = $fileNewPath;
             $values[] = $_FILES['img']['type'];
         }
+
+        $values[] = $requestMethod;
 
         echo call_user_func_array(array($controller, $methodName), $values);
     }

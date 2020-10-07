@@ -38,7 +38,7 @@ class EmployeeController extends Controller
             if ($loginData === false || $_COOKIE['empID'] !== $loginData['empID'] || !password_verify($_COOKIE['cookieID'], $loginData['cookieID'])) {
                 throw new Exception("登入錯誤");
             }
-            if ($loginData['timeOut']) {
+            if ($loginData['timeOut'] && !$loginData['isKeep']) {
                 $this->logout(true);
                 throw new Exception("超過時間，請重新登入");
             }
@@ -382,6 +382,7 @@ class EmployeeController extends Controller
             $permissions = PermissionControlService::getDAO()->getOneByID($_COOKIE['empID']);
             $empSee = $this->smartyAssignPermission($permissions, $smarty, 1);
 
+            //
             if ($empSee) {
                 $smarty->assign('emp', EmployeeService::getDAO()->getOneEmployeeByID($_COOKIE['empID']));
                 $smarty->assign('name', $_COOKIE['empName']);

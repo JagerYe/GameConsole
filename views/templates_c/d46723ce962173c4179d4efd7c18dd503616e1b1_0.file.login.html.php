@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-06 03:06:50
+/* Smarty version 3.1.34-dev-7, created on 2020-10-07 09:48:34
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/login.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7bc32a36ef55_10906573',
+  'unifunc' => 'content_5f7d72d2765d56_67373793',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'd46723ce962173c4179d4efd7c18dd503616e1b1' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/login.html',
-      1 => 1601868942,
+      1 => 1602056800,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_5f7bc32a36ef55_10906573 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f7d72d2765d56_67373793 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html>
 
@@ -85,7 +85,9 @@ function content_5f7bc32a36ef55_10906573 (Smarty_Internal_Template $_smarty_tpl)
 		}).then(function (e) {
 			console.log(e);
 			let json = JSON.parse(organizeFormat(e));
-			if (json.result === false) {
+			if (json.success === false) {
+				alert(json.errMessage);
+			} else if (json.result === false) {
 				$("body").css("display", "inline");
 			} else {
 				$.ajax({
@@ -114,10 +116,10 @@ function content_5f7bc32a36ef55_10906573 (Smarty_Internal_Template $_smarty_tpl)
 			}).then(function (e) {
 				console.log(e);
 				let json = JSON.parse(e);
-				if (json.result === true) {
-					window.location.href = "/GameConsole/employee/getUpdateSelfView";
-				} else if (json.success === false) {
+				if (json.success === false) {
 					alert(json.errMessage);
+				} else if (json.result === true) {
+					window.location.href = "/GameConsole/employee/getUpdateSelfView";
 				} else {
 					alert("發生不明錯誤");
 				}

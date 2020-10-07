@@ -108,10 +108,10 @@
             }).then(function (e) {
                 console.log(e);
                 let json = JSON.parse(e);
-                if (json.result === true) {
-                    alert("更新成功");
-                } else if (json.success === false) {
+                if (json.success === false) {
                     alert(json.errMessage);
+                } else if (json.result === true) {
+                    alert("更新成功");
                 } else {
                     alert("發生意外錯誤");
                 }
@@ -170,7 +170,9 @@
                 e = organizeFormat(e);
                 console.log(organizeFormat(e));
                 let json = JSON.parse(e);
-                if (json.result.result === true) {
+                if (json.success === false) {
+                    alert(json.errMessage);
+                } else if (json.result.result === true) {
                     alert('新增成功');
 
                     let date = new Date();
@@ -200,8 +202,6 @@
                             data: { 0: JSON.stringify(permission) }
                         });
                     }
-                } else if (json.success === false) {
-                    alert(json.errMessage);
                 } else {
                     alert('發生不明錯誤');
                 }
@@ -225,7 +225,9 @@
                 e = organizeFormat(e);
                 console.log(e);
                 let json = JSON.parse(e);
-                if (json.result.result === true) {
+                if (json.success === false) {
+                    alert(json.errMessage);
+                } else if (json.result.result === true) {
 
                     json.result.data.forEach(item => {
                         $(`.updatePermission[value=${item.permissionID}]`).prop('checked', true);
@@ -253,7 +255,9 @@
             e = organizeFormat(e);
             let json = JSON.parse(e);
 
-            if (json.result === true) {
+            if (json.success === false) {
+                alert(json.errMessage);
+            } else if (json.result === true) {
                 checkMessage.append("<br>此帳號有人使用<br>");
                 input.addClass('borderBottomRed');
             }

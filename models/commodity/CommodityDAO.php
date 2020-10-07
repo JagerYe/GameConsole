@@ -4,19 +4,19 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/config.php";
 class CommodityDAO implements CommodityDAO_Interface
 {
     //新增
-    public function insert($name, $price, $quantity, $text = "", $status = false)
+    public function insert($name, $price, $quantity,  $status = false)
     {
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("INSERT INTO `Commodities`(`name`, `price`, `quantity`, `text`, `status`, `creationDatetime`)
-                VALUES (:name,:price,:quantity,:text,:status,NOW());");
+            $sth = $dbh->prepare("INSERT INTO `Commodities`(`name`, `price`, `quantity`, `status`, `creationDatetime`)
+                VALUES (:name,:price,:quantity,:status,NOW());");
             $sth->bindParam("name", $name);
             $sth->bindParam("price", $price);
             $sth->bindParam("quantity", $quantity);
-            $sth->bindParam("text", $text);
-            $sth->bindParam("status", $status);
+            $sth->bindParam("status", $status, PDO::PARAM_BOOL);
             $sth->execute();
+            $id = $dbh->lastInsertId();
             $dbh->commit();
             $sth = null;
         } catch (PDOException $err) {
@@ -25,22 +25,21 @@ class CommodityDAO implements CommodityDAO_Interface
             throw new Exception("新增發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
-        return true;
+        return $id;
     }
 
     //更新
-    public function update($id, $name, $price, $quantity, $text, $status)
+    public function update($id, $name, $price, $quantity, $status)
     {
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `Commodities` SET `name`=:name,`price`=:price,`quantity`=:quantity,`text`=:text,`status`=:status,`changeDatetime`=NOW() WHERE `id`=:id");
+            $sth = $dbh->prepare("UPDATE `Commodities` SET `name`=:name,`price`=:price,`quantity`=:quantity,`status`=:status,`changeDatetime`=NOW() WHERE `id`=:id");
             $sth->bindParam("id", $id);
             $sth->bindParam("name", $name);
             $sth->bindParam("price", $price);
             $sth->bindParam("quantity", $quantity);
-            $sth->bindParam("text", $text);
-            $sth->bindParam("status", $status);
+            $sth->bindParam("status", $status, PDO::PARAM_BOOL);
             $sth->execute();
             $dbh->commit();
             $sth = null;
@@ -82,7 +81,7 @@ class CommodityDAO implements CommodityDAO_Interface
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT `id`, `name`, `price`, `quantity`, `text`, `status`, `creationDatetime`, `changeDatetime` FROM `Commodities` WHERE `id`=:id;");
+            $sth = $dbh->prepare("SELECT `id`, `name`, `price`, `quantity`, `status`, `creationDatetime`, `changeDatetime` FROM `Commodities` WHERE `id`=:id;");
             $sth->bindParam("id", $id);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_ASSOC);
@@ -118,12 +117,11 @@ class CommodityDAO implements CommodityDAO_Interface
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT `id`, `name`, `price`, `quantity`, `text`, `status`, `creationDatetime`, `changeDatetime` FROM `Commodities`
-                WHERE `id`<IFNULL(:id, (~0 >> 32)) ORDER BY `id` DESC LIMIT 5;"
-            );
+            $sth = $dbh->prepare("SELECT `id`, `name`, `price`, `quantity`, `status`, `creationDatetime`, `changeDatetime` FROM `Commodities`
+                WHERE `id`<IFNULL(:id, (~0 >> 32)) ORDER BY `id` DESC LIMIT 5;");
             $sth->bindParam("id", $id);
             $sth->execute();
-            $request = $sth->fetch(PDO::FETCH_ASSOC);
+            $request = $sth->fetchAll(PDO::FETCH_ASSOC);
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
@@ -132,5 +130,4 @@ class CommodityDAO implements CommodityDAO_Interface
         $dbh = null;
         return $request;
     }
-
 }

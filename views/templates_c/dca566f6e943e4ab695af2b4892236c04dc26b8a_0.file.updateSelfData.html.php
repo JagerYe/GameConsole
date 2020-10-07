@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-05 11:51:30
+/* Smarty version 3.1.34-dev-7, created on 2020-10-07 09:48:13
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/updateSelfData.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7aeca270eff2_07458201',
+  'unifunc' => 'content_5f7d72bde80c79_63684131',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'dca566f6e943e4ab695af2b4892236c04dc26b8a' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/updateSelfData.html',
-      1 => 1601868920,
+      1 => 1602056823,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f7aeca270eff2_07458201 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f7d72bde80c79_63684131 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!doctype html>
 <html lang="en">
 
@@ -181,11 +181,11 @@ function content_5f7aeca270eff2_07458201 (Smarty_Internal_Template $_smarty_tpl)
 				data: { 0: JSON.stringify(employee) }
 			}).then(function (e) {
 				let json = JSON.parse(organizeFormat(e));
-				if (json.result === true) {
+				if (json.success === false) {
+					alert(json.errMessage);
+				} else if (json.result === true) {
 					alert("更新成功");
 					history.go(0);
-				} else if (json.success === false) {
-					alert(json.errMessage);
 				} else {
 					alert("發生不明錯誤");
 				}

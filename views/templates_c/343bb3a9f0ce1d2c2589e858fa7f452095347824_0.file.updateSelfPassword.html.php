@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-05 11:51:40
+/* Smarty version 3.1.34-dev-7, created on 2020-10-07 09:48:21
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/updateSelfPassword.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7aecac632104_37325361',
+  'unifunc' => 'content_5f7d72c5bc37a0_18293341',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '343bb3a9f0ce1d2c2589e858fa7f452095347824' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/updateSelfPassword.html',
-      1 => 1601878344,
+      1 => 1602056845,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f7aecac632104_37325361 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f7d72c5bc37a0_18293341 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!doctype html>
 <html lang="en">
 
@@ -186,11 +186,11 @@ function content_5f7aecac632104_37325361 (Smarty_Internal_Template $_smarty_tpl)
 				data: { 0: JSON.stringify(data) }
 			}).then(function (e) {
 				let json = JSON.parse(organizeFormat(e));
-				if (json.result === true) {
+				if (json.success === false) {
+					alert(json.errMessage);
+				} else if (json.result === true) {
 					alert("更新成功，請再重新登入");
 					window.location.href = "/GameConsole/employee/getLoginView";
-				} else if (json.success === false) {
-					alert(json.errMessage);
 				} else {
 					alert("發生不明錯誤");
 				}

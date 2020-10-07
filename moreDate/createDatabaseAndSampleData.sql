@@ -98,7 +98,6 @@ DROP TABLE IF EXISTS `Permissions`;
 CREATE TABLE `Permissions`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(20) NOT NULL,
-    `funtionName` VARCHAR(50),
     `creationDatetime` DATETIME NOT NULL,
     `changeDatetime` DATETIME,
     PRIMARY KEY(`id`)
@@ -135,10 +134,10 @@ INSERT INTO `OrderDetails`(`orderID`, `commodityID`, `price`, `quantity`, `creat
 (1,2,100,10,NOW()),
 (1,3,100,10,NOW());
 
-INSERT INTO `Permissions`(`name`, `creationDatetime`, `funtionName`) VALUES
-('員工檢視',NOW(), 'getEmployeeListView'),
-('員工管理',NOW(), null),
-('商品檢視',NOW(), 'getCommoditieListView'),
-('商品管理',NOW(), null),
-('會員檢視',NOW(), 'getMemberListView'),
-('會員管理',NOW(), null);
+INSERT INTO `Permissions`(`name`, `creationDatetime`) VALUES
+('員工檢視',NOW()),
+('員工管理',NOW()),
+('商品檢視',NOW()),
+('商品管理',NOW()),
+('會員檢視',NOW()),
+('會員管理',NOW());

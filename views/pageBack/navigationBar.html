@@ -19,11 +19,11 @@
                 {{/if}}
                 {{if isset($comSee) && $comSee}}
                 <li><a
-                        href="/GameConsole/commodity/getCommoditieListView">商品{{(isset($comUse) && $comUse)?'管理':'檢視'}}</a>
+                        href="/GameConsole/commodity/getEmpCommodityListView">商品{{(isset($comUse) && $comUse)?'管理':'檢視'}}</a>
                 </li>
                 {{/if}}
                 {{if isset($memSee) && $memSee}}
-                <li><a href="/GameConsole/member/getMemberListView">員工{{(isset($memUse) && $memUse)?'管理':'檢視'}}</a></li>
+                <li><a href="/GameConsole/member/getMemberListView">會員{{(isset($memUse) && $memUse)?'管理':'檢視'}}</a></li>
                 {{/if}}
             </ul>
             <ul class="nav navbar-nav navbar-right">

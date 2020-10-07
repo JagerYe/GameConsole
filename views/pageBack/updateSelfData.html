@@ -140,11 +140,11 @@
 				data: { 0: JSON.stringify(employee) }
 			}).then(function (e) {
 				let json = JSON.parse(organizeFormat(e));
-				if (json.result === true) {
+				if (json.success === false) {
+					alert(json.errMessage);
+				} else if (json.result === true) {
 					alert("更新成功");
 					history.go(0);
-				} else if (json.success === false) {
-					alert(json.errMessage);
 				} else {
 					alert("發生不明錯誤");
 				}

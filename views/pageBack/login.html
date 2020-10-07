@@ -51,7 +51,9 @@
 		}).then(function (e) {
 			console.log(e);
 			let json = JSON.parse(organizeFormat(e));
-			if (json.result === false) {
+			if (json.success === false) {
+				alert(json.errMessage);
+			} else if (json.result === false) {
 				$("body").css("display", "inline");
 			} else {
 				$.ajax({
@@ -80,10 +82,10 @@
 			}).then(function (e) {
 				console.log(e);
 				let json = JSON.parse(e);
-				if (json.result === true) {
-					window.location.href = "/GameConsole/employee/getUpdateSelfView";
-				} else if (json.success === false) {
+				if (json.success === false) {
 					alert(json.errMessage);
+				} else if (json.result === true) {
+					window.location.href = "/GameConsole/employee/getUpdateSelfView";
 				} else {
 					alert("發生不明錯誤");
 				}

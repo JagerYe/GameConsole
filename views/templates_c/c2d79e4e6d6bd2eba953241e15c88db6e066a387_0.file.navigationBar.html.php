@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-05 11:17:45
+/* Smarty version 3.1.34-dev-7, created on 2020-10-07 09:21:21
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/navigationBar.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7ae4b9792f38_22308716',
+  'unifunc' => 'content_5f7d6c71ba3035_32497244',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'c2d79e4e6d6bd2eba953241e15c88db6e066a387' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/navigationBar.html',
-      1 => 1601887136,
+      1 => 1602033284,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_5f7ae4b9792f38_22308716 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f7d6c71ba3035_32497244 (Smarty_Internal_Template $_smarty_tpl) {
 ?><nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -43,12 +43,12 @@ function content_5f7ae4b9792f38_22308716 (Smarty_Internal_Template $_smarty_tpl)
                 <?php }?>
                 <?php if ((isset($_smarty_tpl->tpl_vars['comSee']->value)) && $_smarty_tpl->tpl_vars['comSee']->value) {?>
                 <li><a
-                        href="/GameConsole/commodity/getCommoditieListView">商品<?php echo (isset($_smarty_tpl->tpl_vars['comUse']->value)) && $_smarty_tpl->tpl_vars['comUse']->value ? '管理' : '檢視';?>
+                        href="/GameConsole/commodity/getEmpCommodityListView">商品<?php echo (isset($_smarty_tpl->tpl_vars['comUse']->value)) && $_smarty_tpl->tpl_vars['comUse']->value ? '管理' : '檢視';?>
 </a>
                 </li>
                 <?php }?>
                 <?php if ((isset($_smarty_tpl->tpl_vars['memSee']->value)) && $_smarty_tpl->tpl_vars['memSee']->value) {?>
-                <li><a href="/GameConsole/member/getMemberListView">員工<?php echo (isset($_smarty_tpl->tpl_vars['memUse']->value)) && $_smarty_tpl->tpl_vars['memUse']->value ? '管理' : '檢視';?>
+                <li><a href="/GameConsole/member/getMemberListView">會員<?php echo (isset($_smarty_tpl->tpl_vars['memUse']->value)) && $_smarty_tpl->tpl_vars['memUse']->value ? '管理' : '檢視';?>
 </a></li>
                 <?php }?>
             </ul>

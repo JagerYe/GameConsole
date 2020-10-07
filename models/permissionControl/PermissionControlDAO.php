@@ -201,8 +201,7 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT `empID`, `permissionID`, pc.`creationDatetime`,
-                `name` AS 'permissionName', `funtionName`
+            $sth = $dbh->prepare("SELECT `empID`, `permissionID`, pc.`creationDatetime`, `name` AS 'permissionName'
                 FROM `PermissionControl` AS pc
                 INNER JOIN `Permissions` AS p ON p.id=pc.permissionID
                 WHERE `empID`=:empID;");
