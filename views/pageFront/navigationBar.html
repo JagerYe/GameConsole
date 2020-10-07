@@ -13,30 +13,25 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                {{if isset($empSee) && $empSee}}
                 <li>
-                    <a href="/GameConsole/employee/getEmployeeListView">員工{{(isset($empUse) && $empUse)?'管理':'檢視'}}</a>
+                    <a href="/GameConsole/employee/getEmployeeListView">商品列表</a>
                 </li>
-                {{/if}}
-                {{if isset($comSee) && $comSee}}
+                {{if isset($isLogin) && $isLogin}}
                 <li>
-                    <a href="/GameConsole/commodity/getEmpCommodityListView">商品{{(isset($comUse) && $comUse)?'管理':'檢視'}}</a>
+                    <a href="/GameConsole/commodity/getEmpCommodityListView">交易紀錄</a>
                 </li>
-                {{/if}}
-                {{if isset($memSee) && $memSee}}
-                <li>
-                    <a href="/GameConsole/member/getMemberListView">會員{{(isset($memUse) && $memUse)?'管理':'檢視'}}</a>
-                </li>
+                <li><a href="/GameConsole/member/getMemberListView">購物車</a></li>
                 {{/if}}
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {{if $isLogin === true}}
                 <li id="showUserName"><a
-                        href={{( isset($isUpdate) && $isUpdate ) ? "#" : "/GameConsole/employee/getUpdateSelfView"}}>{{$name}}</a>
+                        href={{( isset($isUpdate) && $isUpdate ) ? "#" : "/GameConsole/member/getUpdateView"}}>{{$name}}</a>
                 </li>
-                <li><a href="/GameConsole/employee/getLoginView" id="showLogin">登出</a></li>
+                <li><a href="/GameConsole/member/getLoginView" id="showLogin">登出</a></li>
                 {{else}}
-                <li><a href="/GameConsole/employee/getLoginView" id="showLogin">登入</a></li>
+                <li><a href="/GameConsole/member/getLoginView" id="showLogin">註冊</a></li>
+                <li><a href="/GameConsole/member/getLoginView" id="showLogin">登入</a></li>
                 {{/if}}
             </ul>
         </div>

@@ -8,5 +8,5 @@ interface MemberDAO_Interface
     public function getOneMemberByID($id);
     public function getALL();
     public function doLogin($account, $password);
-    public function checkMemberExist($id);
+    public function checkAccountExist($id);
 }

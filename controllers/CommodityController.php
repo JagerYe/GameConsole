@@ -202,6 +202,30 @@ class CommodityController extends Controller
         );
     }
 
+    //取得部份能購買的商品資料
+    public function getSomeCanBuyDate($lastID)
+    {
+        try {
+
+            $commodity = new Commodity();
+            $commodity->setId($lastID);
+
+            if (!($this->result = CommodityService::getDAO()->getSomeCanBuy($commodity->getId()))) {
+                throw new Exception('取得發生錯誤');
+            }
+
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
     //取得管理者商品清單
     public function getEmpCommodityListView()
     {

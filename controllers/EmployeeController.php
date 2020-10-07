@@ -30,12 +30,12 @@ class EmployeeController extends Controller
     public function checkIdentity()
     {
         $empLoginDAO = EmployeeLoginStatusService::getDAO();
-        if (!isset($_COOKIE['loginID']) || !isset($_COOKIE['cookieID']) || !isset($_COOKIE['empID'])) {
+        if (!isset($_COOKIE['empLoginID']) || !isset($_COOKIE['empCookieID']) || !isset($_COOKIE['empID'])) {
             return false;
         }
         try {
-            $loginData = $empLoginDAO->getLoginData($_COOKIE['loginID']);
-            if ($loginData === false || $_COOKIE['empID'] !== $loginData['empID'] || !password_verify($_COOKIE['cookieID'], $loginData['cookieID'])) {
+            $loginData = $empLoginDAO->getLoginData($_COOKIE['empLoginID']);
+            if ($loginData === false || $_COOKIE['empID'] !== $loginData['empID'] || !password_verify($_COOKIE['empCookieID'], $loginData['empCookieID'])) {
                 throw new Exception("登入錯誤");
             }
             if ($loginData['timeOut'] && !$loginData['isKeep']) {
@@ -46,10 +46,10 @@ class EmployeeController extends Controller
             $this->saveTime = time() + (($loginData['isKeep']) ? (60 * 60 * 24 * 365) : (60 * 30));
             setcookie('empID', $_COOKIE['empID'], $this->saveTime, "/");
             setcookie('empName', $_COOKIE['empName'], $this->saveTime, "/");
-            setcookie('loginID', $_COOKIE['loginID'], $this->saveTime, "/");
-            setcookie('cookieID', $_COOKIE['cookieID'], $this->saveTime, "/");
+            setcookie('empLoginID', $_COOKIE['empLoginID'], $this->saveTime, "/");
+            setcookie('empCookieID', $_COOKIE['empCookieID'], $this->saveTime, "/");
 
-            return $empLoginDAO->updateUsingByID($_COOKIE['loginID']);
+            return $empLoginDAO->updateUsingByID($_COOKIE['empLoginID']);
         } catch (Exception $err) {
             throw new Exception($err->getMessage());
         }
@@ -236,15 +236,15 @@ class EmployeeController extends Controller
     public function logout($isTimeOut = false)
     {
         try {
-            if (!isset($_COOKIE['loginID'])) {
+            if (!isset($_COOKIE['empLoginID'])) {
                 throw new Exception('並未登入');
             }
 
-            if ($this->result = EmployeeLoginStatusService::getDAO()->setLogoutByID($_COOKIE['loginID'])) {
+            if ($this->result = EmployeeLoginStatusService::getDAO()->setLogoutByID($_COOKIE['empLoginID'])) {
                 setcookie('empID', null, -1, "/");
                 setcookie('empName', null, -1, "/");
-                setcookie('cookieID', null, -1, "/");
-                setcookie('loginID', null, -1, "/");
+                setcookie('empCookieID', null, -1, "/");
+                setcookie('empLoginID', null, -1, "/");
                 $this->success = true;
             }
         } catch (Exception $err) {

@@ -24,8 +24,8 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
             $sth->bindParam("cookieID", $updateCookieID);
             $sth->execute();
             $dbh->commit();
-            setcookie('cookieID', $cookieID, $saveTime, "/");
-            setcookie('loginID', $id, $saveTime, "/");
+            setcookie('empCookieID', $cookieID, $saveTime, "/");
+            setcookie('empLoginID', $id, $saveTime, "/");
 
             $sth = null;
         } catch (PDOException $err) {
@@ -112,13 +112,6 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
             $sth->bindParam("loginID", $id);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_ASSOC);
-            // if($request===false){
-            //     throw new Exception("尚未登入");
-            // }
-            // if ($request['timeOut']) {
-            //     $this->setLogoutByID($id, $dbh);
-            //     throw new Exception("超過時間");
-            // }
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
@@ -127,7 +120,6 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
             throw new Exception($err->getMessage());
         }
         $dbh = null;
-        // return password_verify($cookieID, $request['cookieID']);
         return $request;
     }
 }

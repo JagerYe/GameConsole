@@ -130,4 +130,23 @@ class CommodityDAO implements CommodityDAO_Interface
         $dbh = null;
         return $request;
     }
+
+    //取得部份上架商品
+    public function getSomeCanBuy($id = null)
+    {
+        try {
+            $dbh = Config::getDBConnect();
+            $sth = $dbh->prepare("SELECT `id`, `name`, `price`, `quantity`, `status`, `creationDatetime`, `changeDatetime` FROM `Commodities`
+                WHERE status=1 && `id`<IFNULL(:id, (~0 >> 32)) ORDER BY `id` DESC LIMIT 5;");
+            $sth->bindParam("id", $id);
+            $sth->execute();
+            $request = $sth->fetchAll(PDO::FETCH_ASSOC);
+            $sth = null;
+        } catch (PDOException $err) {
+            $dbh = null;
+            throw new Exception("取得商品發生錯誤\r\n" . $err->getMessage());
+        }
+        $dbh = null;
+        return $request;
+    }
 }

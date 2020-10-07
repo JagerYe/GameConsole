@@ -4,17 +4,17 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/config.php";
 class MemberLoginStatusDAO implements MemberLoginStatusDAO_Interface
 {
     //登入
-    public function insert($memberID, $isKeep = 1)
+    public function insert($memberID, $saveTime, $isKeep)
     {
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
             $sth = $dbh->prepare("INSERT INTO `MemberLoginStatus`
                 (`memberID`, `isKeep`, `loginDatetime`, `usageDatetime`)
-                VALUES ( :memberID, :isKeep, NOW(), NOW());");
+                VALUES (:memberID,:isKeep,NOW(),NOW());");
 
             $sth->bindParam("memberID ", $memberID);
-            $sth->bindParam("isKeep ", $isKeep);
+            $sth->bindParam("isKeep", $isKeep, PDO::PARAM_BOOL);
             $sth->execute();
             $id = $dbh->lastInsertId();
 
@@ -26,15 +26,17 @@ class MemberLoginStatusDAO implements MemberLoginStatusDAO_Interface
             $sth->bindParam("cookieID", $updateCookieID);
             $sth->execute();
             $dbh->commit();
-            $id = $dbh->lastInsertId();
+            setcookie('memCookieID', $cookieID, $saveTime, "/");
+            setcookie('memLoginID', $id, $saveTime, "/");
+
             $sth = null;
         } catch (PDOException $err) {
             $dbh->rollBack();
             $dbh = null;
-            throw new Exception("新增發生錯誤\r\n" . $err->getMessage());
+            throw new Exception("登入發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
-        return $id;
+        return true;
     }
 
     //登出
@@ -100,7 +102,7 @@ class MemberLoginStatusDAO implements MemberLoginStatusDAO_Interface
     }
 
     //登入狀態
-    public function checkIsLogin($id, $cookieID)
+    public function getLoginData($id)
     {
         try {
             $dbh = Config::getDBConnect();
@@ -112,10 +114,6 @@ class MemberLoginStatusDAO implements MemberLoginStatusDAO_Interface
             $sth->bindParam("loginID", $id);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_ASSOC);
-            if ($request['timeOut']) {
-                $this->setLogoutByID($id, $dbh);
-                throw new Exception("超過時間");
-            }
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
@@ -124,6 +122,6 @@ class MemberLoginStatusDAO implements MemberLoginStatusDAO_Interface
             throw new Exception($err->getMessage());
         }
         $dbh = null;
-        return password_verify($cookieID, $request['cookieID']);
+        return $request;
     }
 }

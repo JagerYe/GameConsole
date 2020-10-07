@@ -152,7 +152,7 @@ class MemberDAO implements MemberDAO_Interface
             }
 
             $sth = $dbh->prepare("SELECT `password` FROM `members` WHERE `id`=:id");
-            $sth->bindParam("id", $id);
+            $sth->bindParam("id", $request['id']);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_NUM);
             $sth = null;
@@ -164,7 +164,7 @@ class MemberDAO implements MemberDAO_Interface
         return password_verify($password, $request['0']);
     }
 
-    public function checkMemberExist($id)
+    public function checkAccountExist($id)
     {
         try {
             $dbh = Config::getDBConnect();

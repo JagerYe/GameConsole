@@ -3,13 +3,25 @@ class IndexController extends Controller
 {
     public function getIndexView()
     {
-        // $smarty = SmartyConfig::getSmarty();
-        // $isLogin = isset($_SESSION['userID']);
-        // $smarty->assign('isLogin', $isLogin);
-        // $smarty->assign('userID', ($isLogin) ? $_SESSION['userID'] : "");
-        // $smarty->assign('userName', ($isLogin) ? $_SESSION['userName'] : "");
+        require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/controllers/MemberController.php";
+        require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/models/commodity/CommodityService.php";
+        $smarty = SmartyConfig::getSmarty();
+        try {
+            $isLogin = (new MemberController)->checkIdentity();
+        } catch (Exception $err) {
+            $isLogin = false;
+        }
 
-        // $smarty->display('index_.html');
+        $smarty->assign('isLogin', $isLogin);
+        if ($isLogin) {
+            $smarty->assign('name', 'true');
+            $smarty->assign('memID',  $_COOKIE['memID']);
+        }
+
+        $smarty->assign('commoditys', CommodityService::getDAO()->getSomeCanBuy());
+
+
+        $smarty->display('pageFront/index.html');
     }
 
     public function getBackIndexView()
