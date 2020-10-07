@@ -30,6 +30,10 @@
 
     <!-- ajax -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    {{if !(isset($comSee))}}
+    <meta http-equiv="refresh" content="0;url=/GameConsole/employee/getUpdateSelfView">
+    {{/if}}
 </head>
 <style>
     .topImgBtn {
@@ -64,7 +68,6 @@
 <script src="/GameConsole/views/js/rule.js"></script>
 <script src="/GameConsole/views/js/viewModels/commodityViewModel.js"></script>
 <script>
-    let comSee = '{{isset($comSee)&&$comSee}}';
     let updateID = -1;
     let lastID = '{{$lastID}}';
     let getItemProcessing = false;
@@ -76,11 +79,6 @@
                 scrollTop: 0
             }, 1000);
         });
-
-        //阻止無觀看權限者
-        if (comSee !== '1') {
-            window.location.href = "/GameConsole/index/getBackIndexView";
-        }
 
         //滾動監聽器
         $(window).scroll(function (e) {

@@ -30,6 +30,9 @@
 
     <!-- ajax -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    {{if !(isset($empSee))}}
+    <meta http-equiv="refresh" content="0;url=/GameConsole/employee/getUpdateSelfView">
+    {{/if}}
 </head>
 <style>
     .topImgBtn {
@@ -64,7 +67,6 @@
 <script src="/GameConsole/views/js/viewModels/employeeViewModel.js"></script>
 <script>
     let empUse = '{{isset($empUse)&&$empUse}}';
-    let empSee = '{{isset($empSee)&&$empSee}}';
     let updatePermissionEmpID = -1;
     let empPermissions = new Array();
     $(window).ready(() => {
@@ -74,11 +76,6 @@
                 scrollTop: 0
             }, 1000);
         });
-
-        //阻止無觀看權限者
-        if (empSee !== '1') {
-            window.location.href = "/GameConsole/index/getBackIndexView";
-        }
 
         //阻止無權限使用者修改
         if (empUse !== '1') {

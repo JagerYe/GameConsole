@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-07 09:52:14
-  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/commodityList.html' */
+/* Smarty version 3.1.34-dev-7, created on 2020-10-07 18:33:02
+  from 'C:\xampp\htdocs\GameConsole\views\pageBack\commodityList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7d73aeccb2d1_96423532',
+  'unifunc' => 'content_5f7dedbe344fe4_88660400',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
-    'f5f0d670ee24d5a465f59bcb16abfb72abc09d1e' => 
+    'e5a84925bb00b4b79ded32d70fe51194dfd38669' => 
     array (
-      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/commodityList.html',
-      1 => 1602057133,
+      0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageBack\\commodityList.html',
+      1 => 1602085672,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f7d73aeccb2d1_96423532 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f7dedbe344fe4_88660400 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -62,6 +62,10 @@ function content_5f7d73aeccb2d1_96423532 (Smarty_Internal_Template $_smarty_tpl)
     <?php echo '<script'; ?>
  src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"><?php echo '</script'; ?>
 >
+
+    <?php if (!((isset($_smarty_tpl->tpl_vars['comSee']->value)))) {?>
+    <meta http-equiv="refresh" content="0;url=/GameConsole/employee/getUpdateSelfView">
+    <?php }?>
 </head>
 <style>
     .topImgBtn {
@@ -105,8 +109,6 @@ function content_5f7d73aeccb2d1_96423532 (Smarty_Internal_Template $_smarty_tpl)
 >
 <?php echo '<script'; ?>
 >
-    let comSee = '<?php echo (isset($_smarty_tpl->tpl_vars['comSee']->value)) && $_smarty_tpl->tpl_vars['comSee']->value;?>
-';
     let updateID = -1;
     let lastID = '<?php echo $_smarty_tpl->tpl_vars['lastID']->value;?>
 ';
@@ -119,11 +121,6 @@ function content_5f7d73aeccb2d1_96423532 (Smarty_Internal_Template $_smarty_tpl)
                 scrollTop: 0
             }, 1000);
         });
-
-        //阻止無觀看權限者
-        if (comSee !== '1') {
-            window.location.href = "/GameConsole/index/getBackIndexView";
-        }
 
         //滾動監聽器
         $(window).scroll(function (e) {

@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-07 10:08:20
-  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/navigationBar.html' */
+/* Smarty version 3.1.34-dev-7, created on 2020-10-07 18:34:20
+  from 'C:\xampp\htdocs\GameConsole\views\pageFront\navigationBar.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7d777496d346_47290251',
+  'unifunc' => 'content_5f7dee0ccf1d23_87920002',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
-    'be7664f8ba10993e888bcc53befecd36dee605eb' => 
+    '9d1cc2998841c4776a8e4448193ffe3cd07a2867' => 
     array (
-      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/navigationBar.html',
-      1 => 1602058098,
+      0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageFront\\navigationBar.html',
+      1 => 1602088451,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_5f7d777496d346_47290251 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f7dee0ccf1d23_87920002 (Smarty_Internal_Template $_smarty_tpl) {
 ?><nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -32,18 +32,18 @@ function content_5f7d777496d346_47290251 (Smarty_Internal_Template $_smarty_tpl)
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/GameConsole/employee/getUpdateSelfView">Game休閒館</a>
+            <a class="navbar-brand" href="/GameConsole/index/getIndexView">Game休閒館</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li>
-                    <a href="/GameConsole/employee/getEmployeeListView">商品列表</a>
+                    <a href="/GameConsole/index/getIndexView">商品列表</a>
                 </li>
                 <?php if ((isset($_smarty_tpl->tpl_vars['isLogin']->value)) && $_smarty_tpl->tpl_vars['isLogin']->value) {?>
                 <li>
-                    <a href="/GameConsole/commodity/getEmpCommodityListView">交易紀錄</a>
+                    <a href="#">交易紀錄</a>
                 </li>
-                <li><a href="/GameConsole/member/getMemberListView">購物車</a></li>
+                <li><a href="#">購物車</a></li>
                 <?php }?>
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -53,10 +53,10 @@ function content_5f7d777496d346_47290251 (Smarty_Internal_Template $_smarty_tpl)
 ><?php echo $_smarty_tpl->tpl_vars['name']->value;?>
 </a>
                 </li>
-                <li><a href="/GameConsole/member/getLoginView" id="showLogin">登出</a></li>
+                <li><a href="/GameConsole/member/getLoginView">登出</a></li>
                 <?php } else { ?>
-                <li><a href="/GameConsole/member/getLoginView" id="showLogin">註冊</a></li>
-                <li><a href="/GameConsole/member/getLoginView" id="showLogin">登入</a></li>
+                <li><a href="/GameConsole/member/getCreateView">註冊</a></li>
+                <li><a href="/GameConsole/member/getLoginView">登入</a></li>
                 <?php }?>
             </ul>
         </div>

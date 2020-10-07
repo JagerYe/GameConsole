@@ -9,11 +9,12 @@ class MemberLoginStatusDAO implements MemberLoginStatusDAO_Interface
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("INSERT INTO `MemberLoginStatus`
-                (`memberID`, `isKeep`, `loginDatetime`, `usageDatetime`)
-                VALUES (:memberID,:isKeep,NOW(),NOW());");
+            $sth = $dbh->prepare(
+                "INSERT INTO `MemberLoginStatus`(`memberID`,`isKeep`,`loginDatetime`,`usageDatetime`)
+                VALUES (:memberID,:isKeep,NOW(),NOW());"
+            );
 
-            $sth->bindParam("memberID ", $memberID);
+            $sth->bindParam("memberID", $memberID);
             $sth->bindParam("isKeep", $isKeep, PDO::PARAM_BOOL);
             $sth->execute();
             $id = $dbh->lastInsertId();
@@ -47,7 +48,7 @@ class MemberLoginStatusDAO implements MemberLoginStatusDAO_Interface
                 $dbh = Config::getDBConnect();
             }
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `logoutDate`=NOW() WHERE `loginID`=:loginID;");
+            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `logoutDatetime`=NOW() WHERE `loginID`=:loginID;");
             $sth->bindParam("loginID", $id);
             $sth->execute();
             $dbh->commit();
@@ -67,7 +68,7 @@ class MemberLoginStatusDAO implements MemberLoginStatusDAO_Interface
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `logoutDate`=NOW() WHERE `memberID`=:memberID;");
+            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `logoutDatetime`=NOW() WHERE `memberID`=:memberID;");
             $sth->bindParam("memberID", $id);
             $sth->execute();
             $dbh->commit();
@@ -87,7 +88,7 @@ class MemberLoginStatusDAO implements MemberLoginStatusDAO_Interface
         try {
             $dbh = Config::getDBConnect();
             $dbh->beginTransaction();
-            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `usageTime`=NOW() WHERE `loginID`=:loginID;");
+            $sth = $dbh->prepare("UPDATE `MemberLoginStatus` SET `usageDatetime`=NOW() WHERE `loginID`=:loginID;");
             $sth->bindParam("loginID", $id);
             $sth->execute();
             $dbh->commit();
@@ -107,10 +108,10 @@ class MemberLoginStatusDAO implements MemberLoginStatusDAO_Interface
         try {
             $dbh = Config::getDBConnect();
             $sth = $dbh->prepare("SELECT `loginID`, `memberID`, `cookieID`,
-                    `loginDate`, `usageTime`, `logoutDate`,
-                    (DATE_ADD(`usageTime`,INTERVAL 30 MINUTE) <= NOW()) AS `timeOut`
+                    `loginDatetime`, `usageDatetime`, `logoutDatetime`, `isKeep`,
+                    (DATE_ADD(`usageDatetime`,INTERVAL 30 MINUTE) <= NOW()) AS `timeOut`
                 FROM `MemberLoginStatus` WHERE
-                `loginID`=:loginID && IF(`logoutDate`,FALSE,TRUE);");
+                `loginID`=:loginID && IF(`logoutDatetime`,FALSE,TRUE);");
             $sth->bindParam("loginID", $id);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_ASSOC);

@@ -23,6 +23,17 @@ class CommodityController extends Controller
         }
     }
 
+    //確認會員身份
+    public function checkIsMem()
+    {
+        require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/controllers/MemberController.php";
+        try {
+            return (new MemberController())->checkIdentity();
+        } catch (Exception $err) {
+            return false;
+        }
+    }
+
     //新增
     public function insert($str, $requestMethod)
     {
@@ -224,6 +235,153 @@ class CommodityController extends Controller
             $this->result,
             isset($err) ? $err->getMessage() : null
         );
+    }
+
+    //新增至購物車
+    public function addInShoppingCart($str, $requestMethod)
+    {
+        try {
+            if ($requestMethod !== 'POST') {
+                throw new Exception("請求方式錯誤");
+            }
+            $jsonObj = json_decode($str);
+            if (!(CommodityService::getDAO()->getOneByID($jsonObj->id))) {
+                throw new Exception('無此商品');
+            }
+            if (isset($_COOKIE['shoppingCart'])) {
+                $shoppingCart = json_decode($_COOKIE['shoppingCart']);
+            } else {
+                $shoppingCart = array();
+            }
+            $commodity = new Commodity();
+            $commodity->setQuantity($jsonObj->quantity);
+
+            foreach ($shoppingCart as $item) {
+                if ($item->id === $jsonObj->id) {
+                    $item->quantity += $jsonObj->quantity;
+                    setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
+                    return Result::getResultJson(
+                        true,
+                        true,
+                        null
+                    );
+                }
+            }
+
+            $shoppingCart[] = $jsonObj;
+            setcookie("shoppingCart", json_encode($shoppingCart), (time() + 31536000), "/");
+            $this->result = true;
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
+    //更新購物車
+    public function updateInShoppingCart($str, $requestMethod)
+    {
+        try {
+            if ($requestMethod !== 'PUT') {
+                throw new Exception("請求方式錯誤");
+            }
+
+            $jsonObj = json_decode($str);
+            if (!(CommodityService::getDAO()->getOneByID($jsonObj->id))) {
+                throw new Exception('無此商品');
+            }
+            if (isset($_COOKIE['shoppingCart'])) {
+                $shoppingCart = json_decode($_COOKIE['shoppingCart']);
+            } else {
+                $shoppingCart = array();
+            }
+            $commodity = new Commodity();
+            $commodity->setQuantity($jsonObj->quantity);
+
+            foreach ($shoppingCart as $item) {
+                if ($item->id === $jsonObj->id) {
+                    $item->quantity = $jsonObj->quantity;
+                    setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
+                    $this->result = true;
+                    break;
+                }
+            }
+
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
+    //刪除購物車
+    public function deleteInShoppingCart($str, $requestMethod)
+    {
+        try {
+            if ($requestMethod !== 'DELETE') {
+                throw new Exception("請求方式錯誤");
+            }
+
+            $jsonObj = json_decode($str);
+
+            if (isset($_COOKIE['shoppingCart'])) {
+                $shoppingCart = json_decode($_COOKIE['shoppingCart']);
+            } else {
+                $shoppingCart = array();
+            }
+            $commodity = new Commodity();
+            $commodity->setQuantity($jsonObj->quantity);
+
+            foreach ($shoppingCart as $key => $item) {
+                if ($item->id === $jsonObj->id) {
+                    unset($shoppingCart[$key]);
+                    setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
+                    $this->result = true;
+                    break;
+                }
+            }
+
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
+    //取得單一頁面
+    public function getOneView($id)
+    {
+        require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/controllers/MemberController.php";
+        $smarty = SmartyConfig::getSmarty();
+
+        try {
+            $isLogin = (new MemberController)->checkIdentity();
+        } catch (Exception $err) {
+            $isLogin = false;
+        }
+        $smarty->assign('isLogin', $isLogin);
+        if ($isLogin) {
+            $smarty->assign('name',  $_COOKIE['memName']);
+            $smarty->assign('memID',  $_COOKIE['memID']);
+        }
+
+        $smarty->assign('commodity', CommodityService::getDAO()->getOneByID($id));
+        $smarty->display('pageFront/oneCommodity.html');
     }
 
     //取得管理者商品清單

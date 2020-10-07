@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-07 09:48:34
-  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/login.html' */
+/* Smarty version 3.1.34-dev-7, created on 2020-10-07 18:16:13
+  from 'C:\xampp\htdocs\GameConsole\views\pageBack\login.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7d72d2765d56_67373793',
+  'unifunc' => 'content_5f7de9cde81228_36107276',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
-    'd46723ce962173c4179d4efd7c18dd503616e1b1' => 
+    '67c4a2b64d43f96883d515b6473af157490adde2' => 
     array (
-      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/login.html',
-      1 => 1602056800,
+      0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageBack\\login.html',
+      1 => 1602070468,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_5f7d72d2765d56_67373793 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f7de9cde81228_36107276 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html>
 

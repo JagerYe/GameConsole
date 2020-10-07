@@ -1,4 +1,28 @@
-<!DOCTYPE html>
+<?php
+/* Smarty version 3.1.34-dev-7, created on 2020-10-07 18:44:10
+  from 'C:\xampp\htdocs\GameConsole\views\pageFront\index.html' */
+
+/* @var Smarty_Internal_Template $_smarty_tpl */
+if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
+  'version' => '3.1.34-dev-7',
+  'unifunc' => 'content_5f7df05ac22953_93273085',
+  'has_nocache_code' => false,
+  'file_dependency' => 
+  array (
+    '89d631e73d8e1f804ecf03865a260fd27664d59c' => 
+    array (
+      0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageFront\\index.html',
+      1 => 1602089028,
+      2 => 'file',
+    ),
+  ),
+  'includes' => 
+  array (
+    'file:./navigationBar.html' => 1,
+  ),
+),false)) {
+function content_5f7df05ac22953_93273085 (Smarty_Internal_Template $_smarty_tpl) {
+?><!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -18,18 +42,26 @@
     <link href="/GameConsole/views/css/starter-template.css" rel="stylesheet">
 
     <!-- Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    <?php echo '<script'; ?>
+ src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
         integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
         integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
 
     <!-- ajax -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <?php echo '<script'; ?>
+ src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"><?php echo '</script'; ?>
+>
 </head>
 <style>
     img {
@@ -49,11 +81,19 @@
         background-color: rgba(70, 4, 100, 0.3);
     }
 </style>
-<script src="/GameConsole/views/js/jsonFormat.js"></script>
-<script src="/GameConsole/views/js/title.js"></script>
-<script src="/GameConsole/views/js/viewModels/commodityViewModel.js"></script>
-<script>
-    let lastID = '{{$lastID}}';
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/jsonFormat.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/title.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/viewModels/commodityViewModel.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+>
+    let lastID = '<?php echo $_smarty_tpl->tpl_vars['lastID']->value;?>
+';
     let getItemProcessing = false;
 
     $(window).ready(() => {
@@ -97,10 +137,12 @@
 
     });
 
-</script>
+<?php echo '</script'; ?>
+>
 
 <body>
-    {{include file='./navigationBar.html'}}
+    <?php $_smarty_tpl->_subTemplateRender('file:./navigationBar.html', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
+?>
     <div class="blank"></div>
 
     <main class="container">
@@ -108,30 +150,41 @@
 
         <div class="row">
 
-            {{foreach $commoditys as $commodity}}
+            <?php
+$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['commoditys']->value, 'commodity');
+$_smarty_tpl->tpl_vars['commodity']->do_else = true;
+if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['commodity']->value) {
+$_smarty_tpl->tpl_vars['commodity']->do_else = false;
+?>
             <div class="col-sm-6 col-md-4 col-lg-3 col-xs-12 oneCommodity">
-                <a href="/GameConsole/commodity/getOneView?id={{$commodity['id']}}">
+                <a href="/GameConsole/commodity/getOneView?id=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+">
                     <table>
                         <tr>
                             <td colspan="2">
-                                {{$commodity['name']}}
+                                <?php echo $_smarty_tpl->tpl_vars['commodity']->value['name'];?>
+
                             </td>
                         </tr>
                         <tr>
                             <td colspan="2">
-                                <img src="/GameConsole/commodity/getOneImg?ID={{$commodity['id']}}"
+                                <img src="/GameConsole/commodity/getOneImg?ID=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+"
                                     onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                價格：{{$commodity['price']}}
+                                價格：<?php echo $_smarty_tpl->tpl_vars['commodity']->value['price'];?>
+
                             </td>
                         </tr>
                     </table>
                 </a>
             </div>
-            {{/foreach}}
+            <?php
+}
+$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
 
 
 
@@ -141,4 +194,5 @@
 
 </body>
 
-</html>
+</html><?php }
+}

@@ -21,7 +21,7 @@ class MemberController extends Controller
         }
         try {
             $loginData = $memLoginDAO->getLoginData($_COOKIE['memLoginID']);
-            if ($loginData === false || $_COOKIE['memID'] !== $loginData['memID'] || !password_verify($_COOKIE['memCookieID'], $loginData['memCookieID'])) {
+            if ($loginData === false || $_COOKIE['memID'] !== $loginData['memberID'] || !password_verify($_COOKIE['memCookieID'], $loginData['cookieID'])) {
                 throw new Exception("登入錯誤");
             }
             if ($loginData['timeOut'] && !$loginData['isKeep']) {
@@ -210,15 +210,16 @@ class MemberController extends Controller
             }
 
             if ($this->result = MemberLoginStatusService::getDAO()->setLogoutByID($_COOKIE['memLoginID'])) {
-                setcookie('memID', null, -1, "/");
-                setcookie('memName', null, -1, "/");
-                setcookie('memCookieID', null, -1, "/");
-                setcookie('memLoginID', null, -1, "/");
                 $this->success = true;
             }
         } catch (Exception $err) {
             $this->success = false;
         }
+
+        setcookie('memID', null, -1, "/");
+        setcookie('memName', null, -1, "/");
+        setcookie('memCookieID', null, -1, "/");
+        setcookie('memLoginID', null, -1, "/");
 
         if (!$isTimeOut) {
             return Result::getResultJson(

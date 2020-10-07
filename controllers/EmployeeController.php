@@ -241,15 +241,15 @@ class EmployeeController extends Controller
             }
 
             if ($this->result = EmployeeLoginStatusService::getDAO()->setLogoutByID($_COOKIE['empLoginID'])) {
-                setcookie('empID', null, -1, "/");
-                setcookie('empName', null, -1, "/");
-                setcookie('empCookieID', null, -1, "/");
-                setcookie('empLoginID', null, -1, "/");
                 $this->success = true;
             }
         } catch (Exception $err) {
             $this->success = false;
         }
+        setcookie('empID', null, -1, "/");
+        setcookie('empName', null, -1, "/");
+        setcookie('empCookieID', null, -1, "/");
+        setcookie('empLoginID', null, -1, "/");
 
         if (!$isTimeOut) {
             return Result::getResultJson(

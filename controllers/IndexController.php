@@ -14,12 +14,14 @@ class IndexController extends Controller
 
         $smarty->assign('isLogin', $isLogin);
         if ($isLogin) {
-            $smarty->assign('name', 'true');
-            $smarty->assign('memID',  $_COOKIE['memID']);
+            $smarty->assign('name', $_COOKIE['memName']);
+            $smarty->assign('memID', $_COOKIE['memID']);
         }
 
-        $smarty->assign('commoditys', CommodityService::getDAO()->getSomeCanBuy());
-
+        $commoditys = CommodityService::getDAO()->getSomeCanBuy();
+        $lastID = $commoditys[count($commoditys) - 1]['id'];
+        $smarty->assign('commoditys', $commoditys);
+        $smarty->assign('lastID', $lastID);
 
         $smarty->display('pageFront/index.html');
     }

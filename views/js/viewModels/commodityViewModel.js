@@ -31,3 +31,20 @@ function getEmpInsertCommodityItemView(id, name, price, quantity, status, creati
                         </td>
                 </tr>`;
 }
+
+function getCommodityItemView(id, name, price) {
+        return `<div class="col-sm-6 col-md-4 col-lg-3 col-xs-12 oneCommodity">
+                        <a href="/GameConsole/commodity/getOneView?id=${id}">
+                        <table>
+                                <tr><td colspan="2">${name}</td></tr>
+                                <tr>
+                                        <td colspan="2">
+                                                <img src="/GameConsole/commodity/getOneImg?ID=${id}"
+                                                onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
+                                        </td>
+                                </tr>
+                                <tr><td>價格：${price}</td></tr>
+                        </table>
+                        </a>
+                </div>`;
+}

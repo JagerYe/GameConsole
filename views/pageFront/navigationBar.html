@@ -9,18 +9,18 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/GameConsole/employee/getUpdateSelfView">Game休閒館</a>
+            <a class="navbar-brand" href="/GameConsole/index/getIndexView">Game休閒館</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li>
-                    <a href="/GameConsole/employee/getEmployeeListView">商品列表</a>
+                    <a href="/GameConsole/index/getIndexView">商品列表</a>
                 </li>
                 {{if isset($isLogin) && $isLogin}}
                 <li>
-                    <a href="/GameConsole/commodity/getEmpCommodityListView">交易紀錄</a>
+                    <a href="#">交易紀錄</a>
                 </li>
-                <li><a href="/GameConsole/member/getMemberListView">購物車</a></li>
+                <li><a href="#">購物車</a></li>
                 {{/if}}
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -28,10 +28,10 @@
                 <li id="showUserName"><a
                         href={{( isset($isUpdate) && $isUpdate ) ? "#" : "/GameConsole/member/getUpdateView"}}>{{$name}}</a>
                 </li>
-                <li><a href="/GameConsole/member/getLoginView" id="showLogin">登出</a></li>
+                <li><a href="/GameConsole/member/getLoginView">登出</a></li>
                 {{else}}
-                <li><a href="/GameConsole/member/getLoginView" id="showLogin">註冊</a></li>
-                <li><a href="/GameConsole/member/getLoginView" id="showLogin">登入</a></li>
+                <li><a href="/GameConsole/member/getCreateView">註冊</a></li>
+                <li><a href="/GameConsole/member/getLoginView">登入</a></li>
                 {{/if}}
             </ul>
         </div>

@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-07 09:48:13
-  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/updateSelfData.html' */
+/* Smarty version 3.1.34-dev-7, created on 2020-10-07 18:16:13
+  from 'C:\xampp\htdocs\GameConsole\views\pageBack\updateSelfData.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7d72bde80c79_63684131',
+  'unifunc' => 'content_5f7de9cd4b9b69_60821043',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
-    'dca566f6e943e4ab695af2b4892236c04dc26b8a' => 
+    '2ec1bc0b882d5f291cd569f187dc8ebacc14ad27' => 
     array (
-      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/updateSelfData.html',
-      1 => 1602056823,
+      0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageBack\\updateSelfData.html',
+      1 => 1602070468,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f7d72bde80c79_63684131 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f7de9cd4b9b69_60821043 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!doctype html>
 <html lang="en">
 
