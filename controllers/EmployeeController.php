@@ -35,7 +35,7 @@ class EmployeeController extends Controller
         }
         try {
             $loginData = $empLoginDAO->getLoginData($_COOKIE['empLoginID']);
-            if ($loginData === false || $_COOKIE['empID'] !== $loginData['empID'] || !password_verify($_COOKIE['empCookieID'], $loginData['empCookieID'])) {
+            if ($loginData === false || $_COOKIE['empID'] !== $loginData['empID'] || !password_verify($_COOKIE['empCookieID'], $loginData['cookieID'])) {
                 throw new Exception("登入錯誤");
             }
             if ($loginData['timeOut'] && !$loginData['isKeep']) {

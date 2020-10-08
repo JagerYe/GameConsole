@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-07 18:33:02
-  from 'C:\xampp\htdocs\GameConsole\views\pageBack\commodityList.html' */
+/* Smarty version 3.1.34-dev-7, created on 2020-10-08 03:35:28
+  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/commodityList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7dedbe344fe4_88660400',
+  'unifunc' => 'content_5f7e6ce04c7131_04306068',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
-    'e5a84925bb00b4b79ded32d70fe51194dfd38669' => 
+    'f5f0d670ee24d5a465f59bcb16abfb72abc09d1e' => 
     array (
-      0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageBack\\commodityList.html',
-      1 => 1602085672,
+      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/commodityList.html',
+      1 => 1602120925,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f7dedbe344fe4_88660400 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f7e6ce04c7131_04306068 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -113,6 +113,9 @@ function content_5f7dedbe344fe4_88660400 (Smarty_Internal_Template $_smarty_tpl)
     let lastID = '<?php echo $_smarty_tpl->tpl_vars['lastID']->value;?>
 ';
     let getItemProcessing = false;
+    let comUse = "<?php echo (isset($_smarty_tpl->tpl_vars['comUse']->value)) && $_smarty_tpl->tpl_vars['comUse']->value;?>
+";
+
 
     $(window).ready(() => {
         //回最頂按鈕
@@ -138,6 +141,7 @@ function content_5f7dedbe344fe4_88660400 (Smarty_Internal_Template $_smarty_tpl)
                     if (json.success === true) {
                         for (let item of json.result) {
                             $('#dataShow').append(getEmpInsertCommodityItemView(
+                                comUse,
                                 item.id,
                                 item.name,
                                 item.price,
@@ -279,6 +283,7 @@ function content_5f7dedbe344fe4_88660400 (Smarty_Internal_Template $_smarty_tpl)
                             let json = JSON.parse(e);
                             if (json.success === true) {
                                 $('#dataShow').prepend(getEmpInsertCommodityItemView(
+                                    comUse,
                                     json.result.id,
                                     json.result.name,
                                     json.result.price,
@@ -362,6 +367,7 @@ function content_5f7dedbe344fe4_88660400 (Smarty_Internal_Template $_smarty_tpl)
             contentType: false,
             processData: false
         }).then(function (e) {
+            $('#inputImage').val('');
             e = organizeFormat(e);
             let json = JSON.parse(e);
             if (json.success === false) {
@@ -455,7 +461,7 @@ function content_5f7dedbe344fe4_88660400 (Smarty_Internal_Template $_smarty_tpl)
                     <th>上下架狀態</th>
                     <th>建立時間</th>
                     <th>修改時間</th>
-                    <?php if ($_smarty_tpl->tpl_vars['comUse']->value) {?>
+                    <?php if ((isset($_smarty_tpl->tpl_vars['comUse']->value)) && $_smarty_tpl->tpl_vars['comUse']->value) {?>
                     <th>
                         <button class="btn btn-success width100Percentage" id="creatBtn" type="button"
                             data-toggle="modal" data-target="#commodityModal">新增商品</button>
@@ -491,7 +497,8 @@ $_smarty_tpl->tpl_vars['commodity']->do_else = false;
 </td>
                     <td><?php echo $_smarty_tpl->tpl_vars['commodity']->value['changeDatetime'];?>
 </td>
-                    <?php if ($_smarty_tpl->tpl_vars['comUse']->value) {?>
+
+                    <?php if ((isset($_smarty_tpl->tpl_vars['comUse']->value)) && $_smarty_tpl->tpl_vars['comUse']->value) {?>
                     <td>
                         <button class="btn btn-info width100Percentage updateBtn" type="button" data-toggle="modal"
                             data-target="#commodityModal">修改</button>
@@ -510,7 +517,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
 
         </table>
 
-        <?php if ($_smarty_tpl->tpl_vars['comUse']->value) {?>
+        <?php if ((isset($_smarty_tpl->tpl_vars['comUse']->value)) && $_smarty_tpl->tpl_vars['comUse']->value) {?>
         <!-- Modal，用於新增or修改商品用-->
         <div class="modal fade" id="commodityModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
             <!--背景-->

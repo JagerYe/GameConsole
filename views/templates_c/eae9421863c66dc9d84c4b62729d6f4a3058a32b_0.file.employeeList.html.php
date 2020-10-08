@@ -1,4 +1,28 @@
-<!DOCTYPE html>
+<?php
+/* Smarty version 3.1.34-dev-7, created on 2020-10-08 03:17:09
+  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/employeeList.html' */
+
+/* @var Smarty_Internal_Template $_smarty_tpl */
+if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
+  'version' => '3.1.34-dev-7',
+  'unifunc' => 'content_5f7e68957dd096_73391664',
+  'has_nocache_code' => false,
+  'file_dependency' => 
+  array (
+    'eae9421863c66dc9d84c4b62729d6f4a3058a32b' => 
+    array (
+      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/employeeList.html',
+      1 => 1602119776,
+      2 => 'file',
+    ),
+  ),
+  'includes' => 
+  array (
+    'file:./navigationBar.html' => 1,
+  ),
+),false)) {
+function content_5f7e68957dd096_73391664 (Smarty_Internal_Template $_smarty_tpl) {
+?><!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -18,21 +42,29 @@
     <link href="/GameConsole/views/css/starter-template.css" rel="stylesheet">
 
     <!-- Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    <?php echo '<script'; ?>
+ src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
         integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
         integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
 
     <!-- ajax -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    {{if !(isset($empSee))}}
+    <?php echo '<script'; ?>
+ src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"><?php echo '</script'; ?>
+>
+    <?php if (!((isset($_smarty_tpl->tpl_vars['empSee']->value)))) {?>
     <meta http-equiv="refresh" content="0;url=/GameConsole/employee/getUpdateSelfView">
-    {{/if}}
+    <?php }?>
 </head>
 <style>
     .topImgBtn {
@@ -61,12 +93,22 @@
         border-bottom: 2px solid red;
     }
 </style>
-<script src="/GameConsole/views/js/jsonFormat.js"></script>
-<script src="/GameConsole/views/js/title.js"></script>
-<script src="/GameConsole/views/js/rule.js"></script>
-<script src="/GameConsole/views/js/viewModels/employeeViewModel.js"></script>
-<script>
-    let empUse = '{{isset($empUse)&&$empUse}}';
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/jsonFormat.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/title.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/rule.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/viewModels/employeeViewModel.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+>
+    let empUse = '<?php echo (isset($_smarty_tpl->tpl_vars['empUse']->value)) && $_smarty_tpl->tpl_vars['empUse']->value;?>
+';
     let updatePermissionEmpID = -1;
     let empPermissions = new Array();
     $(window).ready(() => {
@@ -301,21 +343,23 @@
         return "";
     }
 
-</script>
+<?php echo '</script'; ?>
+>
 
 <body>
-    {{include file='./navigationBar.html'}}
+    <?php $_smarty_tpl->_subTemplateRender('file:./navigationBar.html', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
+?>
     <div class="blank"></div>
 
     <main class="container">
         <img class="topImgBtn" src="/GameConsole/views/img/top.png" alt="">
 
-        {{if (isset($empUse)&&$empUse)}}
+        <?php if (((isset($_smarty_tpl->tpl_vars['empUse']->value)) && $_smarty_tpl->tpl_vars['empUse']->value)) {?>
         <div class="text-right">
             <button class="btn btn-info " type="button" data-toggle="modal" data-target="#creatEmployeeModal"
                 id="creatEmployeeBtn">新增員工</button>
         </div>
-        {{/if}}
+        <?php }?>
 
 
         <table class="table table-hover table-bordered" id="mainShow">
@@ -333,20 +377,35 @@
 
 
             <tbody id="dataShow">
-                {{foreach $employees as $emp}}
-                <tr id="emp{{$emp['id']}}">
-                    <td>{{$emp['id']}}</td>
-                    <td>{{$emp['account']}}</td>
-                    <td>{{$emp['name']}}</td>
-                    <td>{{$emp['email']}}</td>
-                    <td>{{$emp['creationDatetime']}}</td>
-                    <td>{{$emp['changeDatetime']}}</td>
+                <?php
+$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['employees']->value, 'emp');
+$_smarty_tpl->tpl_vars['emp']->do_else = true;
+if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['emp']->value) {
+$_smarty_tpl->tpl_vars['emp']->do_else = false;
+?>
+                <tr id="emp<?php echo $_smarty_tpl->tpl_vars['emp']->value['id'];?>
+">
+                    <td><?php echo $_smarty_tpl->tpl_vars['emp']->value['id'];?>
+</td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['emp']->value['account'];?>
+</td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['emp']->value['name'];?>
+</td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['emp']->value['email'];?>
+</td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['emp']->value['creationDatetime'];?>
+</td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['emp']->value['changeDatetime'];?>
+</td>
                     <td><button class="btn btn-info width100Percentage updatePermissionBtn" type="button"
                             data-toggle="modal" data-target="#updatePermissionModal">
-                            {{(isset($empUse) && $empUse) ? '修改' : '檢視'}}權限
+                            <?php echo (isset($_smarty_tpl->tpl_vars['empUse']->value)) && $_smarty_tpl->tpl_vars['empUse']->value ? '修改' : '檢視';?>
+權限
                         </button></td>
                 </tr>
-                {{/foreach}}
+                <?php
+}
+$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
             </tbody>
 
 
@@ -370,12 +429,21 @@
                     </div>
                     <div class="modal-body">
                         <!--身-->
-                        {{foreach $permissions as $permission}}
+                        <?php
+$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['permissions']->value, 'permission');
+$_smarty_tpl->tpl_vars['permission']->do_else = true;
+if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['permission']->value) {
+$_smarty_tpl->tpl_vars['permission']->do_else = false;
+?>
                         <label><input type="checkbox" class="updatePermission"
-                                value="{{$permission['id']}}">{{$permission['name']}}</label>
-                        {{/foreach}}
+                                value="<?php echo $_smarty_tpl->tpl_vars['permission']->value['id'];?>
+"><?php echo $_smarty_tpl->tpl_vars['permission']->value['name'];?>
+</label>
+                        <?php
+}
+$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
                     </div>
-                    {{if (isset($empUse)&&$empUse)}}
+                    <?php if (((isset($_smarty_tpl->tpl_vars['empUse']->value)) && $_smarty_tpl->tpl_vars['empUse']->value)) {?>
                     <div class="modal-footer">
                         <!--底-->
                         <button type="button" class="btn btn-default" data-dismiss="modal"
@@ -384,11 +452,11 @@
                         <button type="button" class="btn btn-primary" id="updateSubBtn">更新</button>
                         <!--送出-->
                     </div>
-                    {{/if}}
+                    <?php }?>
                 </div>
             </div>
         </div>
-        {{if (isset($empUse)&&$empUse)}}
+        <?php if (((isset($_smarty_tpl->tpl_vars['empUse']->value)) && $_smarty_tpl->tpl_vars['empUse']->value)) {?>
         <!-- Modal，用於新增員工用-->
         <div class="modal fade" id="creatEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
             <!--背景-->
@@ -433,16 +501,25 @@
                                 <tr>
                                     <td>權限</td>
                                     <td>
-                                        {{foreach $permissions as $permission}}
+                                        <?php
+$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['permissions']->value, 'permission');
+$_smarty_tpl->tpl_vars['permission']->do_else = true;
+if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['permission']->value) {
+$_smarty_tpl->tpl_vars['permission']->do_else = false;
+?>
                                         <label><input type="checkbox" class="creatEmpPermission"
-                                                value="{{$permission['id']}}">{{$permission['name']}}</label>
-                                        {{/foreach}}
+                                                value="<?php echo $_smarty_tpl->tpl_vars['permission']->value['id'];?>
+"><?php echo $_smarty_tpl->tpl_vars['permission']->value['name'];?>
+</label>
+                                        <?php
+}
+$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    {{if (isset($empUse)&&$empUse)}}
+                    <?php if (((isset($_smarty_tpl->tpl_vars['empUse']->value)) && $_smarty_tpl->tpl_vars['empUse']->value)) {?>
                     <div class="modal-footer">
                         <!--底-->
                         <button type="button" class="btn btn-default" data-dismiss="modal"
@@ -451,13 +528,14 @@
                         <button type="button" class="btn btn-primary" id="createSubBtn">新增</button>
                         <!--送出-->
                     </div>
-                    {{/if}}
+                    <?php }?>
                 </div>
             </div>
         </div>
-        {{/if}}
+        <?php }?>
     </main><!-- /.container -->
 
 </body>
 
-</html>
+</html><?php }
+}

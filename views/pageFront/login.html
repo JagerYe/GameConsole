@@ -50,23 +50,23 @@
 			url: "/GameConsole/member/checkIsLogin"
 		}).then(function (e) {
 			console.log(e);
-			let json = JSON.parse(organizeFormat(e));
-			if (json.success === false) {
-				alert(json.errMessage);
-			}
-			if (json.success === false || json.result === true) {
+
+			try {
+				let json = JSON.parse(organizeFormat(e));
+				if (json.result === false) {
+					$("body").css("display", "inline");
+				}
+				if (json.success === false || json.result === true) {
+					throw new Error();
+				}
+			} catch (error) {
 				$.ajax({
 					type: "GET",
 					url: "/GameConsole/member/logout"
 				}).then(() => {
 					history.go(0);
 				});
-				return;
 			}
-
-			$("body").css("display", "inline");
-
-
 
 		});
 	}

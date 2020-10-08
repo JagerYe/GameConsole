@@ -50,12 +50,16 @@
 			url: "/GameConsole/employee/checkIsLogin"
 		}).then(function (e) {
 			console.log(e);
-			let json = JSON.parse(organizeFormat(e));
-			if (json.success === false) {
-				alert(json.errMessage);
-			} else if (json.result === false) {
-				$("body").css("display", "inline");
-			} else {
+
+			try {
+				let json = JSON.parse(organizeFormat(e));
+				if (json.result === false) {
+					$("body").css("display", "inline");
+				}
+				if (json.success === false || json.result === true) {
+					throw new Error();
+				}
+			} catch (error) {
 				$.ajax({
 					type: "GET",
 					url: "/GameConsole/employee/logout"

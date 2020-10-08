@@ -1,4 +1,4 @@
-function getEmpUpdateCommodityItemView(id, name, price, quantity, status, creationDatetime, changeDatetime = '') {
+function getEmpUpdateCommodityItemView(comUse, id, name, price, quantity, status, creationDatetime, changeDatetime = '') {
         return `<td>${id}</td>
                 <td><img src="/GameConsole/commodity/getOneImg?id=${id}" alt=""
                         id="showImg${id}"></td>
@@ -8,13 +8,10 @@ function getEmpUpdateCommodityItemView(id, name, price, quantity, status, creati
                 <td>${(status === '1') ? '上架' : '下架'}</td>
                 <td>${creationDatetime}</td>
                 <td>${changeDatetime}</td>
-                <td>
-                        <button class="btn btn-info width100Percentage updateBtn" type="button" data-toggle="modal"
-                        data-target="#commodityModal">修改</button>
-                </td>`;
+                ${getControl(comUse)}`;
 }
 
-function getEmpInsertCommodityItemView(id, name, price, quantity, status, creationDatetime, changeDatetime = '') {
+function getEmpInsertCommodityItemView(comUse, id, name, price, quantity, status, creationDatetime, changeDatetime = '') {
         return `<tr id="com${id}">
                         <td>${id}</td>
                         <td><img src="/GameConsole/commodity/getOneImg?id=${id}" alt=""
@@ -25,11 +22,13 @@ function getEmpInsertCommodityItemView(id, name, price, quantity, status, creati
                         <td>${(status === '1') ? '上架' : '下架'}</td>
                         <td>${creationDatetime}</td>
                         <td>${changeDatetime}</td>
-                        <td>
-                                <button class="btn btn-info width100Percentage updateBtn" type="button" data-toggle="modal"
-                                data-target="#commodityModal">修改</button>
-                        </td>
+                        ${getControl(comUse)}
                 </tr>`;
+}
+
+function getControl(comUse) {
+        return (comUse) ? `<td><button class="btn btn-info width100Percentage updateBtn" type="button" data-toggle="modal"
+        data-target="#commodityModal">修改</button></td>`: '';
 }
 
 function getCommodityItemView(id, name, price) {

@@ -7,5 +7,5 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/core/Result.php";
 try {
     $api = new Api();
 } catch (Exception $err) {
-    Result::getResultJson(false, null, $err->getMessage());
+    echo $err->getMessage();
 }
