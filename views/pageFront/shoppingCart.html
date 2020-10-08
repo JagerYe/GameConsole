@@ -178,7 +178,14 @@
             }).then(function (e) {
                 e = organizeFormat(e);
                 let json = JSON.parse(e);
-                console.log(json);
+
+                if (json.success === false) {
+                    alert(json.errMessage);
+                    return
+                }
+                if (json.result === true) {
+                    window.location.href = "/GameConsole/order/getMemOrderListView";
+                }
             });
         });
 

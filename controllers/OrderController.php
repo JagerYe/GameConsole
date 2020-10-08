@@ -75,6 +75,26 @@ class OrderController extends Controller
         );
     }
 
+    //取得單一頁面
+    public function getMemOrderListView()
+    {
+        require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/controllers/MemberController.php";
+        $smarty = SmartyConfig::getSmarty();
+
+        try {
+            $isLogin = (new MemberController)->checkIdentity();
+        } catch (Exception $err) {
+            $isLogin = false;
+        }
+        $smarty->assign('isLogin', $isLogin);
+        if ($isLogin) {
+            $smarty->assign('name',  $_COOKIE['memName']);
+            $smarty->assign('memID',  $_COOKIE['memID']);
+        }
+
+        $smarty->display('pageFront/orderList.html');
+    }
+
     // //取得部份能購買的商品資料
     // public function getSomeCanBuyDate($lastID)
     // {
@@ -99,26 +119,7 @@ class OrderController extends Controller
     //     );
     // }
 
-    // //取得單一頁面
-    // public function getOneView($id)
-    // {
-    //     require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/controllers/MemberController.php";
-    //     $smarty = SmartyConfig::getSmarty();
 
-    //     try {
-    //         $isLogin = (new MemberController)->checkIdentity();
-    //     } catch (Exception $err) {
-    //         $isLogin = false;
-    //     }
-    //     $smarty->assign('isLogin', $isLogin);
-    //     if ($isLogin) {
-    //         $smarty->assign('name',  $_COOKIE['memName']);
-    //         $smarty->assign('memID',  $_COOKIE['memID']);
-    //     }
-
-    //     $smarty->assign('order', OrderService::getDAO()->getOneByID($id));
-    //     $smarty->display('pageFront/oneOrder.html');
-    // }
 
     // //取得管理者商品清單
     // public function getEmpOrderListView()

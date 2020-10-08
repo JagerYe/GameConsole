@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-08 11:43:31
+/* Smarty version 3.1.34-dev-7, created on 2020-10-08 12:02:45
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/shoppingCart.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7edf433205b7_19314122',
+  'unifunc' => 'content_5f7ee3c5801f64_61334897',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '705de739c166b249d7334aadd3cf7bb295a8cfa9' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/shoppingCart.html',
-      1 => 1602150209,
+      1 => 1602151356,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f7edf433205b7_19314122 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f7ee3c5801f64_61334897 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -217,10 +217,16 @@ function content_5f7edf433205b7_19314122 (Smarty_Internal_Template $_smarty_tpl)
                 type: 'POST',
                 url: '/GameConsole/order/insert'
             }).then(function (e) {
-                console.log(e);
                 e = organizeFormat(e);
                 let json = JSON.parse(e);
-                console.log(json);
+
+                if (json.success === false) {
+                    alert(json.errMessage);
+                    return
+                }
+                if (json.result === true) {
+                    window.location.href = "/GameConsole/order/getMemOrderListView";
+                }
             });
         });
 
