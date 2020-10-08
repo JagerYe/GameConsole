@@ -46,4 +46,28 @@ class Controller
 
         return $reply;
     }
+
+    //確認管理者身份
+    public function checkIsEmp()
+    {
+        require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/controllers/EmployeeController.php";
+        $this->requireDAO("permissionControl");
+        $this->requireDAO("employee");
+        try {
+            return (new EmployeeController())->checkIdentity();
+        } catch (Exception $err) {
+            return false;
+        }
+    }
+
+    //確認會員身份
+    public function checkIsMem()
+    {
+        require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/controllers/MemberController.php";
+        try {
+            return (new MemberController())->checkIdentity();
+        } catch (Exception $err) {
+            return false;
+        }
+    }
 }

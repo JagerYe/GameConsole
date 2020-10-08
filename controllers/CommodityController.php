@@ -10,30 +10,6 @@ class CommodityController extends Controller
         $this->requireDAO("commodity");
     }
 
-    //確認管理者身份
-    public function checkIsEmp()
-    {
-        require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/controllers/EmployeeController.php";
-        $this->requireDAO("permissionControl");
-        $this->requireDAO("employee");
-        try {
-            return (new EmployeeController())->checkIdentity();
-        } catch (Exception $err) {
-            return false;
-        }
-    }
-
-    //確認會員身份
-    public function checkIsMem()
-    {
-        require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/controllers/MemberController.php";
-        try {
-            return (new MemberController())->checkIdentity();
-        } catch (Exception $err) {
-            return false;
-        }
-    }
-
     //新增
     public function insert($str, $requestMethod)
     {
@@ -339,12 +315,10 @@ class CommodityController extends Controller
             } else {
                 $shoppingCart = array();
             }
-            $commodity = new Commodity();
-            $commodity->setQuantity($jsonObj->quantity);
 
             foreach ($shoppingCart as $key => $item) {
                 if ($item->id === $jsonObj->id) {
-                    unset($shoppingCart[$key]);
+                    array_splice($shoppingCart, $key, 1);
                     setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
                     $this->result = true;
                     break;
@@ -361,6 +335,77 @@ class CommodityController extends Controller
             $this->result,
             isset($err) ? $err->getMessage() : null
         );
+    }
+
+    //取得購物車總金額
+    public function getShoppingCartTotal()
+    {
+        try {
+            if (isset($_COOKIE['shoppingCart'])) {
+                $shoppingCart = json_decode($_COOKIE['shoppingCart']);
+            } else {
+                $shoppingCart = array();
+            }
+
+            $commodityDAO = CommodityService::getDAO();
+            $total = 0;
+            foreach ($shoppingCart as $item) {
+                $commodity = $commodityDAO->getOneByID($item->id);
+                $total += $item->quantity * $commodity['price'];
+            }
+
+            $this->result = $total;
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
+    //取得購物車頁面
+    public function getShoppingCartView()
+    {
+        require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/controllers/MemberController.php";
+        $smarty = SmartyConfig::getSmarty();
+
+        try {
+            $isLogin = (new MemberController)->checkIdentity();
+        } catch (Exception $err) {
+            $isLogin = false;
+        }
+        $smarty->assign('isLogin', $isLogin);
+        if ($isLogin) {
+            $smarty->assign('name',  $_COOKIE['memName']);
+            $smarty->assign('memID',  $_COOKIE['memID']);
+        }
+        $shoppingCart = isset($_COOKIE['shoppingCart']) ? json_decode($_COOKIE['shoppingCart']) : array();
+
+        $total = 0;
+        $commodityDAO = CommodityService::getDAO();
+        $lastID = -1;
+        $cartSize = count($shoppingCart);
+        foreach ($shoppingCart as $key => $item) {
+            if (!($commodity = $commodityDAO->getOneByID($item->id)) || !$commodity['status']) {
+                unset($shoppingCart[$key]);
+                continue;
+            }
+            $shoppingCart[$key]->name = $commodity['name'];
+            $shoppingCart[$key]->price = $commodity['price'];
+            $shoppingCart[$key]->maxQuantity = $commodity['quantity'];
+            $total += $item->quantity * $commodity['price'];
+            $lastID = $key;
+        }
+
+        $smarty->assign('lastID', $lastID);
+        $smarty->assign('cartSize', $cartSize);
+        $smarty->assign('shoppingCart', $shoppingCart);
+        $smarty->assign('total', $total);
+        $smarty->display('pageFront/shoppingCart.html');
     }
 
     //取得單一頁面

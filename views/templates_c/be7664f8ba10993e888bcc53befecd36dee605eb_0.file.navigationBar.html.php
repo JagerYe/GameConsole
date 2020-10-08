@@ -1,4 +1,27 @@
-<nav class="navbar navbar-default navbar-fixed-top">
+<?php
+/* Smarty version 3.1.34-dev-7, created on 2020-10-08 08:07:46
+  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/navigationBar.html' */
+
+/* @var Smarty_Internal_Template $_smarty_tpl */
+if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
+  'version' => '3.1.34-dev-7',
+  'unifunc' => 'content_5f7eacb2ca1bd5_50748427',
+  'has_nocache_code' => false,
+  'file_dependency' => 
+  array (
+    'be7664f8ba10993e888bcc53befecd36dee605eb' => 
+    array (
+      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/navigationBar.html',
+      1 => 1602137265,
+      2 => 'file',
+    ),
+  ),
+  'includes' => 
+  array (
+  ),
+),false)) {
+function content_5f7eacb2ca1bd5_50748427 (Smarty_Internal_Template $_smarty_tpl) {
+?><nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -17,24 +40,27 @@
                     <a href="/GameConsole/index/getIndexView">商品列表</a>
                 </li>
                 <li><a href="/GameConsole/commodity/getShoppingCartView">購物車</a></li>
-                {{if isset($isLogin) && $isLogin}}
+                <?php if ((isset($_smarty_tpl->tpl_vars['isLogin']->value)) && $_smarty_tpl->tpl_vars['isLogin']->value) {?>
                 <li>
                     <a href="#">交易紀錄</a>
                 </li>
-                {{/if}}
+                <?php }?>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                {{if $isLogin === true}}
+                <?php if ($_smarty_tpl->tpl_vars['isLogin']->value === true) {?>
                 <li id="showUserName"><a
-                        href={{( isset($isUpdate) && $isUpdate ) ? "#" : "/GameConsole/member/getUpdateView"}}>{{$name}}</a>
+                        href=<?php echo (isset($_smarty_tpl->tpl_vars['isUpdate']->value)) && $_smarty_tpl->tpl_vars['isUpdate']->value ? "#" : "/GameConsole/member/getUpdateView";?>
+><?php echo $_smarty_tpl->tpl_vars['name']->value;?>
+</a>
                 </li>
                 <li><a href="/GameConsole/member/getLoginView">登出</a></li>
-                {{else}}
+                <?php } else { ?>
                 <li><a href="/GameConsole/member/getCreateView">註冊</a></li>
                 <li><a href="/GameConsole/member/getLoginView">登入</a></li>
-                {{/if}}
+                <?php }?>
             </ul>
         </div>
     </div>
 
-</nav>
+</nav><?php }
+}

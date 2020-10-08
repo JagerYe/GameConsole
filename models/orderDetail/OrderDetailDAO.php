@@ -14,11 +14,11 @@ class OrderDetailDAO implements OrderDetailDAO_Interface
         try {
             $sth = $dbh->prepare($sqlStr);
 
-            foreach ($orderDetails as $key => $detail) {
+            foreach ($orderDetails as $key => &$detail) {
                 $sth->bindParam("orderID{$key}", $orderID);
-                $sth->bindParam("commodityID{$key}", $detail->commodityID);
-                $sth->bindParam("price{$key}", $detail->price);
-                $sth->bindParam("quantity{$key}", $detail->quantity);
+                $sth->bindParam("commodityID{$key}", $detail['id']);
+                $sth->bindParam("price{$key}", $detail['price']);
+                $sth->bindParam("quantity{$key}", $detail['quantity']);
             }
             $sth->execute();
 

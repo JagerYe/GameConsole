@@ -17,7 +17,7 @@ class OrderDAO implements OrderDAO_Interface
             $id = $dbh->lastInsertId();
 
             //新增訂單明細
-            if (OrderDetailService::getDAO()->insert($id, $orderDetails, $dbh)) {
+            if (!OrderDetailService::getDAO()->insert($id, $orderDetails, $dbh)) {
                 throw new Exception('新增明細發生錯誤');
             }
 
@@ -31,7 +31,7 @@ class OrderDAO implements OrderDAO_Interface
             throw new Exception($err->getMessage());
         }
         $dbh = null;
-        return $id;
+        return true;
     }
 
     //修改
