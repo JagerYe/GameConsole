@@ -50,37 +50,25 @@
 </style>
 <script src="/GameConsole/views/js/jsonFormat.js"></script>
 <script src="/GameConsole/views/js/title.js"></script>
+<script>
+$(window).ready(()=>{
+    $('.showDetailsBtn').click(function(){
+        //找orderID
+        console.log($(this).closest('div[class="oneOrder"]').find('.orderID').html());
+    });
+});
+</script>
 
 <body>
     {{include file='./navigationBar.html'}}
     <div class="blank"></div>
 
     <main class="container">
-        <div id="orderList">
-            <div class="oneOrder" id="order1">
-                <table class="table table-hover table-bordered">
-                    <thead>
-                        <tr>
-                            <td>訂單編號</td>
-                            <td>日期</td>
-                            <td>總價</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>2020-06-12</td>
-                            <td>1000</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="row" id="details">
-                    <div class="col-xs-1"><a href="#">查看明細</a></div>
-                    <div class="col-xs-11" id="showDetails"></div>
-                </div>
-            </div>
 
-            <div class="oneOrder" id="order2">
+        {{if isset($orders)}}
+        {{foreach $orders as $order}}
+        <div id="orderList">
+            <div class="oneOrder">
                 <table class="table table-hover table-bordered">
                     <thead>
                         <tr>
@@ -91,44 +79,22 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>1</td>
-                            <td>2020-06-12</td>
-                            <td>1000</td>
+                            <td class="orderID">{{$order['orderID']}}</td>
+                            <td>{{$order['creationDatetime']}}</td>
+                            <td>{{$order['creationDatetime']}}</td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="row" id="details">
-                    <div class="col-xs-1"><a href="#">關閉明細</a></div>
-                    <div class="col-xs-11" id="showDetails">
-                        <table class="table table-hover table-bordered">
-                            <tbody>
-                                <tr>
-                                    <td>商品名稱</td>
-                                    <td>數量</td>
-                                    <td>價格</td>
-                                </tr>
-                                <tr>
-                                    <td>商品名稱</td>
-                                    <td>數量</td>
-                                    <td>價格</td>
-                                </tr>
-                                <tr>
-                                    <td>商品名稱</td>
-                                    <td>數量</td>
-                                    <td>價格</td>
-                                </tr>
-                                <tr>
-                                    <td>商品名稱</td>
-                                    <td>數量</td>
-                                    <td>價格</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <div class="col-xs-1"><button class="btn btn-info showDetailsBtn" type="button">查看明細</button></div>
+                    <div class="col-xs-11" id="showDetails{{$order['orderID']}}"></div>
                 </div>
             </div>
         </div>
-
+        {{/foreach}}
+        {{else}}
+        <h2>您尚未購買</h2>
+        {{/if}}
     </main>
 </body>
 

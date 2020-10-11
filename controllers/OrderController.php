@@ -90,6 +90,10 @@ class OrderController extends Controller
         if ($isLogin) {
             $smarty->assign('name',  $_COOKIE['memName']);
             $smarty->assign('memID',  $_COOKIE['memID']);
+
+            if (($orders = OrderService::getDAO()->getSomeByMemberID($_COOKIE['memID'])) !== false) {
+                $smarty->assign('orders',  $orders);
+            }
         }
 
         $smarty->display('pageFront/orderList.html');

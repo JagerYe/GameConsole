@@ -37,19 +37,19 @@ class OrderDAO implements OrderDAO_Interface
     //修改
     // public function update(){}
 
-    //登入狀態
+    //取得會員部分訂單
     public function getSomeByMemberID($memberID, $orderID = null)
     {
         try {
             $dbh = Config::getDBConnect();
             $sth = $dbh->prepare("SELECT * FROM `Orders`
-                WHERE `memberID`=:memberID && `orderID`=<IFNULL(:orderID,(~0 >> 32))
+                WHERE `memberID`=:memberID && `orderID`<IFNULL(:orderID,(~0 >> 32))
                 ORDER BY `orderID` DESC LIMIT 5;"
             );
             $sth->bindParam("memberID", $memberID);
             $sth->bindParam("orderID", $orderID);
             $sth->execute();
-            $request = $sth->fetch(PDO::FETCH_ASSOC);
+            $request = $sth->fetchAll(PDO::FETCH_ASSOC);
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;

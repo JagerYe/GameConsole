@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-11 06:11:22
+/* Smarty version 3.1.34-dev-7, created on 2020-10-11 17:47:44
   from 'C:\xampp\htdocs\GameConsole\views\pageFront\orderList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f8285ea2a4a84_66017399',
+  'unifunc' => 'content_5f832920790995_87928910',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '7d519791b11e8747c900111fccee8537a3f8305d' => 
     array (
       0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageFront\\orderList.html',
-      1 => 1602389476,
+      1 => 1602431261,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f8285ea2a4a84_66017399 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f832920790995_87928910 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -86,6 +86,15 @@ function content_5f8285ea2a4a84_66017399 (Smarty_Internal_Template $_smarty_tpl)
 <?php echo '<script'; ?>
  src="/GameConsole/views/js/title.js"><?php echo '</script'; ?>
 >
+<?php echo '<script'; ?>
+>
+$(window).ready(()=>{
+    $('.showDetailsBtn').click(function(){
+        console.log($(this).closest('div[class="oneOrder"]').find('.orderID').html());
+    });
+});
+<?php echo '</script'; ?>
+>
 
 <body>
     <?php $_smarty_tpl->_subTemplateRender('file:./navigationBar.html', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
@@ -93,31 +102,16 @@ function content_5f8285ea2a4a84_66017399 (Smarty_Internal_Template $_smarty_tpl)
     <div class="blank"></div>
 
     <main class="container">
-        <div id="orderList">
-            <div class="oneOrder" id="order1">
-                <table class="table table-hover table-bordered">
-                    <thead>
-                        <tr>
-                            <td>訂單編號</td>
-                            <td>日期</td>
-                            <td>總價</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>2020-06-12</td>
-                            <td>1000</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="row" id="details">
-                    <div class="col-xs-1"><a href="#">查看明細</a></div>
-                    <div class="col-xs-11" id="showDetails"></div>
-                </div>
-            </div>
 
-            <div class="oneOrder" id="order2">
+        <?php if ((isset($_smarty_tpl->tpl_vars['orders']->value))) {?>
+        <?php
+$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['orders']->value, 'order');
+$_smarty_tpl->tpl_vars['order']->do_else = true;
+if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['order']->value) {
+$_smarty_tpl->tpl_vars['order']->do_else = false;
+?>
+        <div id="orderList">
+            <div class="oneOrder">
                 <table class="table table-hover table-bordered">
                     <thead>
                         <tr>
@@ -128,44 +122,28 @@ function content_5f8285ea2a4a84_66017399 (Smarty_Internal_Template $_smarty_tpl)
                     </thead>
                     <tbody>
                         <tr>
-                            <td>1</td>
-                            <td>2020-06-12</td>
-                            <td>1000</td>
+                            <td class="orderID"><?php echo $_smarty_tpl->tpl_vars['order']->value['orderID'];?>
+</td>
+                            <td><?php echo $_smarty_tpl->tpl_vars['order']->value['creationDatetime'];?>
+</td>
+                            <td><?php echo $_smarty_tpl->tpl_vars['order']->value['creationDatetime'];?>
+</td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="row" id="details">
-                    <div class="col-xs-1"><a href="#">關閉明細</a></div>
-                    <div class="col-xs-11" id="showDetails">
-                        <table class="table table-hover table-bordered">
-                            <tbody>
-                                <tr>
-                                    <td>商品名稱</td>
-                                    <td>數量</td>
-                                    <td>價格</td>
-                                </tr>
-                                <tr>
-                                    <td>商品名稱</td>
-                                    <td>數量</td>
-                                    <td>價格</td>
-                                </tr>
-                                <tr>
-                                    <td>商品名稱</td>
-                                    <td>數量</td>
-                                    <td>價格</td>
-                                </tr>
-                                <tr>
-                                    <td>商品名稱</td>
-                                    <td>數量</td>
-                                    <td>價格</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <div class="col-xs-1"><button class="btn btn-info showDetailsBtn" type="button">查看明細</button></div>
+                    <div class="col-xs-11" id="showDetails<?php echo $_smarty_tpl->tpl_vars['order']->value['orderID'];?>
+"></div>
                 </div>
             </div>
         </div>
-
+        <?php
+}
+$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
+        <?php } else { ?>
+        <h2>您尚未購買</h2>
+        <?php }?>
     </main>
 </body>
 
