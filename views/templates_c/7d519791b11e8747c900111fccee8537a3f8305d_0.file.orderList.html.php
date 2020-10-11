@@ -1,4 +1,28 @@
-<!DOCTYPE html>
+<?php
+/* Smarty version 3.1.34-dev-7, created on 2020-10-11 06:11:22
+  from 'C:\xampp\htdocs\GameConsole\views\pageFront\orderList.html' */
+
+/* @var Smarty_Internal_Template $_smarty_tpl */
+if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
+  'version' => '3.1.34-dev-7',
+  'unifunc' => 'content_5f8285ea2a4a84_66017399',
+  'has_nocache_code' => false,
+  'file_dependency' => 
+  array (
+    '7d519791b11e8747c900111fccee8537a3f8305d' => 
+    array (
+      0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageFront\\orderList.html',
+      1 => 1602389476,
+      2 => 'file',
+    ),
+  ),
+  'includes' => 
+  array (
+    'file:./navigationBar.html' => 1,
+  ),
+),false)) {
+function content_5f8285ea2a4a84_66017399 (Smarty_Internal_Template $_smarty_tpl) {
+?><!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -18,22 +42,30 @@
     <link href="/GameConsole/views/css/starter-template.css" rel="stylesheet">
 
     <!-- Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    <?php echo '<script'; ?>
+ src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
         integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
         integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
 
     <!-- ajax -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <?php echo '<script'; ?>
+ src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"><?php echo '</script'; ?>
+>
 
-    {{if !(isset($isLogin)&&$isLogin)}}
+    <?php if (!((isset($_smarty_tpl->tpl_vars['isLogin']->value)) && $_smarty_tpl->tpl_vars['isLogin']->value)) {?>
     <meta http-equiv="refresh" content="0;url=/GameConsole/index/getIndexView">
-    {{/if}}
+    <?php }?>
 </head>
 <style>
     table {
@@ -48,11 +80,16 @@
         margin-bottom: 10px;
     }
 </style>
-<script src="/GameConsole/views/js/jsonFormat.js"></script>
-<script src="/GameConsole/views/js/title.js"></script>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/jsonFormat.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/title.js"><?php echo '</script'; ?>
+>
 
 <body>
-    {{include file='./navigationBar.html'}}
+    <?php $_smarty_tpl->_subTemplateRender('file:./navigationBar.html', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
+?>
     <div class="blank"></div>
 
     <main class="container">
@@ -132,4 +169,5 @@
     </main>
 </body>
 
-</html>
+</html><?php }
+}
