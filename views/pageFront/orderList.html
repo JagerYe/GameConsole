@@ -163,32 +163,30 @@
         <div id="orderList">
             {{foreach $orders as $order}}
             <div class="oneOrder">
-                <div class="bg-info text-white">
-                    <table class="table table-hover table-bordered">
-                        <thead>
-                            <tr>
-                                <td>訂單編號</td>
-                                <td>日期</td>
-                                <td>總價</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="orderID">{{$order['orderID']}}</td>
-                                <td>{{$order['creationDatetime']}}</td>
-                                <td>{{$order['total']}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="row" id="details">
-                        <div class="col-xs-12"><button class="btn btn-info showDetailsBtn" type="button">查看明細</button>
-                        </div>
-                        <div class="col-xs-2"></div>
-                        <div class="col-xs-10" id="details{{$order['orderID']}}">
-                            <table class="table table-hover">
-                                <tbody id="showDetails{{$order['orderID']}}"></tbody>
-                            </table>
-                        </div>
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <td>訂單編號</td>
+                            <td>日期</td>
+                            <td>總價</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="orderID">{{$order['orderID']}}</td>
+                            <td>{{$order['creationDatetime']}}</td>
+                            <td>{{$order['total']}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="row" id="details">
+                    <div class="col-xs-12"><button class="btn btn-info showDetailsBtn" type="button">查看明細</button>
+                    </div>
+                    <div class="col-xs-2"></div>
+                    <div class="col-xs-10" id="details{{$order['orderID']}}">
+                        <table class="table table-hover">
+                            <tbody id="showDetails{{$order['orderID']}}"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>

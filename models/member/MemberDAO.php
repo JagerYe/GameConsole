@@ -34,7 +34,7 @@ class MemberDAO implements MemberDAO_Interface
     }
 
     //更新會員
-    public function update($id, $name, $email, $phone, $status, $address = null)
+    public function update($id, $name, $email, $phone, $address = null)
     {
         try {
             $dbh = Config::getDBConnect();
@@ -44,16 +44,13 @@ class MemberDAO implements MemberDAO_Interface
                     `email`=:email,
                     `phone`=:phone,
                     `address`=:address,
-                    `status`=:status,
                     `changeDatetime`=NOW()
-                WHERE `id`=:id;"
-            );
+                WHERE `id`=:id;");
             $sth->bindParam("id", $id);
             $sth->bindParam("name", $name);
             $sth->bindParam("email", $email);
             $sth->bindParam("phone", $phone);
             $sth->bindParam("address", $address);
-            $sth->bindParam("status", $status);
             $sth->execute();
             $dbh->commit();
             $sth = null;
@@ -84,6 +81,28 @@ class MemberDAO implements MemberDAO_Interface
             $dbh->rollBack();
             $dbh = null;
             throw new Exception("更新密碼發生錯誤\r\n" . $err->getMessage());
+        }
+        $dbh = null;
+        return true;
+    }
+
+    //更新狀態
+    public function updateStatus($id, $status)
+    {
+        try {
+            $dbh = Config::getDBConnect();
+            $dbh->beginTransaction();
+            $sth = $dbh->prepare("UPDATE `Members` SET `status`=:status,`changeDatetime`=NOW()
+                                   WHERE `id`=:id;");
+            $sth->bindParam("id", $id);
+            $sth->bindParam("status", $status, PDO::PARAM_BOOL);
+            $sth->execute();
+            $dbh->commit();
+            $sth = null;
+        } catch (PDOException $err) {
+            $dbh->rollBack();
+            $dbh = null;
+            throw new Exception("更新發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
         return true;
@@ -129,7 +148,7 @@ class MemberDAO implements MemberDAO_Interface
             $dbh = Config::getDBConnect();
             $sth = $dbh->prepare("SELECT `id`, `account`, `name`, `email`, `phone`, `address`, `status`, `creationDatetime`, `changeDatetime` FROM `Members`;");
             $sth->execute();
-            $request = $sth->fetch(PDO::FETCH_ASSOC);
+            $request = $sth->fetchAll(PDO::FETCH_ASSOC);
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
@@ -143,7 +162,7 @@ class MemberDAO implements MemberDAO_Interface
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT COUNT(`id`) AS `check`, `id` FROM `members` WHERE `account`=:account;");
+            $sth = $dbh->prepare("SELECT COUNT(`id`) AS `check`, `id` FROM `members` WHERE `account`=:account && `status`=TRUE;");
             $sth->bindParam("account", $account);
             $sth->execute();
             $request = $sth->fetch(PDO::FETCH_ASSOC);
@@ -179,5 +198,4 @@ class MemberDAO implements MemberDAO_Interface
         }
         return $request['0'] > 0;
     }
-
 }

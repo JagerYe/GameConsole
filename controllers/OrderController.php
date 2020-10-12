@@ -10,6 +10,7 @@ class OrderController extends Controller
     {
         $this->requireDAO('order');
         $this->requireDAO('commodity');
+        $this->requireDAO("permissionControl");
     }
 
     //新增
@@ -79,7 +80,7 @@ class OrderController extends Controller
         );
     }
 
-    //抓取訂單
+    //抓取會員自己訂單
     public function getMemberSelfOrder($lastShowOrderID, $requestMethod)
     {
         try {
@@ -95,7 +96,43 @@ class OrderController extends Controller
                 $_COOKIE['memID'],
                 $lastShowOrderID
             )) === 0) {
-                throw new Exception('沒有明細');
+                throw new Exception('沒有訂單');
+            }
+
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
+    //員工抓取會員訂單
+    public function getMemberOrder($str, $requestMethod)
+    {
+        try {
+            //驗證
+            if ($requestMethod !== 'GET') {
+                throw new Exception('請求方式錯誤');
+            }
+            if (!$this->checkIsEmp()) {
+                throw new Exception('確認身份發生錯誤');
+            }
+            if (!PermissionControlService::getDAO()->checkHavePermissionByEmpID($_COOKIE['empID'], 6)) {
+                throw new Exception("無此權限");
+            }
+
+            $jsonObj = json_decode($str);
+
+            if (count($this->result = OrderService::getDAO()->getSomeByMemberID(
+                $jsonObj->id,
+                $jsonObj->lastShowOrderID
+            )) === 0) {
+                throw new Exception('沒有訂單');
             }
 
             $this->success = true;

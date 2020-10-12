@@ -32,19 +32,15 @@ function getControl(comUse) {
 }
 
 function getCommodityItemView(id, name, price) {
-        return `<div class="col-sm-6 col-md-4 col-lg-3 col-xs-12 oneCommodity">
+        return `<div class="col-xs-12 col-sm-6 col-md-3 col-lg-2 bg-light text-dark">
+                        <div class="oneCommodity text-center">
                         <a href="/GameConsole/commodity/getOneView?id=${id}">
-                        <table>
-                                <tr><td colspan="2">${name}</td></tr>
-                                <tr>
-                                        <td colspan="2">
-                                                <img src="/GameConsole/commodity/getOneImg?ID=${id}"
-                                                onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
-                                        </td>
-                                </tr>
-                                <tr><td>價格：${price}</td></tr>
-                        </table>
+                                <img class="img-responsive" src="/GameConsole/commodity/getOneImg?ID=${id}"
+                                onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
+                                <h3>價格：${price}</h3>
+                                <h4>${name}</h4>
                         </a>
+                        </div>
                 </div>`;
 }
 

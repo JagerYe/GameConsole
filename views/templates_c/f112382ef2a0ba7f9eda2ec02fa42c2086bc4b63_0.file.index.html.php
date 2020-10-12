@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-08 03:41:34
+/* Smarty version 3.1.34-dev-7, created on 2020-10-12 09:58:05
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/index.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7e6e4ed92cb2_71753982',
+  'unifunc' => 'content_5f840c8d87dba2_33344346',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'f112382ef2a0ba7f9eda2ec02fa42c2086bc4b63' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/index.html',
-      1 => 1602117933,
+      1 => 1602487320,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f7e6e4ed92cb2_71753982 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f840c8d87dba2_33344346 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -68,18 +68,6 @@ function content_5f7e6e4ed92cb2_71753982 (Smarty_Internal_Template $_smarty_tpl)
         max-width: 100%;
         height: auto;
     }
-
-    .width100Percentage {
-        width: 100%;
-    }
-
-    .oneCommodity {
-        margin-bottom: 10px;
-    }
-
-    table {
-        background-color: rgba(70, 4, 100, 0.3);
-    }
 </style>
 <?php echo '<script'; ?>
  src="/GameConsole/views/js/jsonFormat.js"><?php echo '</script'; ?>
@@ -92,8 +80,10 @@ function content_5f7e6e4ed92cb2_71753982 (Smarty_Internal_Template $_smarty_tpl)
 >
 <?php echo '<script'; ?>
 >
-    let lastID = '<?php echo $_smarty_tpl->tpl_vars['lastID']->value;?>
-';
+    let lastID = '<?php if ((isset($_smarty_tpl->tpl_vars['lastID']->value))) {
+echo $_smarty_tpl->tpl_vars['lastID']->value;
+}?>';
+    lastID = parseInt(lastID);
     let getItemProcessing = false;
 
     $(window).ready(() => {
@@ -109,6 +99,12 @@ function content_5f7e6e4ed92cb2_71753982 (Smarty_Internal_Template $_smarty_tpl)
             let windowBottom = $(this).height() + $(this).scrollTop();
             console.log('window bottom' + windowBottom);
             console.log('body ' + $('body').height());
+
+            if (isNaN(lastID) || lastID <= 0) {
+                $(this).off('scroll');
+                return;
+            }
+
             if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing && lastID > 1) {
                 getItemProcessing = true;
                 $.ajax({
@@ -156,31 +152,19 @@ $_smarty_tpl->tpl_vars['commodity']->do_else = true;
 if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['commodity']->value) {
 $_smarty_tpl->tpl_vars['commodity']->do_else = false;
 ?>
-            <div class="col-sm-6 col-md-4 col-lg-3 col-xs-12 oneCommodity">
-                <a href="/GameConsole/commodity/getOneView?id=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-2 bg-light text-dark">
+                <div class="oneCommodity text-center">
+                    <a href="/GameConsole/commodity/getOneView?id=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
 ">
-                    <table>
-                        <tr>
-                            <td colspan="2">
-                                <?php echo $_smarty_tpl->tpl_vars['commodity']->value['name'];?>
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <img src="/GameConsole/commodity/getOneImg?ID=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+                        <img class="img-responsive" src="/GameConsole/commodity/getOneImg?ID=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
 "
-                                    onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                價格：<?php echo $_smarty_tpl->tpl_vars['commodity']->value['price'];?>
-
-                            </td>
-                        </tr>
-                    </table>
-                </a>
+                            onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
+                        <h3>價格：<?php echo $_smarty_tpl->tpl_vars['commodity']->value['price'];?>
+</h3>
+                        <h4><?php echo $_smarty_tpl->tpl_vars['commodity']->value['name'];?>
+</h4>
+                    </a>
+                </div>
             </div>
             <?php
 }

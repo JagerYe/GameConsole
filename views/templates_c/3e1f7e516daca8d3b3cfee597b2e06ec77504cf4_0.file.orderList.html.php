@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-12 08:24:14
+/* Smarty version 3.1.34-dev-7, created on 2020-10-12 11:53:40
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/orderList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f83f68ec60bb9_34470577',
+  'unifunc' => 'content_5f8427a4f2c316_18747244',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '3e1f7e516daca8d3b3cfee597b2e06ec77504cf4' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/orderList.html',
-      1 => 1602483820,
+      1 => 1602496419,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f83f68ec60bb9_34470577 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f8427a4f2c316_18747244 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -213,37 +213,35 @@ if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['order']->value) 
 $_smarty_tpl->tpl_vars['order']->do_else = false;
 ?>
             <div class="oneOrder">
-                <div class="bg-info text-white">
-                    <table class="table table-hover table-bordered">
-                        <thead>
-                            <tr>
-                                <td>訂單編號</td>
-                                <td>日期</td>
-                                <td>總價</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="orderID"><?php echo $_smarty_tpl->tpl_vars['order']->value['orderID'];?>
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <td>訂單編號</td>
+                            <td>日期</td>
+                            <td>總價</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="orderID"><?php echo $_smarty_tpl->tpl_vars['order']->value['orderID'];?>
 </td>
-                                <td><?php echo $_smarty_tpl->tpl_vars['order']->value['creationDatetime'];?>
+                            <td><?php echo $_smarty_tpl->tpl_vars['order']->value['creationDatetime'];?>
 </td>
-                                <td><?php echo $_smarty_tpl->tpl_vars['order']->value['total'];?>
+                            <td><?php echo $_smarty_tpl->tpl_vars['order']->value['total'];?>
 </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="row" id="details">
-                        <div class="col-xs-12"><button class="btn btn-info showDetailsBtn" type="button">查看明細</button>
-                        </div>
-                        <div class="col-xs-2"></div>
-                        <div class="col-xs-10" id="details<?php echo $_smarty_tpl->tpl_vars['order']->value['orderID'];?>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="row" id="details">
+                    <div class="col-xs-12"><button class="btn btn-info showDetailsBtn" type="button">查看明細</button>
+                    </div>
+                    <div class="col-xs-2"></div>
+                    <div class="col-xs-10" id="details<?php echo $_smarty_tpl->tpl_vars['order']->value['orderID'];?>
 ">
-                            <table class="table table-hover">
-                                <tbody id="showDetails<?php echo $_smarty_tpl->tpl_vars['order']->value['orderID'];?>
+                        <table class="table table-hover">
+                            <tbody id="showDetails<?php echo $_smarty_tpl->tpl_vars['order']->value['orderID'];?>
 "></tbody>
-                            </table>
-                        </div>
+                        </table>
                     </div>
                 </div>
             </div>

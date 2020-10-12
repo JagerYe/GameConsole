@@ -36,24 +36,13 @@
         max-width: 100%;
         height: auto;
     }
-
-    .width100Percentage {
-        width: 100%;
-    }
-
-    .oneCommodity {
-        margin-bottom: 10px;
-    }
-
-    table {
-        background-color: rgba(70, 4, 100, 0.3);
-    }
 </style>
 <script src="/GameConsole/views/js/jsonFormat.js"></script>
 <script src="/GameConsole/views/js/title.js"></script>
 <script src="/GameConsole/views/js/viewModels/commodityViewModel.js"></script>
 <script>
-    let lastID = '{{$lastID}}';
+    let lastID = '{{if isset($lastID)}}{{$lastID}}{{/if}}';
+    lastID = parseInt(lastID);
     let getItemProcessing = false;
 
     $(window).ready(() => {
@@ -69,6 +58,12 @@
             let windowBottom = $(this).height() + $(this).scrollTop();
             console.log('window bottom' + windowBottom);
             console.log('body ' + $('body').height());
+
+            if (isNaN(lastID) || lastID <= 0) {
+                $(this).off('scroll');
+                return;
+            }
+
             if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing && lastID > 1) {
                 getItemProcessing = true;
                 $.ajax({
@@ -109,27 +104,15 @@
         <div class="row">
 
             {{foreach $commoditys as $commodity}}
-            <div class="col-sm-6 col-md-4 col-lg-3 col-xs-12 oneCommodity">
-                <a href="/GameConsole/commodity/getOneView?id={{$commodity['id']}}">
-                    <table>
-                        <tr>
-                            <td colspan="2">
-                                {{$commodity['name']}}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <img src="/GameConsole/commodity/getOneImg?ID={{$commodity['id']}}"
-                                    onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                價格：{{$commodity['price']}}
-                            </td>
-                        </tr>
-                    </table>
-                </a>
+            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-2 bg-light text-dark">
+                <div class="oneCommodity text-center">
+                    <a href="/GameConsole/commodity/getOneView?id={{$commodity['id']}}">
+                        <img class="img-responsive" src="/GameConsole/commodity/getOneImg?ID={{$commodity['id']}}"
+                            onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
+                        <h3>價格：{{$commodity['price']}}</h3>
+                        <h4>{{$commodity['name']}}</h4>
+                    </a>
+                </div>
             </div>
             {{/foreach}}
 

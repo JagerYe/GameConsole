@@ -165,7 +165,6 @@
                 data: { 0: JSON.stringify(employee) }
             }).then(function (e) {
                 e = organizeFormat(e);
-                console.log(organizeFormat(e));
                 let json = JSON.parse(e);
                 if (json.success === false) {
                     alert(json.errMessage);

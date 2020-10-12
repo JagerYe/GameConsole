@@ -2,7 +2,7 @@
 interface MemberDAO_Interface
 {
     public function insert($account, $password, $name, $email, $phone, $address = null);
-    public function update($id, $name, $email, $phone, $status, $address = null);
+    public function update($id, $name, $email, $phone, $address = null);
     public function updatePassword($id, $password);
     public function getOneMemberByAccount($account);
     public function getOneMemberByID($id);

@@ -1,6 +1,6 @@
 function getOrderListView(id, dateTime, total) {
     return `<div class="oneOrder">
-                <div class="bg-info text-white">
+                <div class="bg-warning">
                     <table class="table table-hover table-bordered">
                         <thead>
                             <tr>

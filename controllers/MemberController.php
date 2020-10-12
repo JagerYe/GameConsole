@@ -10,6 +10,8 @@ class MemberController extends Controller
     {
         $this->requireDAO("member");
         $this->requireDAO("memberLoginStatus");
+        $this->requireDAO("permissionControl");
+        $this->requireDAO('permission');
     }
 
     //確認身份
@@ -81,8 +83,46 @@ class MemberController extends Controller
         );
     }
 
-    // //更新
-    // public function update($str, $requestMethod)
+    //更新會員啟用狀態
+    public function updateStatus($str, $requestMethod)
+    {
+        try {
+            //驗證
+            if ($requestMethod !== 'PUT') {
+                throw new Exception("請求方式錯誤");
+            }
+            if (!$this->checkIsEmp()) {
+                throw new Exception("確認身份發生錯誤");
+            }
+            if (!PermissionControlService::getDAO()->checkHavePermissionByEmpID($_COOKIE['empID'], 6)) {
+                throw new Exception("無此權限");
+            }
+
+            $jsonObj = json_decode($str);
+            $member = new Member();
+            $member->setId($jsonObj->id);
+            $member->setStatus($jsonObj->status);
+
+            if (!($this->result = MemberService::getDAO()->updateStatus($jsonObj->id, $jsonObj->status))) {
+                throw new Exception('更新發生錯誤');
+            }
+
+            MemberLoginStatusService::getDAO()->setLogoutByMemberID($jsonObj->id);
+
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
+    // //更新自己資料
+    // public function updateSelf($str, $requestMethod)
     // {
     //     try {
     //         //驗證
@@ -349,7 +389,7 @@ class MemberController extends Controller
         $smarty = SmartyConfig::getSmarty();
 
         try {
-            $isLogin = $this->checkIdentity();
+            $isLogin = $this->checkIsEmp();
         } catch (Exception $err) {
             $isLogin = false;
         }
@@ -357,16 +397,14 @@ class MemberController extends Controller
         if ($isLogin) {
 
             //權限處理
-            $permissions = PermissionControlService::getDAO()->getOneByID($_COOKIE['memID']);
-            $memSee = $this->smartyAssignPermission($permissions, $smarty, 1);
+            $permissions = PermissionControlService::getDAO()->getOneByID($_COOKIE['empID']);
+            $memSee = $this->smartyAssignPermission($permissions, $smarty, 5);
 
             //
             if ($memSee) {
-                $smarty->assign('mem', MemberService::getDAO()->getOneMemberByID($_COOKIE['memID']));
-                $smarty->assign('name', $_COOKIE['memName']);
+                $smarty->assign('name', $_COOKIE['empName']);
                 $smarty->assign('isLogin', $isLogin);
                 $smarty->assign('members', MemberService::getDAO()->getAll());
-                $smarty->assign('permissions', PermissionService::getDAO()->getAll());
                 $smarty->display('pageBack/memberList.html');
                 return;
             }
