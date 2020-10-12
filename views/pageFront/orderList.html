@@ -37,7 +37,8 @@
 </head>
 <style>
     table {
-        width: 100%;
+        width: 90%;
+        max-width: 100%;
     }
 
     .showDetails {
@@ -50,13 +51,106 @@
 </style>
 <script src="/GameConsole/views/js/jsonFormat.js"></script>
 <script src="/GameConsole/views/js/title.js"></script>
+<script src="/GameConsole/views/js/viewModels/orderViewModel.js"></script>
 <script>
-$(window).ready(()=>{
-    $('.showDetailsBtn').click(function(){
-        //找orderID
-        console.log($(this).closest('div[class="oneOrder"]').find('.orderID').html());
+    let lastOrderID = '{{if isset($lastOrderID)}}{{$lastOrderID}}{{/if}}';
+    let lastShowOrderID = '{{if isset($lastShowOrderID)}}{{$lastShowOrderID}}{{/if}}';
+    lastOrderID = parseInt(lastOrderID);
+    lastShowOrderID = parseInt(lastShowOrderID);
+
+    //控制用
+    let getItemProcessing = false;//用於滾動畫面時一直抓取資料
+
+    $(window).ready(() => {
+        showDetailsBtnListener();
+
+        //滾動監聽器
+        $(window).scroll(function (e) {
+            let windowBottom = $(this).height() + $(this).scrollTop();
+            console.log('window bottom' + windowBottom);
+            console.log('body ' + $('body').height());
+
+            //當錯誤時或讀取到尾時關閉事件
+            if (isNaN(lastOrderID) || isNaN(lastShowOrderID) || lastOrderID === lastShowOrderID) {
+                $(this).off('scroll');
+                return;
+            }
+
+            //抓取資料
+            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing && lastShowOrderID > lastOrderID) {
+                getItemProcessing = true;
+                $.ajax({
+                    type: 'GET',
+                    url: `/GameConsole/order/getMemberSelfOrder?id=${lastShowOrderID}`
+                }).then(function (e) {
+                    e = organizeFormat(e);
+                    let json = JSON.parse(e);
+                    if (json.success === true) {
+                        for (let item of json.result) {
+                            $('#orderList').append(getOrderListView(
+                                item.orderID,
+                                item.creationDatetime,
+                                item.total
+                            ));
+                            lastShowOrderID = item.orderID;
+                        }
+                        showDetailsBtnListener();
+                    } else {
+                        alert(json.errMessage);
+                    }
+                    getItemProcessing = false;
+                });
+            }
+        }).trigger('scroll');
+
+
     });
-});
+
+    function showDetailsBtnListener() {
+        $('.showDetailsBtn').off('click');
+        $('.showDetailsBtn').click(function () {
+            let orderID = $(this).closest('div[class="oneOrder"]').find('.orderID').html();
+            let showDetails = $(`#showDetails${orderID}`);
+            let button = $(this);
+
+            if (showDetails.html().length > 0) {
+                showDetails.empty();
+                button.text('查看明細');
+                return;
+            }
+
+            let data = {
+                'orderID': orderID,
+                'commodityID': null
+            }
+
+            $.ajax({
+                type: 'GET',
+                url: '/GameConsole/order/getMemSelfOrderDetail',
+                data: { 0: JSON.stringify(data) }
+            }).then(function (e) {
+                e = organizeFormat(e);
+                let json = JSON.parse(e);
+                console.log(json);
+
+                if (json.success === false) {
+                    return;
+                }
+
+                button.text('關閉明細');
+                for (let item of json.result) {
+                    // console.log(item['commodityID']);
+                    showDetails.append(getDetailsListView(
+                        item['name'],
+                        item['price'],
+                        item['quantity']
+                    ));
+                }
+            });
+        });
+
+    }
+
 </script>
 
 <body>
@@ -66,32 +160,40 @@ $(window).ready(()=>{
     <main class="container">
 
         {{if isset($orders)}}
-        {{foreach $orders as $order}}
         <div id="orderList">
+            {{foreach $orders as $order}}
             <div class="oneOrder">
-                <table class="table table-hover table-bordered">
-                    <thead>
-                        <tr>
-                            <td>訂單編號</td>
-                            <td>日期</td>
-                            <td>總價</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="orderID">{{$order['orderID']}}</td>
-                            <td>{{$order['creationDatetime']}}</td>
-                            <td>{{$order['creationDatetime']}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="row" id="details">
-                    <div class="col-xs-1"><button class="btn btn-info showDetailsBtn" type="button">查看明細</button></div>
-                    <div class="col-xs-11" id="showDetails{{$order['orderID']}}"></div>
+                <div class="bg-info text-white">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <td>訂單編號</td>
+                                <td>日期</td>
+                                <td>總價</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="orderID">{{$order['orderID']}}</td>
+                                <td>{{$order['creationDatetime']}}</td>
+                                <td>{{$order['total']}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row" id="details">
+                        <div class="col-xs-12"><button class="btn btn-info showDetailsBtn" type="button">查看明細</button>
+                        </div>
+                        <div class="col-xs-2"></div>
+                        <div class="col-xs-10" id="details{{$order['orderID']}}">
+                            <table class="table table-hover">
+                                <tbody id="showDetails{{$order['orderID']}}"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
+            {{/foreach}}
         </div>
-        {{/foreach}}
         {{else}}
         <h2>您尚未購買</h2>
         {{/if}}

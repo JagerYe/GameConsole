@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-08 08:07:46
+/* Smarty version 3.1.34-dev-7, created on 2020-10-12 02:44:23
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/navigationBar.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7eacb2ca1bd5_50748427',
+  'unifunc' => 'content_5f83a6e70c4f84_78575738',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'be7664f8ba10993e888bcc53befecd36dee605eb' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/navigationBar.html',
-      1 => 1602137265,
+      1 => 1602462954,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_5f7eacb2ca1bd5_50748427 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f83a6e70c4f84_78575738 (Smarty_Internal_Template $_smarty_tpl) {
 ?><nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -42,7 +42,7 @@ function content_5f7eacb2ca1bd5_50748427 (Smarty_Internal_Template $_smarty_tpl)
                 <li><a href="/GameConsole/commodity/getShoppingCartView">購物車</a></li>
                 <?php if ((isset($_smarty_tpl->tpl_vars['isLogin']->value)) && $_smarty_tpl->tpl_vars['isLogin']->value) {?>
                 <li>
-                    <a href="#">交易紀錄</a>
+                    <a href="/GameConsole/order/getMemOrderListView">交易紀錄</a>
                 </li>
                 <?php }?>
             </ul>

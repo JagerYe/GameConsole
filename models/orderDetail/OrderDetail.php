@@ -53,7 +53,7 @@ class OrderDetail implements \JsonSerializable
     }
     public function setQuantity($quantity)
     {
-        if (!preg_match("/\d/", $quantity) || $quantity <= 0) {
+        if (!preg_match("/\d/", $quantity) || $quantity < 0) {
             throw new Exception("數量格式錯誤");
         }
         $this->_quantity = $quantity;

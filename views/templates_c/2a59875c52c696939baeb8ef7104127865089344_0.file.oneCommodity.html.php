@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-08 03:41:27
+/* Smarty version 3.1.34-dev-7, created on 2020-10-12 07:56:49
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/oneCommodity.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7e6e470e2e48_81853683',
+  'unifunc' => 'content_5f83f0211d7d56_71190276',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '2a59875c52c696939baeb8ef7104127865089344' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/oneCommodity.html',
-      1 => 1602117933,
+      1 => 1602481600,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f7e6e470e2e48_81853683 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f83f0211d7d56_71190276 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -172,6 +172,7 @@ function content_5f7e6e470e2e48_81853683 (Smarty_Internal_Template $_smarty_tpl)
             </div>
             <p>價格：<?php echo $_smarty_tpl->tpl_vars['commodity']->value['price'];?>
 </p>
+            <?php if ($_smarty_tpl->tpl_vars['commodity']->value['quantity'] > 0) {?>
             <div>
                 購買數量：<input type="number" max="<?php echo $_smarty_tpl->tpl_vars['commodity']->value['quantity'];?>
 " min="1" value="1" id="quantity">
@@ -180,6 +181,9 @@ function content_5f7e6e470e2e48_81853683 (Smarty_Internal_Template $_smarty_tpl)
             <div>
                 <button type="button" id="sub">加入購物車</button>
             </div>
+            <?php } else { ?>
+            <h3>此商品已售完</h3>
+            <?php }?>
         </div>
     </main><!-- /.container -->
 

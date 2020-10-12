@@ -1,38 +1,42 @@
 function getOrderListView(id, dateTime, total) {
-    return `<div class="oneOrder" id="order1">
-                <table class="table table-hover table-bordered">
-                    <thead>
-                        <tr>
-                            <td>訂單編號</td>
-                            <td>日期</td>
-                            <td>總價</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="orderID">${id}</td>
-                            <td>${dateTime}</td>
-                            <td>${total}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="row">
-                    <div class="col-xs-1"><button class="btn btn-info showDetailsBtn" type="button">查看明細</button></div>
-                    <div class="col-xs-11">
-                        <table class="table table-hover table-bordered">
+    return `<div class="oneOrder">
+                <div class="bg-info text-white">
+                    <table class="table table-hover table-bordered">
                         <thead>
-                                <tr>
-                                    <td>商品名稱</td>
-                                    <td>購買數量</td>
-                                    <td>當時購買價格</td>
-                                </tr>
-                            </thead>
-                            <tbody id="showDetails${id}">
-                            </tbody>
-                        </table>
+                            <tr>
+                                <td>訂單編號</td>
+                                <td>日期</td>
+                                <td>總價</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="orderID">${id}</td>
+                                <td>${dateTime}</td>
+                                <td>${total}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row" id="details">
+                        <div class="col-xs-12"><button class="btn btn-info showDetailsBtn" type="button">查看明細</button>
+                        </div>
+                        <div class="col-xs-2"></div>
+                        <div class="col-xs-10" id="details${id}">
+                            <table class="table table-hover">
+                                <tbody id="showDetails${id}"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>`;
+}
+
+function getDetailsFieldView() {
+    return `<tr>
+                <td>
+                    <button class="btn btn-light showMoreDetailsBtn">顯示更多</button>
+                </td>
+            </tr>`;
 }
 
 function getDetailsListView(name, quantity, price) {

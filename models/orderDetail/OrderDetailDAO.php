@@ -19,6 +19,8 @@ class OrderDetailDAO implements OrderDetailDAO_Interface
                 $sth->bindParam("commodityID{$key}", $detail['id']);
                 $sth->bindParam("price{$key}", $detail['price']);
                 $sth->bindParam("quantity{$key}", $detail['quantity']);
+
+                CommodityService::getDAO()->consume($dbh, $detail['id'], $detail['quantity']);
             }
             $sth->execute();
 
@@ -39,13 +41,16 @@ class OrderDetailDAO implements OrderDetailDAO_Interface
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT * FROM `Orders`
-                WHERE `orderID`=:orderID && `commodityID`=<IFNULL(:commodityID,(~0 >> 32))
-                ORDER BY `commodityID` DESC LIMIT 5;");
+            $sth = $dbh->prepare("SELECT od.`orderID`, `commodityID`, od.`price`, od.`quantity`, `name`, `memberID`
+            FROM `OrderDetails` AS od
+            INNER JOIN `Commodities` AS c ON od.`commodityID`=c.`id`
+            INNER JOIN `Orders` AS o ON od.`orderID`=o.`orderID`
+            WHERE od.`orderID`=:orderID && `commodityID`<IFNULL(:commodityID,(~0 >> 32))
+            ORDER BY `commodityID` DESC LIMIT 5;");
             $sth->bindParam("orderID", $orderID);
             $sth->bindParam("commodityID", $commodityID);
             $sth->execute();
-            $request = $sth->fetch(PDO::FETCH_ASSOC);
+            $request = $sth->fetchAll(PDO::FETCH_ASSOC);
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;

@@ -129,6 +129,7 @@
                     onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
             </div>
             <p>價格：{{$commodity['price']}}</p>
+            {{if $commodity['quantity'] > 0}}
             <div>
                 購買數量：<input type="number" max="{{$commodity['quantity']}}" min="1" value="1" id="quantity">
             </div>
@@ -136,6 +137,9 @@
             <div>
                 <button type="button" id="sub">加入購物車</button>
             </div>
+            {{else}}
+            <h3>此商品已售完</h3>
+            {{/if}}
         </div>
     </main><!-- /.container -->
 

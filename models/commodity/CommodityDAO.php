@@ -28,6 +28,26 @@ class CommodityDAO implements CommodityDAO_Interface
         return $id;
     }
 
+    //結帳時扣庫存用
+    public function consume($dbh, $id, $buyQuantity)
+    {
+        try {
+            $sth = $dbh->prepare("UPDATE `Commodities` SET
+                `quantity`=(SELECT SUM(`quantity`-:buyQuantity) FROM `Commodities` WHERE `id`=:id && `quantity` >= :buyQuantity),
+                `changeDatetime`=NOW() WHERE `id`=:id;");
+            $sth->bindParam("id", $id);
+            $sth->bindParam("buyQuantity", $buyQuantity);
+            $sth->execute();
+            $sth = null;
+        } catch (PDOException $err) {
+            $dbh->rollBack();
+            $dbh = null;
+            throw new Exception("購買失敗\r\n");
+        }
+        $dbh = null;
+        return true;
+    }
+
     //更新
     public function update($id, $name, $price, $quantity, $status)
     {

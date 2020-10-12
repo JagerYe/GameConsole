@@ -42,7 +42,10 @@ class OrderDAO implements OrderDAO_Interface
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT * FROM `Orders`
+            $sth = $dbh->prepare("SELECT `orderID`, `creationDatetime`,
+                (SELECT SUM(`price`*`quantity`) FROM `OrderDetails` WHERE `orderID`=`o`.`orderID`) AS `total`,
+                (SELECT `orderID` FROM `Orders` WHERE `memberID`=:memberID ORDER BY `orderID` LIMIT 1) AS `lastOrderID`
+                FROM `Orders` AS `o`
                 WHERE `memberID`=:memberID && `orderID`<IFNULL(:orderID,(~0 >> 32))
                 ORDER BY `orderID` DESC LIMIT 5;"
             );

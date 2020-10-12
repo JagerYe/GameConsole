@@ -47,9 +47,13 @@ class OrderController extends Controller
                     setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
                     throw new Exception('購買數量超過庫存，數量將修改，請再確認購買數量');
                 }
+                if ($item->quantity <= 0) {
+                    continue;
+                }
 
                 $commodity['quantity'] = $item->quantity;
                 $orderDetails[] = $commodity;
+                array_splice($shoppingCart, $key, 1);
             }
 
 
@@ -61,7 +65,78 @@ class OrderController extends Controller
                 throw new Exception('新增發生錯誤');
             }
 
-            setcookie('shoppingCart', null, -1, '/');
+            setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
+
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
+    //抓取訂單
+    public function getMemberSelfOrder($lastShowOrderID, $requestMethod)
+    {
+        try {
+            //驗證
+            if ($requestMethod !== 'GET') {
+                throw new Exception('請求方式錯誤');
+            }
+            if (!$this->checkIsMem()) {
+                throw new Exception('確認身份發生錯誤');
+            }
+
+            if (count($this->result = OrderService::getDAO()->getSomeByMemberID(
+                $_COOKIE['memID'],
+                $lastShowOrderID
+            )) === 0) {
+                throw new Exception('沒有明細');
+            }
+
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
+    //取得明細
+    public function getMemSelfOrderDetail($str, $requestMethod)
+    {
+        try {
+            //驗證
+            if ($requestMethod !== 'GET') {
+                throw new Exception('請求方式錯誤');
+            }
+
+            if (!$this->checkIsMem()) {
+                throw new Exception('確認身份發生錯誤');
+            }
+
+            $jsonObj = json_decode($str);
+
+            if (count($this->result = OrderDetailService::getDAO()->getSomeByOrderID(
+                $jsonObj->orderID,
+                $jsonObj->commodityID
+            )) === 0) {
+                throw new Exception('沒有明細');
+            }
+
+            //檢查是否為自己的
+            if ($this->result[0]['memberID'] !== $_COOKIE['memID']) {
+                $this->result = null;
+                throw new Exception('資料抓取錯誤');
+            }
 
             $this->success = true;
         } catch (Exception $err) {
@@ -91,39 +166,15 @@ class OrderController extends Controller
             $smarty->assign('name',  $_COOKIE['memName']);
             $smarty->assign('memID',  $_COOKIE['memID']);
 
-            if (($orders = OrderService::getDAO()->getSomeByMemberID($_COOKIE['memID'])) !== false) {
+            if (count($orders = OrderService::getDAO()->getSomeByMemberID($_COOKIE['memID'])) !== 0) {
                 $smarty->assign('orders',  $orders);
+                $smarty->assign('lastOrderID',  $orders[0]['lastOrderID']);
+                $smarty->assign('lastShowOrderID',  $orders[count($orders) - 1]['orderID']);
             }
         }
 
         $smarty->display('pageFront/orderList.html');
     }
-
-    // //取得部份能購買的商品資料
-    // public function getSomeCanBuyDate($lastID)
-    // {
-    //     try {
-
-    //         $order = new Order();
-    //         $order->setId($lastID);
-
-    //         if (!($this->result = OrderService::getDAO()->getSomeCanBuy($order->getId()))) {
-    //             throw new Exception('取得發生錯誤');
-    //         }
-
-    //         $this->success = true;
-    //     } catch (Exception $err) {
-    //         $this->success = false;
-    //     }
-
-    //     return Result::getResultJson(
-    //         $this->success,
-    //         $this->result,
-    //         isset($err) ? $err->getMessage() : null
-    //     );
-    // }
-
-
 
     // //取得管理者商品清單
     // public function getEmpOrderListView()
