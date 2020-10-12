@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-11 05:09:57
+/* Smarty version 3.1.34-dev-7, created on 2020-10-12 15:52:56
   from 'C:\xampp\htdocs\GameConsole\views\pageFront\shoppingCart.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f8277856e1997_40074848',
+  'unifunc' => 'content_5f845fb86097f4_09777430',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'e8987fafd380af5711f7c6f44bcc3341ce564412' => 
     array (
       0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageFront\\shoppingCart.html',
-      1 => 1602295748,
+      1 => 1602509465,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f8277856e1997_40074848 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f845fb86097f4_09777430 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -207,7 +207,7 @@ function content_5f8277856e1997_40074848 (Smarty_Internal_Template $_smarty_tpl)
             });
         });
 
-        //新增按鈕
+        //結帳按鈕
         $('#checkoutBtn').click(() => {
             if (!confirm('確定剁手手？')) {
                 return;
@@ -217,11 +217,13 @@ function content_5f8277856e1997_40074848 (Smarty_Internal_Template $_smarty_tpl)
                 type: 'POST',
                 url: '/GameConsole/order/insert'
             }).then(function (e) {
+                console.log(e);
                 e = organizeFormat(e);
                 let json = JSON.parse(e);
 
                 if (json.success === false) {
                     alert(json.errMessage);
+                    history.go(0);
                     return
                 }
                 if (json.result === true) {
@@ -288,11 +290,15 @@ $_smarty_tpl->tpl_vars['item']->do_else = false;
                 <div class="col-xs-2 itemText"><?php echo $_smarty_tpl->tpl_vars['item']->value->price;?>
 </div>
                 <div class="col-xs-3 ">
+                    <?php if ($_smarty_tpl->tpl_vars['item']->value->maxQuantity > 0) {?>
                     <input type="number" class="width100Percentage quantity form-control" id="buyQuantity<?php echo $_smarty_tpl->tpl_vars['item']->value->id;?>
 "
                         max="<?php echo $_smarty_tpl->tpl_vars['item']->value->maxQuantity;?>
 " min="1" value="<?php echo $_smarty_tpl->tpl_vars['item']->value->quantity;?>
 ">
+                    <?php } else { ?>
+                    <h3>此商品已售完</h3>
+                    <?php }?>
                 </div>
                 <div class="col-xs-2">
                     <button class="width100Percentage deleteBtn" id="deleteBtn<?php echo $_smarty_tpl->tpl_vars['item']->value->id;?>

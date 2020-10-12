@@ -1,16 +1,16 @@
 function getOrderListView(id, dateTime, total) {
     return `<div class="oneOrder">
-                <div class="bg-warning">
+                <div class="bg-info">
                     <table class="table table-hover table-bordered">
                         <thead>
-                            <tr>
+                            <tr class="info">
                                 <td>訂單編號</td>
                                 <td>日期</td>
                                 <td>總價</td>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr class="info">
                                 <td class="orderID">${id}</td>
                                 <td>${dateTime}</td>
                                 <td>${total}</td>
@@ -32,7 +32,7 @@ function getOrderListView(id, dateTime, total) {
 }
 
 function getDetailsFieldView() {
-    return `<tr>
+    return `<tr class="info">
                 <td>
                     <button class="btn btn-light showMoreDetailsBtn">顯示更多</button>
                 </td>
@@ -40,7 +40,7 @@ function getDetailsFieldView() {
 }
 
 function getDetailsListView(name, quantity, price) {
-    return `<tr>
+    return `<tr class="info">
                 <td>${name}</td>
                 <td>${quantity}</td>
                 <td>${price}</td>

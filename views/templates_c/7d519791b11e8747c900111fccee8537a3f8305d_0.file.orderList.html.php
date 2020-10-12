@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-11 17:47:44
+/* Smarty version 3.1.34-dev-7, created on 2020-10-12 15:40:03
   from 'C:\xampp\htdocs\GameConsole\views\pageFront\orderList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f832920790995_87928910',
+  'unifunc' => 'content_5f845cb3b3ac45_78237372',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '7d519791b11e8747c900111fccee8537a3f8305d' => 
     array (
       0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageFront\\orderList.html',
-      1 => 1602431261,
+      1 => 1602509997,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f832920790995_87928910 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f845cb3b3ac45_78237372 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -69,7 +69,8 @@ function content_5f832920790995_87928910 (Smarty_Internal_Template $_smarty_tpl)
 </head>
 <style>
     table {
-        width: 100%;
+        width: 90%;
+        max-width: 100%;
     }
 
     .showDetails {
@@ -87,12 +88,112 @@ function content_5f832920790995_87928910 (Smarty_Internal_Template $_smarty_tpl)
  src="/GameConsole/views/js/title.js"><?php echo '</script'; ?>
 >
 <?php echo '<script'; ?>
+ src="/GameConsole/views/js/viewModels/orderViewModel.js"><?php echo '</script'; ?>
 >
-$(window).ready(()=>{
-    $('.showDetailsBtn').click(function(){
-        console.log($(this).closest('div[class="oneOrder"]').find('.orderID').html());
+<?php echo '<script'; ?>
+>
+    let lastOrderID = '<?php if ((isset($_smarty_tpl->tpl_vars['lastOrderID']->value))) {
+echo $_smarty_tpl->tpl_vars['lastOrderID']->value;
+}?>';
+    let lastShowOrderID = '<?php if ((isset($_smarty_tpl->tpl_vars['lastShowOrderID']->value))) {
+echo $_smarty_tpl->tpl_vars['lastShowOrderID']->value;
+}?>';
+    lastOrderID = parseInt(lastOrderID);
+    lastShowOrderID = parseInt(lastShowOrderID);
+
+    //控制用
+    let getItemProcessing = false;//用於滾動畫面時一直抓取資料
+
+    $(window).ready(() => {
+        showDetailsBtnListener();
+
+        //滾動監聽器
+        $(window).scroll(function (e) {
+            let windowBottom = $(this).height() + $(this).scrollTop();
+            console.log('window bottom' + windowBottom);
+            console.log('body ' + $('body').height());
+
+            //當錯誤時或讀取到尾時關閉事件
+            if (isNaN(lastOrderID) || isNaN(lastShowOrderID) || lastOrderID === lastShowOrderID) {
+                $(this).off('scroll');
+                return;
+            }
+
+            //抓取資料
+            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing && lastShowOrderID > lastOrderID) {
+                getItemProcessing = true;
+                $.ajax({
+                    type: 'GET',
+                    url: `/GameConsole/order/getMemberSelfOrder?id=${lastShowOrderID}`
+                }).then(function (e) {
+                    e = organizeFormat(e);
+                    let json = JSON.parse(e);
+                    if (json.success === true) {
+                        for (let item of json.result) {
+                            $('#orderList').append(getOrderListView(
+                                item.orderID,
+                                item.creationDatetime,
+                                item.total
+                            ));
+                            lastShowOrderID = item.orderID;
+                        }
+                        showDetailsBtnListener();
+                    } else {
+                        alert(json.errMessage);
+                    }
+                    getItemProcessing = false;
+                });
+            }
+        }).trigger('scroll');
+
+
     });
-});
+
+    function showDetailsBtnListener() {
+        $('.showDetailsBtn').off('click');
+        $('.showDetailsBtn').click(function () {
+            let orderID = $(this).closest('div[class="oneOrder"]').find('.orderID').html();
+            let showDetails = $(`#showDetails${orderID}`);
+            let button = $(this);
+
+            if (showDetails.html().length > 0) {
+                showDetails.empty();
+                button.text('查看明細');
+                return;
+            }
+
+            let data = {
+                'orderID': orderID,
+                'commodityID': null
+            }
+
+            $.ajax({
+                type: 'GET',
+                url: '/GameConsole/order/getMemSelfOrderDetail',
+                data: { 0: JSON.stringify(data) }
+            }).then(function (e) {
+                e = organizeFormat(e);
+                let json = JSON.parse(e);
+                console.log(json);
+
+                if (json.success === false) {
+                    return;
+                }
+
+                button.text('關閉明細');
+                for (let item of json.result) {
+                    // console.log(item['commodityID']);
+                    showDetails.append(getDetailsListView(
+                        item['name'],
+                        item['price'],
+                        item['quantity']
+                    ));
+                }
+            });
+        });
+
+    }
+
 <?php echo '</script'; ?>
 >
 
@@ -104,43 +205,52 @@ $(window).ready(()=>{
     <main class="container">
 
         <?php if ((isset($_smarty_tpl->tpl_vars['orders']->value))) {?>
-        <?php
+        <div id="orderList">
+            <?php
 $_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['orders']->value, 'order');
 $_smarty_tpl->tpl_vars['order']->do_else = true;
 if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['order']->value) {
 $_smarty_tpl->tpl_vars['order']->do_else = false;
 ?>
-        <div id="orderList">
             <div class="oneOrder">
-                <table class="table table-hover table-bordered">
-                    <thead>
-                        <tr>
-                            <td>訂單編號</td>
-                            <td>日期</td>
-                            <td>總價</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="orderID"><?php echo $_smarty_tpl->tpl_vars['order']->value['orderID'];?>
+                <div class="bg-info">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <td>訂單編號</td>
+                                <td>日期</td>
+                                <td>總價</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="orderID"><?php echo $_smarty_tpl->tpl_vars['order']->value['orderID'];?>
 </td>
-                            <td><?php echo $_smarty_tpl->tpl_vars['order']->value['creationDatetime'];?>
+                                <td><?php echo $_smarty_tpl->tpl_vars['order']->value['creationDatetime'];?>
 </td>
-                            <td><?php echo $_smarty_tpl->tpl_vars['order']->value['creationDatetime'];?>
+                                <td><?php echo $_smarty_tpl->tpl_vars['order']->value['total'];?>
 </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="row" id="details">
-                    <div class="col-xs-1"><button class="btn btn-info showDetailsBtn" type="button">查看明細</button></div>
-                    <div class="col-xs-11" id="showDetails<?php echo $_smarty_tpl->tpl_vars['order']->value['orderID'];?>
-"></div>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row" id="details">
+                        <div class="col-xs-12"><button class="btn btn-info showDetailsBtn" type="button">查看明細</button>
+                        </div>
+                        <div class="col-xs-2"></div>
+                        <div class="col-xs-10" id="details<?php echo $_smarty_tpl->tpl_vars['order']->value['orderID'];?>
+">
+                            <table class="table table-hover">
+                                <tbody id="showDetails<?php echo $_smarty_tpl->tpl_vars['order']->value['orderID'];?>
+"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <?php
+            <?php
 }
 $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
+        </div>
         <?php } else { ?>
         <h2>您尚未購買</h2>
         <?php }?>

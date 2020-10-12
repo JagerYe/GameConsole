@@ -147,7 +147,7 @@ class OrderController extends Controller
         );
     }
 
-    //取得明細
+    //取得會員自己的明細
     public function getMemSelfOrderDetail($str, $requestMethod)
     {
         try {
@@ -173,6 +173,39 @@ class OrderController extends Controller
             if ($this->result[0]['memberID'] !== $_COOKIE['memID']) {
                 $this->result = null;
                 throw new Exception('資料抓取錯誤');
+            }
+
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
+    //員工取得會員的明細
+    public function getOrderDetail($str, $requestMethod)
+    {
+        try {
+            //驗證
+            if ($requestMethod !== 'GET') {
+                throw new Exception('請求方式錯誤');
+            }
+            if (!$this->checkIsEmp()) {
+                throw new Exception('確認身份發生錯誤');
+            }
+
+            $jsonObj = json_decode($str);
+
+            if (count($this->result = OrderDetailService::getDAO()->getSomeByOrderID(
+                $jsonObj->orderID,
+                $jsonObj->commodityID
+            )) === 0) {
+                throw new Exception('沒有明細');
             }
 
             $this->success = true;
