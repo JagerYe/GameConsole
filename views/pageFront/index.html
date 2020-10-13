@@ -108,6 +108,8 @@
             $('.conditionBtn').parent().find('.btn-primary').removeClass('btn-primary').addClass('btn-light');
             $(this).removeClass('btn-light').addClass('btn-primary');
             condition = this.id;
+            offset = 0;
+            getData();
         });
 
     });
