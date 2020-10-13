@@ -18,10 +18,11 @@ class IndexController extends Controller
             $smarty->assign('memID', $_COOKIE['memID']);
         }
 
-        $commoditys = CommodityService::getDAO()->getSomeCanBuy();
-        $lastID = $commoditys[count($commoditys) - 1]['id'];
+        $commodityDAO = CommodityService::getDAO();
+        $commoditys = $commodityDAO->getSomeCanBuy();
         $smarty->assign('commoditys', $commoditys);
-        $smarty->assign('lastID', $lastID);
+        $smarty->assign('offset', count($commoditys));
+        $smarty->assign('stopSet', $commodityDAO->getSeletSize(array('%'), ''));
 
         $smarty->display('pageFront/index.html');
     }

@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-12 15:34:14
+/* Smarty version 3.1.34-dev-7, created on 2020-10-13 17:26:57
   from 'C:\xampp\htdocs\GameConsole\views\pageFront\index.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f845b56575fd4_70285620',
+  'unifunc' => 'content_5f85c7411f9a60_51165464',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '89d631e73d8e1f804ecf03865a260fd27664d59c' => 
     array (
       0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageFront\\index.html',
-      1 => 1602509465,
+      1 => 1602602805,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f845b56575fd4_70285620 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f85c7411f9a60_51165464 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -66,7 +66,25 @@ function content_5f845b56575fd4_70285620 (Smarty_Internal_Template $_smarty_tpl)
 <style>
     img {
         max-width: 100%;
+        max-height: 100%;
         height: auto;
+    }
+
+    .oneCommodity {
+        height: 250px;
+        margin-bottom: 20px;
+    }
+
+    .showImg {
+        padding: 0;
+        margin: 0;
+        height: 150px;
+    }
+
+    .vcenter {
+        float: none;
+        display: inline-block;
+        vertical-align: middle;
     }
 </style>
 <?php echo '<script'; ?>
@@ -80,11 +98,17 @@ function content_5f845b56575fd4_70285620 (Smarty_Internal_Template $_smarty_tpl)
 >
 <?php echo '<script'; ?>
 >
-    let lastID = '<?php if ((isset($_smarty_tpl->tpl_vars['lastID']->value))) {
-echo $_smarty_tpl->tpl_vars['lastID']->value;
+    let offset = '<?php if ((isset($_smarty_tpl->tpl_vars['offset']->value))) {
+echo $_smarty_tpl->tpl_vars['offset']->value;
 }?>';
-    lastID = parseInt(lastID);
+    offset = parseInt(offset);
+    let stopSet = '<?php if ((isset($_smarty_tpl->tpl_vars['stopSet']->value))) {
+echo $_smarty_tpl->tpl_vars['stopSet']->value;
+}?>';
+    stopSet = parseInt(stopSet);
     let getItemProcessing = false;
+    let seletStr = '';
+    let condition = 'newToOld';
 
     $(window).ready(() => {
         //回最頂按鈕
@@ -100,38 +124,110 @@ echo $_smarty_tpl->tpl_vars['lastID']->value;
             console.log('window bottom' + windowBottom);
             console.log('body ' + $('body').height());
 
-            if (isNaN(lastID) || lastID <= 0) {
+            if (isNaN(offset) || offset < 0 || isNaN(stopSet) || stopSet < 0) {
                 $(this).off('scroll');
                 return;
             }
 
-            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing && lastID > 1) {
-                getItemProcessing = true;
-                $.ajax({
-                    type: 'GET',
-                    url: `/GameConsole/commodity/getSomeData?id=${lastID}`
-                }).then(function (e) {
-                    e = organizeFormat(e);
-                    let json = JSON.parse(e);
-                    if (json.success === true) {
-                        for (let item of json.result) {
-                            $('#dataShow').append(getCommodityItemView(
-                                item.id,
-                                item.name,
-                                item.price
-                            ));
-                            lastID = item.id;
-                        }
-
-                    } else {
-                        alert(json.errMessage);
-                    }
-                    getItemProcessing = false;
-                });
+            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing) {
+                getData(true);
             }
+
         }).trigger('scroll');
 
+        //搜尋按鈕
+        $('#seletBtn').click(() => {
+            seletStr = $('#seletText').val();
+            offset = 0;
+            if (seletStr.length <= 0) {
+                $('#dataShow').empty();
+            }
+
+            getData();
+        });
+
+        //條件按鈕
+        $('.conditionBtn').click(function () {
+            $('.conditionBtn').parent().find('.btn-primary').removeClass('btn-primary').addClass('btn-light');
+            $(this).removeClass('btn-light').addClass('btn-primary');
+            condition = this.id;
+        });
+
     });
+
+    function getData(isScroll = false) {
+
+        if (!isScroll) {
+            $('#dataShow').empty();
+        }
+
+        if (offset >= stopSet) {
+            return;
+        }
+
+        let data = {
+            'names': seletStr,
+            'condition': condition,
+            'offset': offset
+        };
+
+        //當沒搜尋條件時
+        if (seletStr.length <= 0) {
+            getItemProcessing = true;
+            $.ajax({
+                type: 'GET',
+                url: `/GameConsole/commodity/getSomeCanBuyDate`,
+                data: { 0: JSON.stringify(data) }
+            }).then(function (e) {
+                getItemProcessing = false;
+                e = organizeFormat(e);
+                let json = JSON.parse(e);
+                if (json.success === true) {
+                    for (let item of json.result.data) {
+                        $('#dataShow').append(getCommodityItemView(
+                            item.id,
+                            item.name,
+                            item.price
+                        ));
+                    }
+                    offset += json.result.data.length;
+                    stopSet = parseInt(json.result.stopSet);
+                    $(window).trigger('scroll');
+                }
+            });
+        }
+
+        //當有搜尋條件時
+        if (seletStr.length > 0) {
+            getItemProcessing = true;
+            $.ajax({
+                type: 'GET',
+                url: `/GameConsole/commodity/getSomeByName`,
+                data: { 0: JSON.stringify(data) }
+            }).then(function (e) {
+                getItemProcessing = false;
+                e = organizeFormat(e);
+                let json = JSON.parse(e);
+                console.log(json);
+                if (json.success === false) {
+                    alert(json.errMessage);
+                    return;
+                }
+
+                for (let item of json.result.data) {
+                    $('#dataShow').append(getCommodityItemView(
+                        item.id,
+                        item.name,
+                        item.price
+                    ));
+                }
+                offset += json.result.data.length;
+                stopSet = parseInt(json.result.stopSet);
+                $(window).trigger('scroll');
+            });
+        }
+
+    }
 
 <?php echo '</script'; ?>
 >
@@ -140,12 +236,29 @@ echo $_smarty_tpl->tpl_vars['lastID']->value;
     <?php $_smarty_tpl->_subTemplateRender('file:./navigationBar.html', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
 ?>
     <div class="blank"></div>
-
     <main class="container">
         <img class="topImgBtn" src="/GameConsole/views/img/top.png" alt="">
 
         <div class="row">
+            <div class="col-xs-9">
+                <button class="conditionBtn btn btn-primary" id="newToOld">上市日期：新到舊</button>
+                <button class="conditionBtn btn btn-light" id="oldToNew">上市日期：舊到新</button>
+                <button class="conditionBtn btn btn-light" id="cheapToExpensive">價格：低到高</button>
+                <button class="conditionBtn btn btn-light" id="expensiveToCheap">價格：高到低</button>
+            </div>
+            <div class="col-xs-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="seletText" placeholder="請輸入關鍵字">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" id="seletBtn" type="button">找商品</button>
+                    </span>
+                </div>
+            </div>
+        </div>
 
+        <hr>
+
+        <div class="row" id="dataShow">
             <?php
 $_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['commoditys']->value, 'commodity');
 $_smarty_tpl->tpl_vars['commodity']->do_else = true;
@@ -156,9 +269,12 @@ $_smarty_tpl->tpl_vars['commodity']->do_else = false;
                 <div class="oneCommodity text-center">
                     <a href="/GameConsole/commodity/getOneView?id=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
 ">
-                        <img class="img-responsive" src="/GameConsole/commodity/getOneImg?ID=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+                        <div class="showImg">
+                            <img class="center-block vcenter"
+                                src="/GameConsole/commodity/getOneImg?ID=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
 "
-                            onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
+                                onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
+                        </div>
                         <h3>價格：<?php echo $_smarty_tpl->tpl_vars['commodity']->value['price'];?>
 </h3>
                         <h4><?php echo $_smarty_tpl->tpl_vars['commodity']->value['name'];?>
@@ -169,9 +285,6 @@ $_smarty_tpl->tpl_vars['commodity']->do_else = false;
             <?php
 }
 $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
-
-
-
         </div>
 
     </main><!-- /.container -->

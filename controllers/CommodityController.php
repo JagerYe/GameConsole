@@ -190,14 +190,19 @@ class CommodityController extends Controller
     }
 
     //取得部份能購買的商品資料
-    public function getSomeCanBuyDate($lastID)
+    public function getSomeCanBuyDate($str)
     {
         try {
+            $jsonObj = json_decode($str);
 
-            $commodity = new Commodity();
-            $commodity->setId($lastID);
-
-            if (count($this->result = CommodityService::getDAO()->getSomeCanBuy($commodity->getId())) === 0) {
+            $commodityDAO = CommodityService::getDAO();
+            if ((count($this->result['data'] = $commodityDAO->getSomeCanBuy(
+                    $jsonObj->offset,
+                    $jsonObj->condition
+                )) === 0)
+                ||
+                (($this->result['stopSet'] = $commodityDAO->getSeletSize(array('%'))) === -1)
+            ) {
                 throw new Exception('取得發生錯誤');
             }
 
@@ -225,11 +230,19 @@ class CommodityController extends Controller
             for ($i = 0; $i < count($names); $i++) {
                 $names[$i] = '%' . $names[$i] . '%';
             }
+
             $commodityDAO = CommodityService::getDAO();
-            if (count($this->result['data'] = $commodityDAO->getSomeByName($names, $jsonObj->lastID)) === 0) {
+            if (
+                (count($this->result['data'] = $commodityDAO->getSomeByName(
+                    $names,
+                    $jsonObj->offset,
+                    $jsonObj->condition
+                )) === 0)
+                ||
+                (($this->result['stopSet'] = $commodityDAO->getSeletSize($names)) === -1)
+            ) {
                 throw new Exception('找無相關商品');
             }
-            $this->result['stopID'] = $commodityDAO->getSeletNameLastID($names);
 
             $this->success = true;
         } catch (Exception $err) {

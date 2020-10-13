@@ -59,11 +59,12 @@
 <script src="/GameConsole/views/js/title.js"></script>
 <script src="/GameConsole/views/js/viewModels/commodityViewModel.js"></script>
 <script>
-    let lastID = '{{if isset($lastID)}}{{$lastID}}{{/if}}';
-    lastID = parseInt(lastID);
+    let offset = '{{if isset($offset)}}{{$offset}}{{/if}}';
+    offset = parseInt(offset);
+    let stopSet = '{{if isset($stopSet)}}{{$stopSet}}{{/if}}';
+    stopSet = parseInt(stopSet);
     let getItemProcessing = false;
     let seletStr = '';
-    let stopID = -1;
     let condition = 'newToOld';
 
     $(window).ready(() => {
@@ -80,7 +81,7 @@
             console.log('window bottom' + windowBottom);
             console.log('body ' + $('body').height());
 
-            if (isNaN(lastID) || lastID <= 0) {
+            if (isNaN(offset) || offset < 0 || isNaN(stopSet) || stopSet < 0) {
                 $(this).off('scroll');
                 return;
             }
@@ -94,15 +95,9 @@
         //搜尋按鈕
         $('#seletBtn').click(() => {
             seletStr = $('#seletText').val();
-            lastID = 4294967295;
-
+            offset = 0;
             if (seletStr.length <= 0) {
-                $('.conditionBtn').parent().find('.btn-primary').removeClass('btn-primary').addClass('btn-light');
-                $('#newToOld').removeClass('btn-light').addClass('btn-primary');
                 $('#dataShow').empty();
-                stopID = -1;
-                $(window).trigger('scroll');
-                return;
             }
 
             getData();
@@ -123,41 +118,45 @@
             $('#dataShow').empty();
         }
 
+        if (offset >= stopSet) {
+            return;
+        }
+
+        let data = {
+            'names': seletStr,
+            'condition': condition,
+            'offset': offset
+        };
+
         //當沒搜尋條件時
-        if (seletStr.length <= 0 && lastID > 1) {
+        if (seletStr.length <= 0) {
             getItemProcessing = true;
             $.ajax({
                 type: 'GET',
                 url: `/GameConsole/commodity/getSomeCanBuyDate`,
-                data: { 0: JSON.stringify(lastID) }
+                data: { 0: JSON.stringify(data) }
             }).then(function (e) {
                 getItemProcessing = false;
                 e = organizeFormat(e);
                 let json = JSON.parse(e);
                 if (json.success === true) {
-                    for (let item of json.result) {
+                    for (let item of json.result.data) {
                         $('#dataShow').append(getCommodityItemView(
                             item.id,
                             item.name,
                             item.price
                         ));
-                        lastID = parseInt(item.id);
                     }
+                    offset += json.result.data.length;
+                    stopSet = parseInt(json.result.stopSet);
                     $(window).trigger('scroll');
-                } else {
-                    alert(json.errMessage);
                 }
             });
         }
 
         //當有搜尋條件時
-        if (seletStr.length > 0 && lastID > stopID) {
+        if (seletStr.length > 0) {
             getItemProcessing = true;
-            let data = {
-                'names': seletStr,
-                'lastID': lastID
-            };
-
             $.ajax({
                 type: 'GET',
                 url: `/GameConsole/commodity/getSomeByName`,
@@ -172,15 +171,15 @@
                     return;
                 }
 
-                stopID = parseInt(json.result.stopID);
                 for (let item of json.result.data) {
                     $('#dataShow').append(getCommodityItemView(
                         item.id,
                         item.name,
                         item.price
                     ));
-                    lastID = parseInt(item.id);
                 }
+                offset += json.result.data.length;
+                stopSet = parseInt(json.result.stopSet);
                 $(window).trigger('scroll');
             });
         }
@@ -192,7 +191,6 @@
 <body>
     {{include file='./navigationBar.html'}}
     <div class="blank"></div>
-
     <main class="container">
         <img class="topImgBtn" src="/GameConsole/views/img/top.png" alt="">
 

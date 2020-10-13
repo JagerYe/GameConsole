@@ -152,31 +152,30 @@ class CommodityDAO implements CommodityDAO_Interface
     }
 
     //取得部份上架商品
-    public function getSomeCanBuy($id = null, $condition = 'newToOld')
+    public function getSomeCanBuy($offset = 0, $condition = 'newToOld')
     {
         $sqlStr = "SELECT `id`, `name`, `price`, `quantity`, `status`, `creationDatetime`, `changeDatetime`
-            FROM `Commodities` WHERE `id`<IFNULL(:id, (~0 >> 32)) ";
+            FROM `Commodities` WHERE `status`=1 ";
 
         switch ($condition) {
             case 'oldToNew':
-                $sqlStr .= "ORDER BY `id` LIMIT 5;";
+                $sqlStr .= "ORDER BY `id` LIMIT 5 OFFSET :offset;";
                 break;
             case 'cheapToExpensive':
-                $sqlStr .= "ORDER BY `price` LIMIT 5;";
+                $sqlStr .= "ORDER BY `price` LIMIT 5 OFFSET :offset;";
                 break;
             case 'expensiveToCheap':
-                $sqlStr .= "ORDER BY `price` DESC LIMIT 5;";
+                $sqlStr .= "ORDER BY `price` DESC LIMIT 5 OFFSET :offset;";
                 break;
             default:
-                $sqlStr .= "ORDER BY `id` DESC LIMIT 5;";
+                $sqlStr .= "ORDER BY `id` DESC LIMIT 5 OFFSET :offset;";
                 break;
         }
 
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT `id`, `name`, `price`, `quantity`, `status`, `creationDatetime`, `changeDatetime` FROM `Commodities`
-                WHERE status=1 && `id`<IFNULL(:id, (~0 >> 32)) ORDER BY `id` DESC LIMIT 5;");
-            $sth->bindParam("id", $id);
+            $sth = $dbh->prepare($sqlStr);
+            $sth->bindParam("offset", $offset, PDO::PARAM_INT);
             $sth->execute();
             $request = $sth->fetchAll(PDO::FETCH_ASSOC);
             $sth = null;
@@ -189,18 +188,32 @@ class CommodityDAO implements CommodityDAO_Interface
     }
 
     //取得名稱搜尋結果
-    public function getSomeByName($names, $lastID = null)
+    public function getSomeByName($names, $offset, $condition)
     {
         $sqlStr = 'SELECT `id`, `name`, `price`, `quantity`,
             `status`, `creationDatetime`, `changeDatetime`
-            FROM `Commodities`
-            WHERE `status`=1 && `id`<IFNULL(:lastID, (~0 >> 32)) && (';
+            FROM `Commodities` WHERE `status`=1 && (';
 
         foreach ($names as $key => $name) {
             $sqlStr .= "`name` LIKE :name{$key} &&";
         }
         $name = null;
-        $sqlStr = substr_replace($sqlStr, ')ORDER BY `id` DESC LIMIT 5;', -2, 2);
+        $sqlStr = substr_replace($sqlStr, ') ', -2, 2);
+
+        switch ($condition) {
+            case 'oldToNew':
+                $sqlStr .= "ORDER BY `id` LIMIT 5 OFFSET :offset;";
+                break;
+            case 'cheapToExpensive':
+                $sqlStr .= "ORDER BY `price` LIMIT 5 OFFSET :offset;";
+                break;
+            case 'expensiveToCheap':
+                $sqlStr .= "ORDER BY `price` DESC LIMIT 5 OFFSET :offset;";
+                break;
+            default:
+                $sqlStr .= "ORDER BY `id` DESC LIMIT 5 OFFSET :offset;";
+                break;
+        }
 
         try {
             $dbh = Config::getDBConnect();
@@ -208,7 +221,7 @@ class CommodityDAO implements CommodityDAO_Interface
             foreach ($names as $key => &$name) {
                 $sth->bindParam("name{$key}", $name);
             }
-            $sth->bindParam("lastID", $lastID);
+            $sth->bindParam("offset", $offset, PDO::PARAM_INT);
             $sth->execute();
             $request = $sth->fetchAll(PDO::FETCH_ASSOC);
             $sth = null;
@@ -221,15 +234,15 @@ class CommodityDAO implements CommodityDAO_Interface
     }
 
     //取得搜尋結果最終的ID
-    public function getSeletNameLastID($names)
+    public function getSeletSize($names)
     {
-        $sqlStr = 'SELECT `id` FROM `Commodities` WHERE `status`=1 && (';
+        $sqlStr = 'SELECT COUNT(*) FROM `Commodities` WHERE `status`=1 && (';
 
         foreach ($names as $key => $name) {
             $sqlStr .= "`name` LIKE :name{$key} &&";
         }
         $name = null;
-        $sqlStr = substr_replace($sqlStr, ')ORDER BY `id` LIMIT 1;', -2, 2);
+        $sqlStr = substr_replace($sqlStr, ');', -2, 2);
 
         try {
             $dbh = Config::getDBConnect();
@@ -238,7 +251,7 @@ class CommodityDAO implements CommodityDAO_Interface
                 $sth->bindParam("name{$key}", $name);
             }
             $sth->execute();
-            $request = $sth->fetchAll(PDO::FETCH_NUM);
+            $request = $sth->fetch(PDO::FETCH_NUM);
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
