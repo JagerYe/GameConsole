@@ -131,6 +131,41 @@ class EmployeeDAO implements EmployeeDAO_Interface
         return $request;
     }
 
+    public function getSome($lastID = null)
+    {
+        try {
+            $dbh = Config::getDBConnect();
+            $sth = $dbh->prepare("SELECT `id`, `account`, `name`, `email`, `creationDatetime`, `changeDatetime`
+                FROM `Employees`
+                WHERE `id`>IFNULL(:lastID, 0) ORDER BY `id` LIMIT 5;");
+            $sth->bindParam("lastID", $lastID);
+            $sth->execute();
+            $request = $sth->fetchAll(PDO::FETCH_ASSOC);
+            $sth = null;
+        } catch (PDOException $err) {
+            $dbh = null;
+            throw new Exception("取得資料發生錯誤\r\n" . $err->getMessage());
+        }
+        $dbh = null;
+        return $request;
+    }
+
+    public function getLastID()
+    {
+        try {
+            $dbh = Config::getDBConnect();
+            $sth = $dbh->prepare("SELECT `id` FROM `Employees` ORDER BY `id` DESC LIMIT 1;");
+            $sth->execute();
+            $request = $sth->fetch(PDO::FETCH_NUM);
+            $sth = null;
+        } catch (PDOException $err) {
+            $dbh = null;
+            throw new Exception("取得資料發生錯誤\r\n" . $err->getMessage());
+        }
+        $dbh = null;
+        return isset($request[0]) ? $request[0] : -1;
+    }
+
     public function doLogin($account, $password)
     {
         try {

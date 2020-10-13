@@ -61,6 +61,8 @@
 <script src="/GameConsole/views/js/title.js"></script>
 <script src="/GameConsole/views/js/viewModels/orderViewModel.js"></script>
 <script>
+    let memUse = '{{if isset($memUse)&&$memUse}}{{$memUse}}{{/if}}';
+    memUse = (memUse.length <= 0) ? false : true;
 
     $(window).ready(() => {
         //回最頂按鈕
@@ -97,7 +99,15 @@
 
                 if (json.success === false) {
                     buttonThis.closest('.oneMember').next().toggleClass('hidden');
-                    alert(json.errMessage);
+                    switch (json.errMessage) {
+                        case '無此權限':
+                        case '確認身份發生錯誤':
+                            alert(json.errMessage + '將會重新整理頁面');
+                            history.go(0);
+                            return;
+                        default:
+                            alert(json.errMessage);
+                    }
                     return;
                 }
                 if (json.result === false) {
@@ -118,45 +128,10 @@
             });
         });
 
-        //狀態更改
-        $('.status').click(function () {
-            let button = $(this);
-            let buttonClass = this.className.substring(this.className.lastIndexOf('btn'), this.className.length);
-            let status = (buttonClass === 'btn-success') ? true : false;
+        if (memUse) {
+            getChangeStatusBtnListener();
+        }
 
-            if (!confirm(`確定要${status ? '停用' : '啟用'}該會員？`)) {
-                return;
-            }
-
-            let data = {
-                'id': $(this).closest('.oneMember').find('.memberID').text(),
-                'status': !status
-            };
-
-            $.ajax({
-                type: "PUT",
-                url: "/GameConsole/member/updateStatus",
-                data: { 0: JSON.stringify(data) }
-            }).then(function (e) {
-                e = organizeFormat(e);
-                let json = JSON.parse(e);
-                console.log(json);
-
-                if (json.success === false) {
-                    alert(json.errMessage);
-                    return;
-                }
-                if (json.result === true) {
-                    if (status) {
-                        button.removeClass('btn-success').addClass('btn-danger').text('停用');
-                    } else {
-                        button.removeClass('btn-danger').addClass('btn-success').text('啟用');
-                    }
-
-                }
-            });
-
-        });
     });
 
 
@@ -187,6 +162,13 @@
                 console.log(json);
 
                 if (json.success === false) {
+                    switch (json.errMessage) {
+                        case '無此權限':
+                        case '確認身份發生錯誤':
+                            alert(json.errMessage + '將會重新整理頁面');
+                            history.go(0);
+                            return;
+                    }
                     return;
                 }
 
@@ -205,6 +187,59 @@
     }
 
 </script>
+{{if isset($memUse)&&$memUse}}
+<script>
+    function getChangeStatusBtnListener() {
+        //狀態更改
+        $('.status').click(function () {
+            let button = $(this);
+            let buttonClass = this.className.substring(this.className.lastIndexOf('btn'), this.className.length);
+            let status = (buttonClass === 'btn-success') ? true : false;
+
+            if (!confirm(`確定要${status ? '停用' : '啟用'}該會員？`)) {
+                return;
+            }
+
+            let data = {
+                'id': $(this).closest('.oneMember').find('.memberID').text(),
+                'status': !status
+            };
+
+            $.ajax({
+                type: "PUT",
+                url: "/GameConsole/member/updateStatus",
+                data: { 0: JSON.stringify(data) }
+            }).then(function (e) {
+                e = organizeFormat(e);
+                let json = JSON.parse(e);
+                console.log(json);
+
+                if (json.success === false) {
+                    switch (json.errMessage) {
+                        case '無此權限':
+                        case '確認身份發生錯誤':
+                            alert(json.errMessage + '將會重新整理頁面');
+                            history.go(0);
+                            return;
+                        default:
+                            alert(json.errMessage);
+                    }
+                    return;
+                }
+                if (json.result === true) {
+                    if (status) {
+                        button.removeClass('btn-success').addClass('btn-danger').text('停用');
+                    } else {
+                        button.removeClass('btn-danger').addClass('btn-success').text('啟用');
+                    }
+
+                }
+            });
+
+        });
+    }
+</script>
+{{/if}}
 
 <body>
     {{include file='./navigationBar.html'}}
@@ -224,7 +259,9 @@
                     <th>目前狀態</th>
                     <th>創立時間</th>
                     <th>修改資料時間</th>
+                    {{if isset($memUse) && $memUse}}
                     <th></th>
+                    {{/if}}
                 </tr>
             </thead>
 
@@ -246,9 +283,11 @@
                     </td>
                     <td>{{$member['creationDatetime']}}</td>
                     <td>{{$member['changeDatetime']}}</td>
+                    {{if isset($memUse) && $memUse}}
                     <td>
                         <button type="button" class="btn btn-info width100 orderListBtn">開啟訂單記錄</button>
                     </td>
+                    {{/if}}
                 </tr>
                 <tr class="hidden memberOrders info">
                     <td></td>

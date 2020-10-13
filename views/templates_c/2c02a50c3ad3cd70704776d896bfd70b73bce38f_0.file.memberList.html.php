@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-12 12:01:33
+/* Smarty version 3.1.34-dev-7, created on 2020-10-13 04:09:38
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/memberList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f84297d805bd7_73125863',
+  'unifunc' => 'content_5f850c62a97f54_92426104',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '2c02a50c3ad3cd70704776d896bfd70b73bce38f' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/memberList.html',
-      1 => 1602496891,
+      1 => 1602554976,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f84297d805bd7_73125863 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f850c62a97f54_92426104 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -84,6 +84,10 @@ function content_5f84297d805bd7_73125863 (Smarty_Internal_Template $_smarty_tpl)
     .hidden {
         visibility: hidden;
     }
+
+    .showOrder {
+        padding: 0;
+    }
 </style>
 <?php echo '<script'; ?>
  src="/GameConsole/views/js/jsonFormat.js"><?php echo '</script'; ?>
@@ -96,6 +100,10 @@ function content_5f84297d805bd7_73125863 (Smarty_Internal_Template $_smarty_tpl)
 >
 <?php echo '<script'; ?>
 >
+    let memUse = '<?php if ((isset($_smarty_tpl->tpl_vars['memUse']->value)) && $_smarty_tpl->tpl_vars['memUse']->value) {
+echo $_smarty_tpl->tpl_vars['memUse']->value;
+}?>';
+    memUse = (memUse.length <= 0) ? false : true;
 
     $(window).ready(() => {
         //回最頂按鈕
@@ -132,7 +140,15 @@ function content_5f84297d805bd7_73125863 (Smarty_Internal_Template $_smarty_tpl)
 
                 if (json.success === false) {
                     buttonThis.closest('.oneMember').next().toggleClass('hidden');
-                    alert(json.errMessage);
+                    switch (json.errMessage) {
+                        case '無此權限':
+                        case '確認身份發生錯誤':
+                            alert(json.errMessage + '將會重新整理頁面');
+                            history.go(0);
+                            return;
+                        default:
+                            alert(json.errMessage);
+                    }
                     return;
                 }
                 if (json.result === false) {
@@ -146,13 +162,77 @@ function content_5f84297d805bd7_73125863 (Smarty_Internal_Template $_smarty_tpl)
                         .append(getOrderListView(item.orderID, item.creationDatetime, item.total));
                 }
 
-
+                showDetailsBtnListener();
 
 
 
             });
         });
 
+        if (memUse) {
+            getChangeStatusBtnListener();
+        }
+
+    });
+
+
+    function showDetailsBtnListener() {
+        $('.showDetailsBtn').off('click').click(function () {
+            let orderID = $(this).closest('div[class="oneOrder"]').find('.orderID').html();
+            let showDetails = $(`#showDetails${orderID}`);
+            let button = $(this);
+
+            if (showDetails.html().length > 0) {
+                showDetails.empty();
+                button.text('查看明細');
+                return;
+            }
+
+            let data = {
+                'orderID': orderID,
+                'commodityID': null
+            }
+
+            $.ajax({
+                type: 'GET',
+                url: '/GameConsole/order/getOrderDetail',
+                data: { 0: JSON.stringify(data) }
+            }).then(function (e) {
+                e = organizeFormat(e);
+                let json = JSON.parse(e);
+                console.log(json);
+
+                if (json.success === false) {
+                    switch (json.errMessage) {
+                        case '無此權限':
+                        case '確認身份發生錯誤':
+                            alert(json.errMessage + '將會重新整理頁面');
+                            history.go(0);
+                            return;
+                    }
+                    return;
+                }
+
+                button.text('關閉明細');
+                for (let item of json.result) {
+                    // console.log(item['commodityID']);
+                    showDetails.append(getDetailsListView(
+                        item['name'],
+                        item['price'],
+                        item['quantity']
+                    ));
+                }
+            });
+        });
+
+    }
+
+<?php echo '</script'; ?>
+>
+<?php if ((isset($_smarty_tpl->tpl_vars['memUse']->value)) && $_smarty_tpl->tpl_vars['memUse']->value) {
+echo '<script'; ?>
+>
+    function getChangeStatusBtnListener() {
         //狀態更改
         $('.status').click(function () {
             let button = $(this);
@@ -178,7 +258,15 @@ function content_5f84297d805bd7_73125863 (Smarty_Internal_Template $_smarty_tpl)
                 console.log(json);
 
                 if (json.success === false) {
-                    alert(json.errMessage);
+                    switch (json.errMessage) {
+                        case '無此權限':
+                        case '確認身份發生錯誤':
+                            alert(json.errMessage + '將會重新整理頁面');
+                            history.go(0);
+                            return;
+                        default:
+                            alert(json.errMessage);
+                    }
                     return;
                 }
                 if (json.result === true) {
@@ -192,10 +280,10 @@ function content_5f84297d805bd7_73125863 (Smarty_Internal_Template $_smarty_tpl)
             });
 
         });
-    });
-
+    }
 <?php echo '</script'; ?>
 >
+<?php }?>
 
 <body>
     <?php $_smarty_tpl->_subTemplateRender('file:./navigationBar.html', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
@@ -216,7 +304,9 @@ function content_5f84297d805bd7_73125863 (Smarty_Internal_Template $_smarty_tpl)
                     <th>目前狀態</th>
                     <th>創立時間</th>
                     <th>修改資料時間</th>
+                    <?php if ((isset($_smarty_tpl->tpl_vars['memUse']->value)) && $_smarty_tpl->tpl_vars['memUse']->value) {?>
                     <th></th>
+                    <?php }?>
                 </tr>
             </thead>
 
@@ -250,11 +340,13 @@ $_smarty_tpl->tpl_vars['member']->do_else = false;
 </td>
                     <td><?php echo $_smarty_tpl->tpl_vars['member']->value['changeDatetime'];?>
 </td>
+                    <?php if ((isset($_smarty_tpl->tpl_vars['memUse']->value)) && $_smarty_tpl->tpl_vars['memUse']->value) {?>
                     <td>
                         <button type="button" class="btn btn-info width100 orderListBtn">開啟訂單記錄</button>
                     </td>
+                    <?php }?>
                 </tr>
-                <tr class="hidden memberOrders">
+                <tr class="hidden memberOrders info">
                     <td></td>
                     <td class="showOrder" colspan="8"></td>
                 </tr>

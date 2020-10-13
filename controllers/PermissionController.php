@@ -19,7 +19,7 @@ class PermissionController extends Controller
             if ($requestMethod !== 'POST') {
                 throw new Exception("請求方式錯誤");
             }
-            if (!(new EmployeeController())->checkIdentity()) {
+            if (!$this->checkIsEmp()) {
                 throw new Exception("確認身份發生錯誤");
             }
             $permissionControlDAO = PermissionControlService::getDAO();
@@ -61,7 +61,7 @@ class PermissionController extends Controller
             if ($requestMethod !== 'PUT') {
                 throw new Exception("請求方式錯誤");
             }
-            if (!(new EmployeeController())->checkIdentity()) {
+            if (!$this->checkIsEmp()) {
                 throw new Exception("確認身份發生錯誤");
             }
             $permissionControlDAO = PermissionControlService::getDAO();
@@ -74,6 +74,11 @@ class PermissionController extends Controller
             //格式檢查
             $permission = new PermissionControl();
             $permission->setEmpID($jsonObj->empID);
+            if ($_COOKIE['empID'] === $jsonObj->empID) {
+                throw new Exception('自殺，造成不能挽回的遺憾、留給親友極大的傷痛，對個人、家庭、社會都造成極大的損失，
+                    撥打衛生福利部安心專線(0800-788-995，請幫幫救救我)
+                    或撥打生命線1995及張老師1980');
+            }
             foreach ($jsonObj->permissions as $value) {
                 $permission->setPermissionID($value);
             }
@@ -129,7 +134,7 @@ class PermissionController extends Controller
     {
         try {
             //驗證
-            if (!(new EmployeeController())->checkIdentity()) {
+            if (!$this->checkIsEmp()) {
                 throw new Exception("確認身份發生錯誤");
             }
             $permissionControlDAO = PermissionControlService::getDAO();
@@ -137,9 +142,7 @@ class PermissionController extends Controller
                 throw new Exception("無此權限");
             }
 
-            if (!($this->result['data'] = $permissionControlDAO->getOneByID($id))) {
-                throw new Exception('查詢資料');
-            }
+            $this->result['data'] = $permissionControlDAO->getOneByID($id);
 
             $this->result['result'] = true;
             $this->success = true;

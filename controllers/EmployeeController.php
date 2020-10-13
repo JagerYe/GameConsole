@@ -193,8 +193,39 @@ class EmployeeController extends Controller
         );
     }
 
-    public function getOneByID()
+    public function getSome($lastID, $requestMethod)
     {
+        try {
+            //驗證
+            if ($requestMethod !== 'GET') {
+                throw new Exception("請求方式錯誤");
+            }
+            if (!$this->checkIdentity()) {
+                throw new Exception("確認身份發生錯誤");
+            }
+            if (!PermissionControlService::getDAO()->checkHavePermissionByEmpID($_COOKIE['empID'], 1)) {
+                throw new Exception("無此權限");
+            }
+
+            $employeeDAO = EmployeeService::getDAO();
+            if (count($this->result['data'] = $employeeDAO->getSome($lastID)) === 0) {
+                throw new Exception('取得失敗');
+            }
+            if (($this->result['lastID'] = $employeeDAO->getLastID()) === -1) {
+                throw new Exception('取得失敗');
+            }
+
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->result = null;
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
     }
 
     public function login($str, $requestMethod)
@@ -384,10 +415,15 @@ class EmployeeController extends Controller
 
             //
             if ($empSee) {
-                $smarty->assign('emp', EmployeeService::getDAO()->getOneEmployeeByID($_COOKIE['empID']));
+                $employeeDAO = EmployeeService::getDAO();
+                $smarty->assign('emp', $employeeDAO->getOneEmployeeByID($_COOKIE['empID']));
                 $smarty->assign('name', $_COOKIE['empName']);
                 $smarty->assign('isLogin', $isLogin);
-                $smarty->assign('employees', EmployeeService::getDAO()->getAll());
+
+                $employees = $employeeDAO->getSome();
+                $smarty->assign('employees', $employees);
+                $smarty->assign('lastID', $employeeDAO->getLastID());
+                $smarty->assign('showLastID', $employees[count($employees) - 1]['id']);
                 $smarty->assign('permissions', PermissionService::getDAO()->getAll());
                 $smarty->display('pageBack/employeeList.html');
                 return;

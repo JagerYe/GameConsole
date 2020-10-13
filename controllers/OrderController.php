@@ -198,6 +198,9 @@ class OrderController extends Controller
             if (!$this->checkIsEmp()) {
                 throw new Exception('確認身份發生錯誤');
             }
+            if (!PermissionControlService::getDAO()->checkHavePermissionByEmpID($_COOKIE['empID'], 6)) {
+                throw new Exception("無此權限");
+            }
 
             $jsonObj = json_decode($str);
 

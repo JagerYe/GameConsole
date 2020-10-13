@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-08 03:17:09
+/* Smarty version 3.1.34-dev-7, created on 2020-10-13 06:05:47
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/employeeList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7e68957dd096_73391664',
+  'unifunc' => 'content_5f85279bc0cb31_35406924',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'eae9421863c66dc9d84c4b62729d6f4a3058a32b' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/employeeList.html',
-      1 => 1602119776,
+      1 => 1602561946,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f7e68957dd096_73391664 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f85279bc0cb31_35406924 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -111,6 +111,16 @@ function content_5f7e68957dd096_73391664 (Smarty_Internal_Template $_smarty_tpl)
 ';
     let updatePermissionEmpID = -1;
     let empPermissions = new Array();
+    let getItemProcessing = false;
+    let lastID = '<?php if ((isset($_smarty_tpl->tpl_vars['lastID']->value))) {
+echo $_smarty_tpl->tpl_vars['lastID']->value;
+}?>';
+    let showLastID = '<?php if ((isset($_smarty_tpl->tpl_vars['showLastID']->value))) {
+echo $_smarty_tpl->tpl_vars['showLastID']->value;
+}?>';
+    lastID = parseInt(lastID);
+    showLastID = parseInt(showLastID);
+
     $(window).ready(() => {
         //回最頂按鈕
         $(".topImgBtn").click(() => {
@@ -125,6 +135,59 @@ function content_5f7e68957dd096_73391664 (Smarty_Internal_Template $_smarty_tpl)
                 return false;
             });
         }
+
+        //滾動監聽器
+        $(window).scroll(function (e) {
+            let windowBottom = $(this).height() + $(this).scrollTop();
+            console.log('window bottom' + windowBottom);
+            console.log('body ' + $('body').height());
+
+            if (isNaN(lastID) || isNaN(showLastID) || showLastID >= lastID) {
+                $(this).off('scroll');
+                return;
+            }
+
+            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing) {
+                getItemProcessing = true;
+                $.ajax({
+                    type: 'GET',
+                    url: `/GameConsole/employee/getSome?lastID=${showLastID}`
+                }).then(function (e) {
+                    e = organizeFormat(e);
+                    let json = JSON.parse(e);
+                    console.log(json);
+                    if (json.success === false) {
+                        switch (json.errMessage) {
+                            case '無此權限':
+                            case '確認身份發生錯誤':
+                                alert(json.errMessage + '將會重新整理頁面');
+                                history.go(0);
+                                break;
+                            default:
+                                alert(json.errMessage);
+                                break;
+                        }
+                        return;
+                    }
+                    lastID = json.result.lastID;
+                    for (let item of json.result.data) {
+                        $('#dataShow').append(getEmployeeListView(
+                            empUse,
+                            item.id,
+                            item.account,
+                            item.name,
+                            item.email,
+                            item.creationDatetime,
+                            (item.changeDatetime === null) ? '' : item.changeDatetime
+                        ));
+                    }
+
+
+                    getItemProcessing = false;
+                });
+            }
+        }).trigger('scroll');
+
 
         //權限顯示按鈕
         updateListener();
@@ -148,7 +211,15 @@ function content_5f7e68957dd096_73391664 (Smarty_Internal_Template $_smarty_tpl)
                 console.log(e);
                 let json = JSON.parse(e);
                 if (json.success === false) {
-                    alert(json.errMessage);
+                    switch (json.errMessage) {
+                        case '無此權限':
+                        case '確認身份發生錯誤':
+                            alert(json.errMessage + '將會重新整理頁面');
+                            history.go(0);
+                            return;
+                        default:
+                            alert(json.errMessage);
+                    }
                 } else if (json.result === true) {
                     alert("更新成功");
                 } else {
@@ -207,16 +278,24 @@ function content_5f7e68957dd096_73391664 (Smarty_Internal_Template $_smarty_tpl)
                 data: { 0: JSON.stringify(employee) }
             }).then(function (e) {
                 e = organizeFormat(e);
-                console.log(organizeFormat(e));
                 let json = JSON.parse(e);
                 if (json.success === false) {
-                    alert(json.errMessage);
+                    switch (json.errMessage) {
+                        case '無此權限':
+                        case '確認身份發生錯誤':
+                            alert(json.errMessage + '將會重新整理頁面');
+                            history.go(0);
+                            return;
+                        default:
+                            alert(json.errMessage);
+                    }
                 } else if (json.result.result === true) {
                     alert('新增成功');
 
                     let date = new Date();
                     $('#createCloseBtn').trigger('click');
                     $('#dataShow').append(getEmployeeListView(
+                        empUse,
                         json.result.id,
                         employee.account,
                         employee.name,
@@ -265,7 +344,15 @@ function content_5f7e68957dd096_73391664 (Smarty_Internal_Template $_smarty_tpl)
                 console.log(e);
                 let json = JSON.parse(e);
                 if (json.success === false) {
-                    alert(json.errMessage);
+                    switch (json.errMessage) {
+                        case '無此權限':
+                        case '確認身份發生錯誤':
+                            alert(json.errMessage + '將會重新整理頁面');
+                            history.go(0);
+                            return;
+                        default:
+                            alert(json.errMessage);
+                    }
                 } else if (json.result.result === true) {
 
                     json.result.data.forEach(item => {
@@ -429,19 +516,26 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
                     </div>
                     <div class="modal-body">
                         <!--身-->
-                        <?php
+                        <table class="table table-hover">
+                            <?php
 $_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['permissions']->value, 'permission');
 $_smarty_tpl->tpl_vars['permission']->do_else = true;
 if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['permission']->value) {
 $_smarty_tpl->tpl_vars['permission']->do_else = false;
 ?>
-                        <label><input type="checkbox" class="updatePermission"
-                                value="<?php echo $_smarty_tpl->tpl_vars['permission']->value['id'];?>
+                            <tr>
+                                <td>
+                                    <label><input type="checkbox" class="updatePermission"
+                                            value="<?php echo $_smarty_tpl->tpl_vars['permission']->value['id'];?>
 "><?php echo $_smarty_tpl->tpl_vars['permission']->value['name'];?>
 </label>
-                        <?php
+                                </td>
+                            </tr>
+                            <?php
 }
 $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
+                        </table>
+
                     </div>
                     <?php if (((isset($_smarty_tpl->tpl_vars['empUse']->value)) && $_smarty_tpl->tpl_vars['empUse']->value)) {?>
                     <div class="modal-footer">
@@ -501,19 +595,26 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
                                 <tr>
                                     <td>權限</td>
                                     <td>
-                                        <?php
+                                        <table class="table table-hover table-bordered">
+                                            <?php
 $_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['permissions']->value, 'permission');
 $_smarty_tpl->tpl_vars['permission']->do_else = true;
 if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['permission']->value) {
 $_smarty_tpl->tpl_vars['permission']->do_else = false;
 ?>
-                                        <label><input type="checkbox" class="creatEmpPermission"
-                                                value="<?php echo $_smarty_tpl->tpl_vars['permission']->value['id'];?>
+                                            <tr>
+                                                <td>
+                                                    <label><input type="checkbox" class="creatEmpPermission"
+                                                            value="<?php echo $_smarty_tpl->tpl_vars['permission']->value['id'];?>
 "><?php echo $_smarty_tpl->tpl_vars['permission']->value['name'];?>
 </label>
-                                        <?php
+                                                </td>
+                                            </tr>
+                                            <?php
 }
 $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
+                                        </table>
+
                                     </td>
                                 </tr>
                             </tbody>

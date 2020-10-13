@@ -69,6 +69,12 @@
     let empUse = '{{isset($empUse)&&$empUse}}';
     let updatePermissionEmpID = -1;
     let empPermissions = new Array();
+    let getItemProcessing = false;
+    let lastID = '{{if isset($lastID)}}{{$lastID}}{{/if}}';
+    let showLastID = '{{if isset($showLastID)}}{{$showLastID}}{{/if}}';
+    lastID = parseInt(lastID);
+    showLastID = parseInt(showLastID);
+
     $(window).ready(() => {
         //回最頂按鈕
         $(".topImgBtn").click(() => {
@@ -83,6 +89,59 @@
                 return false;
             });
         }
+
+        //滾動監聽器
+        $(window).scroll(function (e) {
+            let windowBottom = $(this).height() + $(this).scrollTop();
+            console.log('window bottom' + windowBottom);
+            console.log('body ' + $('body').height());
+
+            if (isNaN(lastID) || isNaN(showLastID) || showLastID >= lastID) {
+                $(this).off('scroll');
+                return;
+            }
+
+            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing) {
+                getItemProcessing = true;
+                $.ajax({
+                    type: 'GET',
+                    url: `/GameConsole/employee/getSome?lastID=${showLastID}`
+                }).then(function (e) {
+                    e = organizeFormat(e);
+                    let json = JSON.parse(e);
+                    console.log(json);
+                    if (json.success === false) {
+                        switch (json.errMessage) {
+                            case '無此權限':
+                            case '確認身份發生錯誤':
+                                alert(json.errMessage + '將會重新整理頁面');
+                                history.go(0);
+                                break;
+                            default:
+                                alert(json.errMessage);
+                                break;
+                        }
+                        return;
+                    }
+                    lastID = json.result.lastID;
+                    for (let item of json.result.data) {
+                        $('#dataShow').append(getEmployeeListView(
+                            empUse,
+                            item.id,
+                            item.account,
+                            item.name,
+                            item.email,
+                            item.creationDatetime,
+                            (item.changeDatetime === null) ? '' : item.changeDatetime
+                        ));
+                    }
+
+
+                    getItemProcessing = false;
+                });
+            }
+        }).trigger('scroll');
+
 
         //權限顯示按鈕
         updateListener();
@@ -106,7 +165,15 @@
                 console.log(e);
                 let json = JSON.parse(e);
                 if (json.success === false) {
-                    alert(json.errMessage);
+                    switch (json.errMessage) {
+                        case '無此權限':
+                        case '確認身份發生錯誤':
+                            alert(json.errMessage + '將會重新整理頁面');
+                            history.go(0);
+                            return;
+                        default:
+                            alert(json.errMessage);
+                    }
                 } else if (json.result === true) {
                     alert("更新成功");
                 } else {
@@ -167,13 +234,22 @@
                 e = organizeFormat(e);
                 let json = JSON.parse(e);
                 if (json.success === false) {
-                    alert(json.errMessage);
+                    switch (json.errMessage) {
+                        case '無此權限':
+                        case '確認身份發生錯誤':
+                            alert(json.errMessage + '將會重新整理頁面');
+                            history.go(0);
+                            return;
+                        default:
+                            alert(json.errMessage);
+                    }
                 } else if (json.result.result === true) {
                     alert('新增成功');
 
                     let date = new Date();
                     $('#createCloseBtn').trigger('click');
                     $('#dataShow').append(getEmployeeListView(
+                        empUse,
                         json.result.id,
                         employee.account,
                         employee.name,
@@ -222,7 +298,15 @@
                 console.log(e);
                 let json = JSON.parse(e);
                 if (json.success === false) {
-                    alert(json.errMessage);
+                    switch (json.errMessage) {
+                        case '無此權限':
+                        case '確認身份發生錯誤':
+                            alert(json.errMessage + '將會重新整理頁面');
+                            history.go(0);
+                            return;
+                        default:
+                            alert(json.errMessage);
+                    }
                 } else if (json.result.result === true) {
 
                     json.result.data.forEach(item => {
@@ -369,10 +453,17 @@
                     </div>
                     <div class="modal-body">
                         <!--身-->
-                        {{foreach $permissions as $permission}}
-                        <label><input type="checkbox" class="updatePermission"
-                                value="{{$permission['id']}}">{{$permission['name']}}</label>
-                        {{/foreach}}
+                        <table class="table table-hover">
+                            {{foreach $permissions as $permission}}
+                            <tr>
+                                <td>
+                                    <label><input type="checkbox" class="updatePermission"
+                                            value="{{$permission['id']}}">{{$permission['name']}}</label>
+                                </td>
+                            </tr>
+                            {{/foreach}}
+                        </table>
+
                     </div>
                     {{if (isset($empUse)&&$empUse)}}
                     <div class="modal-footer">
@@ -432,10 +523,17 @@
                                 <tr>
                                     <td>權限</td>
                                     <td>
-                                        {{foreach $permissions as $permission}}
-                                        <label><input type="checkbox" class="creatEmpPermission"
-                                                value="{{$permission['id']}}">{{$permission['name']}}</label>
-                                        {{/foreach}}
+                                        <table class="table table-hover table-bordered">
+                                            {{foreach $permissions as $permission}}
+                                            <tr>
+                                                <td>
+                                                    <label><input type="checkbox" class="creatEmpPermission"
+                                                            value="{{$permission['id']}}">{{$permission['name']}}</label>
+                                                </td>
+                                            </tr>
+                                            {{/foreach}}
+                                        </table>
+
                                     </td>
                                 </tr>
                             </tbody>

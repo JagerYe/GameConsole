@@ -224,7 +224,15 @@
                     let json = JSON.parse(e);
                     console.log(json);
                     if (json.success === false) {
-                        alert(json.errMessage);
+                        switch (json.errMessage) {
+                            case '無此權限':
+                            case '確認身份發生錯誤':
+                                alert(json.errMessage + '將會重新整理頁面');
+                                history.go(0);
+                                return;
+                            default:
+                                alert(json.errMessage);
+                        }
                     } else if (json.result.result === true) {
                         //更新圖片
                         if (canUpdateImg) {
@@ -276,7 +284,15 @@
                     e = organizeFormat(e);
                     let json = JSON.parse(e);
                     if (json.success === false) {
-                        alert(json.errMessage);
+                        switch (json.errMessage) {
+                            case '無此權限':
+                            case '確認身份發生錯誤':
+                                alert(json.errMessage + '將會重新整理頁面');
+                                history.go(0);
+                                return;
+                            default:
+                                alert(json.errMessage);
+                        }
                     } else if (json.result === true) {
                         $.ajax({
                             type: 'GET',
@@ -286,6 +302,7 @@
                             let json = JSON.parse(e);
                             if (json.success === true) {
                                 $(`#com${updateID}`).html(getEmpUpdateCommodityItemView(
+                                    comUse,
                                     json.result.id,
                                     json.result.name,
                                     json.result.price,

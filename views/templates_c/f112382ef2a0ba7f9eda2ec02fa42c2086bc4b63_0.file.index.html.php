@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-12 09:58:05
+/* Smarty version 3.1.34-dev-7, created on 2020-10-13 05:14:09
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/index.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f840c8d87dba2_33344346',
+  'unifunc' => 'content_5f851b811c1bf0_10456979',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'f112382ef2a0ba7f9eda2ec02fa42c2086bc4b63' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/index.html',
-      1 => 1602487320,
+      1 => 1602558847,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f840c8d87dba2_33344346 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f851b811c1bf0_10456979 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -131,6 +131,9 @@ echo $_smarty_tpl->tpl_vars['lastID']->value;
             }
         }).trigger('scroll');
 
+        $('#seletBtn').click(() => {
+            console.log($('#seletText').val());
+        });
     });
 
 <?php echo '</script'; ?>
@@ -145,7 +148,20 @@ echo $_smarty_tpl->tpl_vars['lastID']->value;
         <img class="topImgBtn" src="/GameConsole/views/img/top.png" alt="">
 
         <div class="row">
+            <div class="col-xs-9"></div>
+            <div class="col-xs-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="seletText" placeholder="請輸入關鍵字">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" id="seletBtn" type="button">找商品</button>
+                    </span>
+                </div>
+            </div>
+        </div>
 
+        <hr>
+
+        <div class="row">
             <?php
 $_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['commoditys']->value, 'commodity');
 $_smarty_tpl->tpl_vars['commodity']->do_else = true;
@@ -169,9 +185,6 @@ $_smarty_tpl->tpl_vars['commodity']->do_else = false;
             <?php
 }
 $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
-
-
-
         </div>
 
     </main><!-- /.container -->

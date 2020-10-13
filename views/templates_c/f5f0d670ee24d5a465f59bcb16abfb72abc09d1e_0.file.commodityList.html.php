@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-08 03:35:28
+/* Smarty version 3.1.34-dev-7, created on 2020-10-13 03:41:19
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/commodityList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f7e6ce04c7131_04306068',
+  'unifunc' => 'content_5f8505bf532167_52768324',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'f5f0d670ee24d5a465f59bcb16abfb72abc09d1e' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/commodityList.html',
-      1 => 1602120925,
+      1 => 1602553271,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f7e6ce04c7131_04306068 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f8505bf532167_52768324 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -267,7 +267,15 @@ function content_5f7e6ce04c7131_04306068 (Smarty_Internal_Template $_smarty_tpl)
                     let json = JSON.parse(e);
                     console.log(json);
                     if (json.success === false) {
-                        alert(json.errMessage);
+                        switch (json.errMessage) {
+                            case '無此權限':
+                            case '確認身份發生錯誤':
+                                alert(json.errMessage + '將會重新整理頁面');
+                                history.go(0);
+                                return;
+                            default:
+                                alert(json.errMessage);
+                        }
                     } else if (json.result.result === true) {
                         //更新圖片
                         if (canUpdateImg) {
@@ -319,7 +327,15 @@ function content_5f7e6ce04c7131_04306068 (Smarty_Internal_Template $_smarty_tpl)
                     e = organizeFormat(e);
                     let json = JSON.parse(e);
                     if (json.success === false) {
-                        alert(json.errMessage);
+                        switch (json.errMessage) {
+                            case '無此權限':
+                            case '確認身份發生錯誤':
+                                alert(json.errMessage + '將會重新整理頁面');
+                                history.go(0);
+                                return;
+                            default:
+                                alert(json.errMessage);
+                        }
                     } else if (json.result === true) {
                         $.ajax({
                             type: 'GET',
@@ -329,6 +345,7 @@ function content_5f7e6ce04c7131_04306068 (Smarty_Internal_Template $_smarty_tpl)
                             let json = JSON.parse(e);
                             if (json.success === true) {
                                 $(`#com${updateID}`).html(getEmpUpdateCommodityItemView(
+                                    comUse,
                                     json.result.id,
                                     json.result.name,
                                     json.result.price,

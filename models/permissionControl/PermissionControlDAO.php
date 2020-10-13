@@ -227,13 +227,15 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
             $sth->bindParam("empID", $empID);
             $sth->bindParam("permissionID", $permissionID);
             $sth->execute();
-            $request = $sth->fetchAll(PDO::FETCH_NUM);
+            $request = $sth->fetch(PDO::FETCH_NUM);
             $sth = null;
         } catch (PDOException $err) {
             $dbh = null;
             throw new Exception("取得資料發生錯誤\r\n" . $err->getMessage());
         }
         $dbh = null;
-        return $request !== false && (int)$request['0'] === 1;
+        $a = $request !== false;
+        $b = $request[0] === '1';
+        return $request !== false && $request[0] === '1';
     }
 }
