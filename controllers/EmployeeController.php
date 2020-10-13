@@ -432,34 +432,4 @@ class EmployeeController extends Controller
 
         $this->getUpdateSelfView();
     }
-
-
-
-
-
-    // public function getCreateView()
-    // {
-    //     $smarty = SmartyConfig::getSmarty();
-    //     $smarty->display('registered.html');
-    // }
-
-
-
-    // public function getUpdateView()
-    // {
-    //     $smarty = SmartyConfig::getSmarty();
-    //     if ($isLogin = isset($_COOKIE['userID'])) {
-    //         $employee = EmployeeService::getDAO()->getOneEmployeeByID($_COOKIE['userID']);
-    //         $smarty->assign('employee', $employee);
-    //         $smarty->assign('userName', $_COOKIE['userName']);
-    //         $smarty->assign('userID', $_COOKIE['userID']);
-    //     }
-
-    //     $smarty->assign('isLogin', $isLogin);
-    //     $smarty->assign('isUpdate', true);
-
-    //     $smarty->display('updateEmployeeData.html');
-    // }
-
-
 }

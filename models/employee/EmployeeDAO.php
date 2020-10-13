@@ -135,7 +135,8 @@ class EmployeeDAO implements EmployeeDAO_Interface
     {
         try {
             $dbh = Config::getDBConnect();
-            $sth = $dbh->prepare("SELECT `id`, `account`, `name`, `email`, `creationDatetime`, `changeDatetime`
+            $sth = $dbh->prepare("SELECT `id`, `account`, `name`,
+                `email`, `creationDatetime`, `changeDatetime`
                 FROM `Employees`
                 WHERE `id`>IFNULL(:lastID, 0) ORDER BY `id` LIMIT 5;");
             $sth->bindParam("lastID", $lastID);

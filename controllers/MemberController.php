@@ -202,9 +202,40 @@ class MemberController extends Controller
     //     );
     // }
 
-    // public function getOneByID()
-    // {
-    // }
+    public function getSome($lastID, $requestMethod)
+    {
+        try {
+            //驗證
+            if ($requestMethod !== 'GET') {
+                throw new Exception("請求方式錯誤");
+            }
+            if (!$this->checkIsEmp()) {
+                throw new Exception("確認身份發生錯誤");
+            }
+            if (!PermissionControlService::getDAO()->checkHavePermissionByEmpID($_COOKIE['empID'], 5)) {
+                throw new Exception("無此權限");
+            }
+
+            $memberDAO = MemberService::getDAO();
+            if (count($this->result['data'] = $memberDAO->getSome($lastID)) === 0) {
+                throw new Exception('取得失敗');
+            }
+            if (($this->result['lastID'] = $memberDAO->getLastID()) === -1) {
+                throw new Exception('取得失敗');
+            }
+
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->result = null;
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
 
     public function login($str, $requestMethod)
     {
@@ -402,9 +433,13 @@ class MemberController extends Controller
 
             //
             if ($memSee) {
+                $memberDAO = MemberService::getDAO();
+                $members = $memberDAO->getSome();
                 $smarty->assign('name', $_COOKIE['empName']);
                 $smarty->assign('isLogin', $isLogin);
-                $smarty->assign('members', MemberService::getDAO()->getAll());
+                $smarty->assign('members', $members);
+                $smarty->assign('lastID', $memberDAO->getLastID());
+                $smarty->assign('showLastID', $members[count($members) - 1]['id']);
                 $smarty->display('pageBack/memberList.html');
                 return;
             }

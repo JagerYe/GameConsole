@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-13 04:09:38
+/* Smarty version 3.1.34-dev-7, created on 2020-10-13 07:34:24
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/memberList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f850c62a97f54_92426104',
+  'unifunc' => 'content_5f853c60a89068_21686293',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '2c02a50c3ad3cd70704776d896bfd70b73bce38f' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/memberList.html',
-      1 => 1602554976,
+      1 => 1602567263,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f850c62a97f54_92426104 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f853c60a89068_21686293 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -99,11 +99,23 @@ function content_5f850c62a97f54_92426104 (Smarty_Internal_Template $_smarty_tpl)
  src="/GameConsole/views/js/viewModels/orderViewModel.js"><?php echo '</script'; ?>
 >
 <?php echo '<script'; ?>
+ src="/GameConsole/views/js/viewModels/memberViewModel.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
 >
     let memUse = '<?php if ((isset($_smarty_tpl->tpl_vars['memUse']->value)) && $_smarty_tpl->tpl_vars['memUse']->value) {
 echo $_smarty_tpl->tpl_vars['memUse']->value;
 }?>';
     memUse = (memUse.length <= 0) ? false : true;
+    let getItemProcessing = false;
+    let lastID = '<?php if ((isset($_smarty_tpl->tpl_vars['lastID']->value))) {
+echo $_smarty_tpl->tpl_vars['lastID']->value;
+}?>';
+    let showLastID = '<?php if ((isset($_smarty_tpl->tpl_vars['showLastID']->value))) {
+echo $_smarty_tpl->tpl_vars['showLastID']->value;
+}?>';
+    lastID = parseInt(lastID);
+    showLastID = parseInt(showLastID);
 
     $(window).ready(() => {
         //回最頂按鈕
@@ -112,6 +124,60 @@ echo $_smarty_tpl->tpl_vars['memUse']->value;
                 scrollTop: 0
             }, 1000);
         });
+
+        //滾動監聽器
+        $(window).scroll(function (e) {
+            let windowBottom = $(this).height() + $(this).scrollTop();
+            console.log('window bottom' + windowBottom);
+            console.log('body ' + $('body').height());
+
+            if (isNaN(lastID) || isNaN(showLastID) || showLastID >= lastID) {
+                $(this).off('scroll');
+                return;
+            }
+
+            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing) {
+                getItemProcessing = true;
+                $.ajax({
+                    type: 'GET',
+                    url: `/GameConsole/member/getSome?lastID=${showLastID}`
+                }).then(function (e) {
+                    e = organizeFormat(e);
+                    let json = JSON.parse(e);
+                    console.log(json);
+                    if (json.success === false) {
+                        switch (json.errMessage) {
+                            case '無此權限':
+                            case '確認身份發生錯誤':
+                                alert(json.errMessage + '將會重新整理頁面');
+                                history.go(0);
+                                break;
+                            default:
+                                alert(json.errMessage);
+                                break;
+                        }
+                        return;
+                    }
+                    lastID = json.result.lastID;
+                    for (let item of json.result.data) {
+                        $('#dataShow').append(getMemberListView(
+                            memUse,
+                            item.id,
+                            item.account,
+                            item.name,
+                            item.email,
+                            item.phone,
+                            item.status,
+                            item.creationDatetime,
+                            (item.changeDatetime === null) ? '' : item.changeDatetime
+                        ));
+                    }
+
+
+                    getItemProcessing = false;
+                });
+            }
+        }).trigger('scroll');
 
         //訂單紀錄
         $('.orderListBtn').click(function () {
