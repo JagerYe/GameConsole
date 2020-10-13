@@ -237,6 +237,35 @@ class MemberController extends Controller
         );
     }
 
+    public function getLastID($requestMethod)
+    {
+        try {
+            if ($requestMethod !== 'GET') {
+                throw new Exception("請求方式錯誤");
+            }
+            if (!$this->checkIsEmp()) {
+                throw new Exception("確認身份發生錯誤");
+            }
+            if (!PermissionControlService::getDAO()->checkHavePermissionByEmpID($_COOKIE['empID'], 5)) {
+                throw new Exception("無此權限");
+            }
+
+            if (($this->result = MemberService::getDAO()->getLastID()) === -1) {
+                throw new Exception('取得錯誤');
+            }
+
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
     public function login($str, $requestMethod)
     {
         $jsonObj = json_decode($str);

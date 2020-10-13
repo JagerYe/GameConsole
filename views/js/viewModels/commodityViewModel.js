@@ -1,5 +1,5 @@
 function getEmpUpdateCommodityItemView(comUse, id, name, price, quantity, status, creationDatetime, changeDatetime = '') {
-        return `<td>${id}</td>
+        return `<td class="commodityID">${id}</td>
                 <td><img src="/GameConsole/commodity/getOneImg?id=${id}" alt=""
                         id="showImg${id}"></td>
                 <td>${name}</td>
@@ -12,8 +12,8 @@ function getEmpUpdateCommodityItemView(comUse, id, name, price, quantity, status
 }
 
 function getEmpInsertCommodityItemView(comUse, id, name, price, quantity, status, creationDatetime, changeDatetime = '') {
-        return `<tr id="com${id}">
-                        <td>${id}</td>
+        return `<tr class="oneCommodity" id="com${id}">
+                        <td class="commodityID">${id}</td>
                         <td><img src="/GameConsole/commodity/getOneImg?id=${id}" alt=""
                                 id="showImg${id}"></td>
                         <td>${name}</td>
@@ -35,8 +35,10 @@ function getCommodityItemView(id, name, price) {
         return `<div class="col-xs-12 col-sm-6 col-md-3 col-lg-2 bg-light text-dark">
                         <div class="oneCommodity text-center">
                         <a href="/GameConsole/commodity/getOneView?id=${id}">
-                                <img class="img-responsive" src="/GameConsole/commodity/getOneImg?ID=${id}"
-                                onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
+                                <div class="showImg">
+                                        <img class="center-block vcenter" src="/GameConsole/commodity/getOneImg?ID=${id}"
+                                        onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
+                                </div>
                                 <h3>價格：${price}</h3>
                                 <h4>${name}</h4>
                         </a>

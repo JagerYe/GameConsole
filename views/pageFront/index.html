@@ -34,7 +34,25 @@
 <style>
     img {
         max-width: 100%;
+        max-height: 100%;
         height: auto;
+    }
+
+    .oneCommodity {
+        height: 250px;
+        margin-bottom: 20px;
+    }
+
+    .showImg {
+        padding: 0;
+        margin: 0;
+        height: 150px;
+    }
+
+    .vcenter {
+        float: none;
+        display: inline-block;
+        vertical-align: middle;
     }
 </style>
 <script src="/GameConsole/views/js/jsonFormat.js"></script>
@@ -44,6 +62,9 @@
     let lastID = '{{if isset($lastID)}}{{$lastID}}{{/if}}';
     lastID = parseInt(lastID);
     let getItemProcessing = false;
+    let seletStr = '';
+    let stopID = -1;
+    let condition = 'newToOld';
 
     $(window).ready(() => {
         //回最頂按鈕
@@ -64,36 +85,107 @@
                 return;
             }
 
-            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing && lastID > 1) {
-                getItemProcessing = true;
-                $.ajax({
-                    type: 'GET',
-                    url: `/GameConsole/commodity/getSomeData?id=${lastID}`
-                }).then(function (e) {
-                    e = organizeFormat(e);
-                    let json = JSON.parse(e);
-                    if (json.success === true) {
-                        for (let item of json.result) {
-                            $('#dataShow').append(getCommodityItemView(
-                                item.id,
-                                item.name,
-                                item.price
-                            ));
-                            lastID = item.id;
-                        }
-
-                    } else {
-                        alert(json.errMessage);
-                    }
-                    getItemProcessing = false;
-                });
+            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing) {
+                getData(true);
             }
+
         }).trigger('scroll');
 
+        //搜尋按鈕
         $('#seletBtn').click(() => {
-            console.log($('#seletText').val());
+            seletStr = $('#seletText').val();
+            lastID = 4294967295;
+
+            if (seletStr.length <= 0) {
+                $('.conditionBtn').parent().find('.btn-primary').removeClass('btn-primary').addClass('btn-light');
+                $('#newToOld').removeClass('btn-light').addClass('btn-primary');
+                $('#dataShow').empty();
+                stopID = -1;
+                $(window).trigger('scroll');
+                return;
+            }
+
+            getData();
         });
+
+        //條件按鈕
+        $('.conditionBtn').click(function () {
+            $('.conditionBtn').parent().find('.btn-primary').removeClass('btn-primary').addClass('btn-light');
+            $(this).removeClass('btn-light').addClass('btn-primary');
+            condition = this.id;
+        });
+
     });
+
+    function getData(isScroll = false) {
+
+        if (!isScroll) {
+            $('#dataShow').empty();
+        }
+
+        //當沒搜尋條件時
+        if (seletStr.length <= 0 && lastID > 1) {
+            getItemProcessing = true;
+            $.ajax({
+                type: 'GET',
+                url: `/GameConsole/commodity/getSomeCanBuyDate`,
+                data: { 0: JSON.stringify(lastID) }
+            }).then(function (e) {
+                getItemProcessing = false;
+                e = organizeFormat(e);
+                let json = JSON.parse(e);
+                if (json.success === true) {
+                    for (let item of json.result) {
+                        $('#dataShow').append(getCommodityItemView(
+                            item.id,
+                            item.name,
+                            item.price
+                        ));
+                        lastID = parseInt(item.id);
+                    }
+                    $(window).trigger('scroll');
+                } else {
+                    alert(json.errMessage);
+                }
+            });
+        }
+
+        //當有搜尋條件時
+        if (seletStr.length > 0 && lastID > stopID) {
+            getItemProcessing = true;
+            let data = {
+                'names': seletStr,
+                'lastID': lastID
+            };
+
+            $.ajax({
+                type: 'GET',
+                url: `/GameConsole/commodity/getSomeByName`,
+                data: { 0: JSON.stringify(data) }
+            }).then(function (e) {
+                getItemProcessing = false;
+                e = organizeFormat(e);
+                let json = JSON.parse(e);
+                console.log(json);
+                if (json.success === false) {
+                    alert(json.errMessage);
+                    return;
+                }
+
+                stopID = parseInt(json.result.stopID);
+                for (let item of json.result.data) {
+                    $('#dataShow').append(getCommodityItemView(
+                        item.id,
+                        item.name,
+                        item.price
+                    ));
+                    lastID = parseInt(item.id);
+                }
+                $(window).trigger('scroll');
+            });
+        }
+
+    }
 
 </script>
 
@@ -105,7 +197,12 @@
         <img class="topImgBtn" src="/GameConsole/views/img/top.png" alt="">
 
         <div class="row">
-            <div class="col-xs-9"></div>
+            <div class="col-xs-9">
+                <button class="conditionBtn btn btn-primary" id="newToOld">上市日期：新到舊</button>
+                <button class="conditionBtn btn btn-light" id="oldToNew">上市日期：舊到新</button>
+                <button class="conditionBtn btn btn-light" id="cheapToExpensive">價格：低到高</button>
+                <button class="conditionBtn btn btn-light" id="expensiveToCheap">價格：高到低</button>
+            </div>
             <div class="col-xs-3">
                 <div class="input-group">
                     <input type="text" class="form-control" id="seletText" placeholder="請輸入關鍵字">
@@ -118,13 +215,16 @@
 
         <hr>
 
-        <div class="row">
+        <div class="row" id="dataShow">
             {{foreach $commoditys as $commodity}}
             <div class="col-xs-12 col-sm-6 col-md-3 col-lg-2 bg-light text-dark">
                 <div class="oneCommodity text-center">
                     <a href="/GameConsole/commodity/getOneView?id={{$commodity['id']}}">
-                        <img class="img-responsive" src="/GameConsole/commodity/getOneImg?ID={{$commodity['id']}}"
-                            onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
+                        <div class="showImg">
+                            <img class="center-block vcenter"
+                                src="/GameConsole/commodity/getOneImg?ID={{$commodity['id']}}"
+                                onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
+                        </div>
                         <h3>價格：{{$commodity['price']}}</h3>
                         <h4>{{$commodity['name']}}</h4>
                     </a>

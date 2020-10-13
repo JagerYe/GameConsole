@@ -197,9 +197,39 @@ class CommodityController extends Controller
             $commodity = new Commodity();
             $commodity->setId($lastID);
 
-            if (!($this->result = CommodityService::getDAO()->getSomeCanBuy($commodity->getId()))) {
+            if (count($this->result = CommodityService::getDAO()->getSomeCanBuy($commodity->getId())) === 0) {
                 throw new Exception('取得發生錯誤');
             }
+
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
+    //取得關鍵字搜尋
+    public function getSomeByName($str)
+    {
+        try {
+            $jsonObj = json_decode($str);
+
+            $names = trim($jsonObj->names);
+
+            $names = explode(' ', $names);
+            for ($i = 0; $i < count($names); $i++) {
+                $names[$i] = '%' . $names[$i] . '%';
+            }
+            $commodityDAO = CommodityService::getDAO();
+            if (count($this->result['data'] = $commodityDAO->getSomeByName($names, $jsonObj->lastID)) === 0) {
+                throw new Exception('找無相關商品');
+            }
+            $this->result['stopID'] = $commodityDAO->getSeletNameLastID($names);
 
             $this->success = true;
         } catch (Exception $err) {

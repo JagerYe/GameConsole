@@ -109,6 +109,7 @@
                             ));
                             lastID = item.id;
                         }
+                        setUpdateBtnListener();
 
                     } else {
                         alert(json.errMessage);
@@ -119,29 +120,12 @@
         }).trigger('scroll');
 
         //更新按鈕
-        $(".updateBtn").click(function () {
-            updateID = $(this).parent().parent().children().html();
-            $.ajax({
-                type: 'GET',
-                url: `/GameConsole/commodity/getOneData?id=${updateID}`
-            }).then(function (e) {
-                e = organizeFormat(e);
-                let json = JSON.parse(e);
-                if (json.success === true) {
-                    $('#name').val(json.result.name).trigger('change');
-                    $('#price').val(json.result.price).trigger('change');
-                    $('#quantity').val(json.result.quantity).trigger('change');
-                    $('#status').prop('checked', (json.result.status === '1'));
-                    $('#picturePreview').attr('src', `/GameConsole/commodity/getOneImg?id=${updateID}`);
-                } else {
-                    alert(json.errMessage);
-                }
-            });
-        });
+        setUpdateBtnListener();
 
         //新增按鈕
         $("#creatBtn").click(function () {
             updateID = -1;
+            $('.modal-title').text('新增商品');
             $('#name').val("1").trigger('change').val("");
             $('#price').val("").trigger('change');
             $('#quantity').val("").trigger('change');
@@ -162,7 +146,6 @@
         $('#price').change(function () {
             getCheckPriceMessage(this.value);
         });
-
 
         //庫存欄位檢查
         $('#quantity').change(function () {
@@ -257,6 +240,7 @@
                                     json.result.creationDatetime,
                                     (json.result.changeDatetime === null) ? '' : json.result.changeDatetime
                                 ));
+                                setUpdateBtnListener();
                             } else {
                                 alert(json.errMessage);
                             }
@@ -326,6 +310,32 @@
         });
 
     });
+
+    //更新按鈕監聽器
+    function setUpdateBtnListener() {
+        $(".updateBtn").off('click').click(function () {
+            updateID = $(this).closest('.oneCommodity').find('.commodityID').html();
+            $('.modal-title').text('更新商品');
+            console.log(updateID);
+            $.ajax({
+                type: 'GET',
+                url: `/GameConsole/commodity/getOneData?id=${updateID}`
+            }).then(function (e) {
+                e = organizeFormat(e);
+                let json = JSON.parse(e);
+                if (json.success === true) {
+                    $('#name').val(json.result.name).trigger('change');
+                    $('#price').val(json.result.price).trigger('change');
+                    $('#quantity').val(json.result.quantity).trigger('change');
+                    $('#status').prop('checked', (json.result.status === '1'));
+                    $('#picturePreview').attr('src', `/GameConsole/commodity/getOneImg?id=${updateID}`);
+                } else {
+                    alert(json.errMessage);
+                }
+            });
+        });
+
+    }
 
     //更新圖片
     function updateImg(id, img) {
@@ -444,8 +454,8 @@
 
             <tbody id="dataShow">
                 {{foreach $commoditys as $commodity}}
-                <tr id="com{{$commodity['id']}}">
-                    <td>{{$commodity['id']}}</td>
+                <tr class="oneCommodity" id="com{{$commodity['id']}}">
+                    <td class="commodityID">{{$commodity['id']}}</td>
                     <td><img src="/GameConsole/commodity/getOneImg?id={{$commodity['id']}}" alt=""
                             id="showImg{{$commodity['id']}}"></td>
                     <td>{{$commodity['name']}}</td>

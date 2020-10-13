@@ -63,8 +63,9 @@
 <script src="/GameConsole/views/js/viewModels/memberViewModel.js"></script>
 <script>
     let memUse = '{{if isset($memUse)&&$memUse}}{{$memUse}}{{/if}}';
-    memUse = (memUse.length <= 0) ? false : true;
-    let getItemProcessing = false;
+    memUse = (memUse.length > 0 || memUse === '1') ? true : false;
+    let getItemProcessing = false;//取得其他項目執行狀態
+    let getLastIDProcessing = false;//取得最後ID執行狀態
     let lastID = '{{if isset($lastID)}}{{$lastID}}{{/if}}';
     let showLastID = '{{if isset($showLastID)}}{{$showLastID}}{{/if}}';
     lastID = parseInt(lastID);
@@ -84,12 +85,29 @@
             console.log('window bottom' + windowBottom);
             console.log('body ' + $('body').height());
 
-            if (isNaN(lastID) || isNaN(showLastID) || showLastID >= lastID) {
+            if (isNaN(lastID) || isNaN(showLastID)) {
                 $(this).off('scroll');
                 return;
             }
 
-            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing) {
+            if (!getLastIDProcessing && showLastID >= lastID) {
+                getLastIDProcessing = true;
+                setTimeout(function () {
+                    $.ajax({
+                        type: 'GET',
+                        url: '/GameConsole/member/getLastID'
+                    }).then(function (e) {
+                        e = organizeFormat(e);
+                        let json = JSON.parse(e);
+                        if (json.success === false) {
+                            return;
+                        }
+                        lastID = parseInt(json.result);
+                    });
+                }, 1000);
+            }
+
+            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing && showLastID < lastID) {
                 getItemProcessing = true;
                 $.ajax({
                     type: 'GET',
@@ -111,7 +129,7 @@
                         }
                         return;
                     }
-                    lastID = json.result.lastID;
+                    lastID = parseInt(json.result.lastID);
                     for (let item of json.result.data) {
                         $('#dataShow').append(getMemberListView(
                             memUse,
@@ -124,72 +142,20 @@
                             item.creationDatetime,
                             (item.changeDatetime === null) ? '' : item.changeDatetime
                         ));
+                        showLastID = parseInt(item.id);
                     }
-
+                    getOrderListBtnListener();//訂單查看
+                    getChangeStatusBtnListener();//權限修改
 
                     getItemProcessing = false;
                 });
             }
         }).trigger('scroll');
 
-        //訂單紀錄
-        $('.orderListBtn').click(function () {
-            let buttonThis = $(this);
-            buttonThis.closest('.oneMember').next().toggleClass('hidden');
-
-            //如有開啟時關閉
-            if (buttonThis.closest('.oneMember').next('.memberOrders').find('.showOrder').html().length > 0) {
-                buttonThis.text('開啟訂單記錄').closest('.oneMember').next('.memberOrders').find('.showOrder').empty();
-                return;
-            }
-
-            let data = {
-                'id': buttonThis.closest('.oneMember').find('.memberID').text(),
-                'lastShowOrderID': null
-            };
-
-            $.ajax({
-                type: "GET",
-                url: "/GameConsole/order/getMemberOrder",
-                data: { 0: JSON.stringify(data) }
-            }).then(function (e) {
-                e = organizeFormat(e);
-                let json = JSON.parse(e);
-                console.log(json);
-
-                if (json.success === false) {
-                    buttonThis.closest('.oneMember').next().toggleClass('hidden');
-                    switch (json.errMessage) {
-                        case '無此權限':
-                        case '確認身份發生錯誤':
-                            alert(json.errMessage + '將會重新整理頁面');
-                            history.go(0);
-                            return;
-                        default:
-                            alert(json.errMessage);
-                    }
-                    return;
-                }
-                if (json.result === false) {
-                    buttonThis.closest('.oneMember').next().toggleClass('hidden');
-                    alert('你是怎麼做到的？');
-                    return;
-                }
-
-                for (let item of json.result) {
-                    buttonThis.text('關閉訂單記錄').closest('.oneMember').next('.memberOrders').find('.showOrder')
-                        .append(getOrderListView(item.orderID, item.creationDatetime, item.total));
-                }
-
-                showDetailsBtnListener();
-
-
-
-            });
-        });
-
+        //有使用權限者才可使用功能
         if (memUse) {
-            getChangeStatusBtnListener();
+            getOrderListBtnListener();//訂單查看
+            getChangeStatusBtnListener();//權限修改
         }
 
     });
@@ -249,9 +215,65 @@
 </script>
 {{if isset($memUse)&&$memUse}}
 <script>
+
+    function getOrderListBtnListener() {
+        $('.orderListBtn').off('click').click(function () {
+            let buttonThis = $(this);
+            buttonThis.closest('.oneMember').next().toggleClass('hidden');
+
+            //如有開啟時關閉
+            if (buttonThis.closest('.oneMember').next('.memberOrders').find('.showOrder').html().length > 0) {
+                buttonThis.text('開啟訂單記錄').closest('.oneMember').next('.memberOrders').find('.showOrder').empty();
+                return;
+            }
+
+            let data = {
+                'id': buttonThis.closest('.oneMember').find('.memberID').text(),
+                'lastShowOrderID': null
+            };
+
+            $.ajax({
+                type: "GET",
+                url: "/GameConsole/order/getMemberOrder",
+                data: { 0: JSON.stringify(data) }
+            }).then(function (e) {
+                e = organizeFormat(e);
+                let json = JSON.parse(e);
+                console.log(json);
+
+                if (json.success === false) {
+                    buttonThis.closest('.oneMember').next().toggleClass('hidden');
+                    switch (json.errMessage) {
+                        case '無此權限':
+                        case '確認身份發生錯誤':
+                            alert(json.errMessage + '將會重新整理頁面');
+                            history.go(0);
+                            return;
+                        default:
+                            alert(json.errMessage);
+                    }
+                    return;
+                }
+                if (json.result === false) {
+                    buttonThis.closest('.oneMember').next().toggleClass('hidden');
+                    alert('你是怎麼做到的？');
+                    return;
+                }
+
+                for (let item of json.result) {
+                    buttonThis.text('關閉訂單記錄').closest('.oneMember').next('.memberOrders').find('.showOrder')
+                        .append(getOrderListView(item.orderID, item.creationDatetime, item.total));
+                }
+
+                showDetailsBtnListener();
+
+            });
+        });
+    }
+
     function getChangeStatusBtnListener() {
         //狀態更改
-        $('.status').click(function () {
+        $('.status').off('click').click(function () {
             let button = $(this);
             let buttonClass = this.className.substring(this.className.lastIndexOf('btn'), this.className.length);
             let status = (buttonClass === 'btn-success') ? true : false;

@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-13 07:34:24
+/* Smarty version 3.1.34-dev-7, created on 2020-10-13 09:19:34
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/memberList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f853c60a89068_21686293',
+  'unifunc' => 'content_5f855506eefc32_86164518',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '2c02a50c3ad3cd70704776d896bfd70b73bce38f' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/memberList.html',
-      1 => 1602567263,
+      1 => 1602573572,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f853c60a89068_21686293 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f855506eefc32_86164518 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -106,8 +106,9 @@ function content_5f853c60a89068_21686293 (Smarty_Internal_Template $_smarty_tpl)
     let memUse = '<?php if ((isset($_smarty_tpl->tpl_vars['memUse']->value)) && $_smarty_tpl->tpl_vars['memUse']->value) {
 echo $_smarty_tpl->tpl_vars['memUse']->value;
 }?>';
-    memUse = (memUse.length <= 0) ? false : true;
-    let getItemProcessing = false;
+    memUse = (memUse.length > 0 || memUse === '1') ? true : false;
+    let getItemProcessing = false;//取得其他項目執行狀態
+    let getLastIDProcessing = false;//取得最後ID執行狀態
     let lastID = '<?php if ((isset($_smarty_tpl->tpl_vars['lastID']->value))) {
 echo $_smarty_tpl->tpl_vars['lastID']->value;
 }?>';
@@ -131,12 +132,29 @@ echo $_smarty_tpl->tpl_vars['showLastID']->value;
             console.log('window bottom' + windowBottom);
             console.log('body ' + $('body').height());
 
-            if (isNaN(lastID) || isNaN(showLastID) || showLastID >= lastID) {
+            if (isNaN(lastID) || isNaN(showLastID)) {
                 $(this).off('scroll');
                 return;
             }
 
-            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing) {
+            if (!getLastIDProcessing && showLastID >= lastID) {
+                getLastIDProcessing = true;
+                setTimeout(function () {
+                    $.ajax({
+                        type: 'GET',
+                        url: '/GameConsole/member/getLastID'
+                    }).then(function (e) {
+                        e = organizeFormat(e);
+                        let json = JSON.parse(e);
+                        if (json.success === false) {
+                            return;
+                        }
+                        lastID = parseInt(json.result);
+                    });
+                }, 1000);
+            }
+
+            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing && showLastID < lastID) {
                 getItemProcessing = true;
                 $.ajax({
                     type: 'GET',
@@ -158,7 +176,7 @@ echo $_smarty_tpl->tpl_vars['showLastID']->value;
                         }
                         return;
                     }
-                    lastID = json.result.lastID;
+                    lastID = parseInt(json.result.lastID);
                     for (let item of json.result.data) {
                         $('#dataShow').append(getMemberListView(
                             memUse,
@@ -171,72 +189,20 @@ echo $_smarty_tpl->tpl_vars['showLastID']->value;
                             item.creationDatetime,
                             (item.changeDatetime === null) ? '' : item.changeDatetime
                         ));
+                        showLastID = parseInt(item.id);
                     }
-
+                    getOrderListBtnListener();//訂單查看
+                    getChangeStatusBtnListener();//權限修改
 
                     getItemProcessing = false;
                 });
             }
         }).trigger('scroll');
 
-        //訂單紀錄
-        $('.orderListBtn').click(function () {
-            let buttonThis = $(this);
-            buttonThis.closest('.oneMember').next().toggleClass('hidden');
-
-            //如有開啟時關閉
-            if (buttonThis.closest('.oneMember').next('.memberOrders').find('.showOrder').html().length > 0) {
-                buttonThis.text('開啟訂單記錄').closest('.oneMember').next('.memberOrders').find('.showOrder').empty();
-                return;
-            }
-
-            let data = {
-                'id': buttonThis.closest('.oneMember').find('.memberID').text(),
-                'lastShowOrderID': null
-            };
-
-            $.ajax({
-                type: "GET",
-                url: "/GameConsole/order/getMemberOrder",
-                data: { 0: JSON.stringify(data) }
-            }).then(function (e) {
-                e = organizeFormat(e);
-                let json = JSON.parse(e);
-                console.log(json);
-
-                if (json.success === false) {
-                    buttonThis.closest('.oneMember').next().toggleClass('hidden');
-                    switch (json.errMessage) {
-                        case '無此權限':
-                        case '確認身份發生錯誤':
-                            alert(json.errMessage + '將會重新整理頁面');
-                            history.go(0);
-                            return;
-                        default:
-                            alert(json.errMessage);
-                    }
-                    return;
-                }
-                if (json.result === false) {
-                    buttonThis.closest('.oneMember').next().toggleClass('hidden');
-                    alert('你是怎麼做到的？');
-                    return;
-                }
-
-                for (let item of json.result) {
-                    buttonThis.text('關閉訂單記錄').closest('.oneMember').next('.memberOrders').find('.showOrder')
-                        .append(getOrderListView(item.orderID, item.creationDatetime, item.total));
-                }
-
-                showDetailsBtnListener();
-
-
-
-            });
-        });
-
+        //有使用權限者才可使用功能
         if (memUse) {
-            getChangeStatusBtnListener();
+            getOrderListBtnListener();//訂單查看
+            getChangeStatusBtnListener();//權限修改
         }
 
     });
@@ -298,9 +264,65 @@ echo $_smarty_tpl->tpl_vars['showLastID']->value;
 <?php if ((isset($_smarty_tpl->tpl_vars['memUse']->value)) && $_smarty_tpl->tpl_vars['memUse']->value) {
 echo '<script'; ?>
 >
+
+    function getOrderListBtnListener() {
+        $('.orderListBtn').off('click').click(function () {
+            let buttonThis = $(this);
+            buttonThis.closest('.oneMember').next().toggleClass('hidden');
+
+            //如有開啟時關閉
+            if (buttonThis.closest('.oneMember').next('.memberOrders').find('.showOrder').html().length > 0) {
+                buttonThis.text('開啟訂單記錄').closest('.oneMember').next('.memberOrders').find('.showOrder').empty();
+                return;
+            }
+
+            let data = {
+                'id': buttonThis.closest('.oneMember').find('.memberID').text(),
+                'lastShowOrderID': null
+            };
+
+            $.ajax({
+                type: "GET",
+                url: "/GameConsole/order/getMemberOrder",
+                data: { 0: JSON.stringify(data) }
+            }).then(function (e) {
+                e = organizeFormat(e);
+                let json = JSON.parse(e);
+                console.log(json);
+
+                if (json.success === false) {
+                    buttonThis.closest('.oneMember').next().toggleClass('hidden');
+                    switch (json.errMessage) {
+                        case '無此權限':
+                        case '確認身份發生錯誤':
+                            alert(json.errMessage + '將會重新整理頁面');
+                            history.go(0);
+                            return;
+                        default:
+                            alert(json.errMessage);
+                    }
+                    return;
+                }
+                if (json.result === false) {
+                    buttonThis.closest('.oneMember').next().toggleClass('hidden');
+                    alert('你是怎麼做到的？');
+                    return;
+                }
+
+                for (let item of json.result) {
+                    buttonThis.text('關閉訂單記錄').closest('.oneMember').next('.memberOrders').find('.showOrder')
+                        .append(getOrderListView(item.orderID, item.creationDatetime, item.total));
+                }
+
+                showDetailsBtnListener();
+
+            });
+        });
+    }
+
     function getChangeStatusBtnListener() {
         //狀態更改
-        $('.status').click(function () {
+        $('.status').off('click').click(function () {
             let button = $(this);
             let buttonClass = this.className.substring(this.className.lastIndexOf('btn'), this.className.length);
             let status = (buttonClass === 'btn-success') ? true : false;

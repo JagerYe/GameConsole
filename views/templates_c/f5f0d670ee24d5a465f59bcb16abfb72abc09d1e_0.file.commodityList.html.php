@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-13 03:41:19
+/* Smarty version 3.1.34-dev-7, created on 2020-10-13 08:47:11
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/commodityList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f8505bf532167_52768324',
+  'unifunc' => 'content_5f854d6f6e06d0_14013199',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'f5f0d670ee24d5a465f59bcb16abfb72abc09d1e' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/commodityList.html',
-      1 => 1602553271,
+      1 => 1602571629,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f8505bf532167_52768324 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f854d6f6e06d0_14013199 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -152,6 +152,7 @@ function content_5f8505bf532167_52768324 (Smarty_Internal_Template $_smarty_tpl)
                             ));
                             lastID = item.id;
                         }
+                        setUpdateBtnListener();
 
                     } else {
                         alert(json.errMessage);
@@ -162,29 +163,12 @@ function content_5f8505bf532167_52768324 (Smarty_Internal_Template $_smarty_tpl)
         }).trigger('scroll');
 
         //更新按鈕
-        $(".updateBtn").click(function () {
-            updateID = $(this).parent().parent().children().html();
-            $.ajax({
-                type: 'GET',
-                url: `/GameConsole/commodity/getOneData?id=${updateID}`
-            }).then(function (e) {
-                e = organizeFormat(e);
-                let json = JSON.parse(e);
-                if (json.success === true) {
-                    $('#name').val(json.result.name).trigger('change');
-                    $('#price').val(json.result.price).trigger('change');
-                    $('#quantity').val(json.result.quantity).trigger('change');
-                    $('#status').prop('checked', (json.result.status === '1'));
-                    $('#picturePreview').attr('src', `/GameConsole/commodity/getOneImg?id=${updateID}`);
-                } else {
-                    alert(json.errMessage);
-                }
-            });
-        });
+        setUpdateBtnListener();
 
         //新增按鈕
         $("#creatBtn").click(function () {
             updateID = -1;
+            $('.modal-title').text('新增商品');
             $('#name').val("1").trigger('change').val("");
             $('#price').val("").trigger('change');
             $('#quantity').val("").trigger('change');
@@ -205,7 +189,6 @@ function content_5f8505bf532167_52768324 (Smarty_Internal_Template $_smarty_tpl)
         $('#price').change(function () {
             getCheckPriceMessage(this.value);
         });
-
 
         //庫存欄位檢查
         $('#quantity').change(function () {
@@ -300,6 +283,7 @@ function content_5f8505bf532167_52768324 (Smarty_Internal_Template $_smarty_tpl)
                                     json.result.creationDatetime,
                                     (json.result.changeDatetime === null) ? '' : json.result.changeDatetime
                                 ));
+                                setUpdateBtnListener();
                             } else {
                                 alert(json.errMessage);
                             }
@@ -369,6 +353,32 @@ function content_5f8505bf532167_52768324 (Smarty_Internal_Template $_smarty_tpl)
         });
 
     });
+
+    //更新按鈕監聽器
+    function setUpdateBtnListener() {
+        $(".updateBtn").off('click').click(function () {
+            updateID = $(this).closest('.oneCommodity').find('.commodityID').html();
+            $('.modal-title').text('更新商品');
+            console.log(updateID);
+            $.ajax({
+                type: 'GET',
+                url: `/GameConsole/commodity/getOneData?id=${updateID}`
+            }).then(function (e) {
+                e = organizeFormat(e);
+                let json = JSON.parse(e);
+                if (json.success === true) {
+                    $('#name').val(json.result.name).trigger('change');
+                    $('#price').val(json.result.price).trigger('change');
+                    $('#quantity').val(json.result.quantity).trigger('change');
+                    $('#status').prop('checked', (json.result.status === '1'));
+                    $('#picturePreview').attr('src', `/GameConsole/commodity/getOneImg?id=${updateID}`);
+                } else {
+                    alert(json.errMessage);
+                }
+            });
+        });
+
+    }
 
     //更新圖片
     function updateImg(id, img) {
@@ -494,9 +504,9 @@ $_smarty_tpl->tpl_vars['commodity']->do_else = true;
 if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['commodity']->value) {
 $_smarty_tpl->tpl_vars['commodity']->do_else = false;
 ?>
-                <tr id="com<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+                <tr class="oneCommodity" id="com<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
 ">
-                    <td><?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+                    <td class="commodityID"><?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
 </td>
                     <td><img src="/GameConsole/commodity/getOneImg?id=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
 " alt=""

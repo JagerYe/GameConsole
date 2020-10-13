@@ -133,7 +133,7 @@ class CommodityDAO implements CommodityDAO_Interface
     }
 
     //取得部份商品
-    public function getSome($id = null)
+    public function getSome($id = null, $condition = 'newToOld')
     {
         try {
             $dbh = Config::getDBConnect();
@@ -152,8 +152,26 @@ class CommodityDAO implements CommodityDAO_Interface
     }
 
     //取得部份上架商品
-    public function getSomeCanBuy($id = null)
+    public function getSomeCanBuy($id = null, $condition = 'newToOld')
     {
+        $sqlStr = "SELECT `id`, `name`, `price`, `quantity`, `status`, `creationDatetime`, `changeDatetime`
+            FROM `Commodities` WHERE `id`<IFNULL(:id, (~0 >> 32)) ";
+
+        switch ($condition) {
+            case 'oldToNew':
+                $sqlStr .= "ORDER BY `id` LIMIT 5;";
+                break;
+            case 'cheapToExpensive':
+                $sqlStr .= "ORDER BY `price` LIMIT 5;";
+                break;
+            case 'expensiveToCheap':
+                $sqlStr .= "ORDER BY `price` DESC LIMIT 5;";
+                break;
+            default:
+                $sqlStr .= "ORDER BY `id` DESC LIMIT 5;";
+                break;
+        }
+
         try {
             $dbh = Config::getDBConnect();
             $sth = $dbh->prepare("SELECT `id`, `name`, `price`, `quantity`, `status`, `creationDatetime`, `changeDatetime` FROM `Commodities`
@@ -168,5 +186,65 @@ class CommodityDAO implements CommodityDAO_Interface
         }
         $dbh = null;
         return $request;
+    }
+
+    //取得名稱搜尋結果
+    public function getSomeByName($names, $lastID = null)
+    {
+        $sqlStr = 'SELECT `id`, `name`, `price`, `quantity`,
+            `status`, `creationDatetime`, `changeDatetime`
+            FROM `Commodities`
+            WHERE `status`=1 && `id`<IFNULL(:lastID, (~0 >> 32)) && (';
+
+        foreach ($names as $key => $name) {
+            $sqlStr .= "`name` LIKE :name{$key} &&";
+        }
+        $name = null;
+        $sqlStr = substr_replace($sqlStr, ')ORDER BY `id` DESC LIMIT 5;', -2, 2);
+
+        try {
+            $dbh = Config::getDBConnect();
+            $sth = $dbh->prepare($sqlStr);
+            foreach ($names as $key => &$name) {
+                $sth->bindParam("name{$key}", $name);
+            }
+            $sth->bindParam("lastID", $lastID);
+            $sth->execute();
+            $request = $sth->fetchAll(PDO::FETCH_ASSOC);
+            $sth = null;
+        } catch (PDOException $err) {
+            $dbh = null;
+            throw new Exception("取得商品發生錯誤\r\n" . $err->getMessage());
+        }
+        $dbh = null;
+        return $request;
+    }
+
+    //取得搜尋結果最終的ID
+    public function getSeletNameLastID($names)
+    {
+        $sqlStr = 'SELECT `id` FROM `Commodities` WHERE `status`=1 && (';
+
+        foreach ($names as $key => $name) {
+            $sqlStr .= "`name` LIKE :name{$key} &&";
+        }
+        $name = null;
+        $sqlStr = substr_replace($sqlStr, ')ORDER BY `id` LIMIT 1;', -2, 2);
+
+        try {
+            $dbh = Config::getDBConnect();
+            $sth = $dbh->prepare($sqlStr);
+            foreach ($names as $key => &$name) {
+                $sth->bindParam("name{$key}", $name);
+            }
+            $sth->execute();
+            $request = $sth->fetchAll(PDO::FETCH_NUM);
+            $sth = null;
+        } catch (PDOException $err) {
+            $dbh = null;
+            throw new Exception("取得商品發生錯誤\r\n" . $err->getMessage());
+        }
+        $dbh = null;
+        return isset($request[0]) ? $request[0] : -1;
     }
 }
