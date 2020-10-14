@@ -67,6 +67,7 @@
 <script src="/GameConsole/views/js/title.js"></script>
 <script src="/GameConsole/views/js/rule.js"></script>
 <script src="/GameConsole/views/js/viewModels/commodityViewModel.js"></script>
+<script src="/GameConsole/views/js/imgError.js"></script>
 <script>
     let updateID = -1;
     let lastID = '{{$lastID}}';
@@ -75,6 +76,8 @@
 
 
     $(window).ready(() => {
+        setOnImgErrListener();
+
         //回最頂按鈕
         $(".topImgBtn").click(() => {
             $("html,body").animate({
@@ -110,6 +113,7 @@
                             lastID = item.id;
                         }
                         setUpdateBtnListener();
+                        setOnImgErrListener();
 
                     } else {
                         alert(json.errMessage);
@@ -240,6 +244,7 @@
                                     json.result.creationDatetime,
                                     (json.result.changeDatetime === null) ? '' : json.result.changeDatetime
                                 ));
+                                setOnImgErrListener();
                                 setUpdateBtnListener();
                             } else {
                                 alert(json.errMessage);
@@ -295,6 +300,7 @@
                                     json.result.creationDatetime,
                                     json.result.changeDatetime
                                 ));
+                                setOnImgErrListener();
                             } else {
                                 alert(json.errMessage);
                             }

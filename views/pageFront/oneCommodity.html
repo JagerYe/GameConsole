@@ -59,12 +59,15 @@
 </style>
 <script src="/GameConsole/views/js/jsonFormat.js"></script>
 <script src="/GameConsole/views/js/title.js"></script>
+<script src="/GameConsole/views/js/imgError.js"></script>
 <script>
     let commodityID = "{{$commodity['id']}}";
 
 
 
     $(window).ready(() => {
+        setOnImgErrListener();
+
         $('#quantity').change(function () {
             getCheckQuantityMessage(this.value);
         });
@@ -89,12 +92,12 @@
                 let json = JSON.parse(e);
                 console.log(json);
                 if (json.success === false) {
-					alert(json.errMessage);
-				} else if (json.result === true) {
-					alert('購買成功');
-				} else {
-					alert("發生不明錯誤");
-				}
+                    alert(json.errMessage);
+                } else if (json.result === true) {
+                    alert('購買成功');
+                } else {
+                    alert("發生不明錯誤");
+                }
             });
         });
     });
@@ -125,8 +128,7 @@
         <div class="mainShow">
             <h3>{{$commodity['name']}}</h3>
             <div>
-                <img src="/GameConsole/commodity/getOneImg?ID={{$commodity['id']}}"
-                    onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
+                <img src="/GameConsole/commodity/getOneImg?ID={{$commodity['id']}}">
             </div>
             <p>價格：{{$commodity['price']}}</p>
             {{if $commodity['quantity'] > 0}}

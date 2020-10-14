@@ -35,9 +35,8 @@ function getCommodityItemView(id, name, price, quantity) {
         return `<div class="col-xs-12 col-sm-6 col-md-3 col-lg-2 bg-light text-dark">
                         <div class="oneCommodity text-center">
                         <a href="/GameConsole/commodity/getOneView?id=${id}">
-                                <div class="showImg">
-                                        <img class="center-block vcenter" src="/GameConsole/commodity/getOneImg?ID=${id}"
-                                        onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
+                                <div class="showImgDiv">
+                                        <img class="center-block vcenter showImg" src="/GameConsole/commodity/getOneImg?id=${id}">
                                 </div>
                                 <h3>價格：${price}</h3>
                                 <h4>${name}</h4>
@@ -50,8 +49,7 @@ function getCommodityItemView(id, name, price, quantity) {
 function getShoppingCartItemView(id, name, price, maxQuantity, quantity) {
         return `<div class="row oneItem width100Percentage" id="oneItem${id}">
                         <div class="col-xs-3">
-                        <img src="/GameConsole/commodity/getOneImg?ID=${id}"
-                                onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
+                        <img src="/GameConsole/commodity/getOneImg?ID=${id}">
                         </div>
                         <div class="col-xs-2 itemText">${name}</div>
                         <div class="col-xs-2 itemText">${price}</div>

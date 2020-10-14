@@ -1,4 +1,28 @@
-<!DOCTYPE html>
+<?php
+/* Smarty version 3.1.34-dev-7, created on 2020-10-14 16:42:25
+  from 'C:\xampp\htdocs\GameConsole\views\pageFront\shoppingCart.html' */
+
+/* @var Smarty_Internal_Template $_smarty_tpl */
+if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
+  'version' => '3.1.34-dev-7',
+  'unifunc' => 'content_5f870e51ab89d6_30973010',
+  'has_nocache_code' => false,
+  'file_dependency' => 
+  array (
+    'e8987fafd380af5711f7c6f44bcc3341ce564412' => 
+    array (
+      0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageFront\\shoppingCart.html',
+      1 => 1602682309,
+      2 => 'file',
+    ),
+  ),
+  'includes' => 
+  array (
+    'file:./navigationBar.html' => 1,
+  ),
+),false)) {
+function content_5f870e51ab89d6_30973010 (Smarty_Internal_Template $_smarty_tpl) {
+?><!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -18,18 +42,26 @@
     <link href="/GameConsole/views/css/starter-template.css" rel="stylesheet">
 
     <!-- Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    <?php echo '<script'; ?>
+ src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
         integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
         integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
 
     <!-- ajax -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <?php echo '<script'; ?>
+ src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"><?php echo '</script'; ?>
+>
 </head>
 <style>
     img {
@@ -49,20 +81,26 @@
         font-size: 20px;
     }
 </style>
-<script src="/GameConsole/views/js/jsonFormat.js"></script>
-<script src="/GameConsole/views/js/title.js"></script>
-<script src="/GameConsole/views/js/viewModels/commodityViewModel.js"></script>
-<script src="/GameConsole/views/js/imgError.js"></script>
-<script>
-    let lastID = '{{$lastID}}';
-    let cartSize = '{{$cartSize}}';
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/jsonFormat.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/title.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/viewModels/commodityViewModel.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+>
+    let lastID = '<?php echo $_smarty_tpl->tpl_vars['lastID']->value;?>
+';
+    let cartSize = '<?php echo $_smarty_tpl->tpl_vars['cartSize']->value;?>
+';
     lastID = parseInt(lastID);
     cartSize = parseInt(cartSize);
     let getItemProcessing = false;
 
     $(window).ready(() => {
-        setOnImgErrListener();
-
         //回最頂按鈕
         $(".topImgBtn").click(() => {
             $("html,body").animate({
@@ -100,7 +138,7 @@
                         }
                         lastID = json.result.lastID;
                         cartSize = json.result.cartSize;
-                        setOnImgErrListener();
+
                         setButtonListener();
                         return;
                     }
@@ -223,10 +261,12 @@
         return "";
     }
 
-</script>
+<?php echo '</script'; ?>
+>
 
 <body>
-    {{include file='./navigationBar.html'}}
+    <?php $_smarty_tpl->_subTemplateRender('file:./navigationBar.html', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
+?>
     <div class="blank"></div>
     <main class="container">
         <img class="topImgBtn" src="/GameConsole/views/img/top.png" alt="">
@@ -247,27 +287,42 @@
         </div>
 
         <div class="showData">
-            {{foreach $shoppingCart as $item}}
-            <div class="row oneItem width100Percentage" id="oneItem{{$item->id}}">
+            <?php
+$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['shoppingCart']->value, 'item');
+$_smarty_tpl->tpl_vars['item']->do_else = true;
+if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['item']->value) {
+$_smarty_tpl->tpl_vars['item']->do_else = false;
+?>
+            <div class="row oneItem width100Percentage" id="oneItem<?php echo $_smarty_tpl->tpl_vars['item']->value->id;?>
+">
                 <div class="col-xs-3">
-                    <img src="/GameConsole/commodity/getOneImg?ID={{$item->id}}"
+                    <img src="/GameConsole/commodity/getOneImg?ID=<?php echo $_smarty_tpl->tpl_vars['item']->value->id;?>
+"
                         onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
                 </div>
-                <div class="col-xs-2 itemText">{{$item->name}}</div>
-                <div class="col-xs-2 itemText">{{$item->price}}</div>
+                <div class="col-xs-2 itemText"><?php echo $_smarty_tpl->tpl_vars['item']->value->name;?>
+</div>
+                <div class="col-xs-2 itemText"><?php echo $_smarty_tpl->tpl_vars['item']->value->price;?>
+</div>
                 <div class="col-xs-3 ">
-                    {{if $item->maxQuantity > 0}}
-                    <input type="number" class="width100Percentage quantity form-control" id="quantity{{$item->id}}"
-                        max="{{$item->maxQuantity}}" min="1" value="{{$item->quantity}}">
-                    {{else}}
+                    <?php if ($_smarty_tpl->tpl_vars['item']->value->maxQuantity > 0) {?>
+                    <input type="number" class="width100Percentage quantity form-control" id="quantity<?php echo $_smarty_tpl->tpl_vars['item']->value->id;?>
+"
+                        max="<?php echo $_smarty_tpl->tpl_vars['item']->value->maxQuantity;?>
+" min="1" value="<?php echo $_smarty_tpl->tpl_vars['item']->value->quantity;?>
+">
+                    <?php } else { ?>
                     <h3>此商品已售完</h3>
-                    {{/if}}
+                    <?php }?>
                 </div>
                 <div class="col-xs-2">
-                    <button class="width100Percentage deleteBtn" id="deleteBtn{{$item->id}}">刪除</button>
+                    <button class="width100Percentage deleteBtn" id="deleteBtn<?php echo $_smarty_tpl->tpl_vars['item']->value->id;?>
+">刪除</button>
                 </div>
             </div>
-            {{/foreach}}
+            <?php
+}
+$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
         </div>
 
         <div class="row oneItem width100Percentage">
@@ -279,12 +334,12 @@
 
         <div class="text-right">
             <h2 id="total"></h2>
-            {{if isset($isLogin)&&$isLogin}}
+            <?php if ((isset($_smarty_tpl->tpl_vars['isLogin']->value)) && $_smarty_tpl->tpl_vars['isLogin']->value) {?>
             <button class="btn btn-info " type="button" data-toggle="modal" data-target="#creatEmployeeModal"
                 id="checkoutBtn">結帳</button>
-            {{else}}
+            <?php } else { ?>
             <h2>如需購買請先登入</h2>
-            {{/if}}
+            <?php }?>
         </div>
 
         <!-- 此為墊高畫面用 -->
@@ -294,4 +349,5 @@
 
 </body>
 
-</html>
+</html><?php }
+}
