@@ -432,9 +432,15 @@ class CommodityController extends Controller
         $commodityDAO = CommodityService::getDAO();
         $lastID = -1;
         $cartSize = count($shoppingCart);
-        foreach ($shoppingCart as $key => $item) {
-            if (!($commodity = $commodityDAO->getOneByID($item->id)) || !$commodity['status']) {
-                unset($shoppingCart[$key]);
+
+
+        for ($i = 0; $i < count($shoppingCart); $i++) {
+
+            //檢查是否為商城內的商品，如果不是就踢出購物車
+            if (!($commodity = $commodityDAO->getOneByID($shoppingCart[$i]->id)) || !$commodity['status']) {
+                array_splice($shoppingCart, $i, 1);
+                $i--;
+                setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
                 continue;
             }
             $shoppingCart[$key]->name = $commodity['name'];

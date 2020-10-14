@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-14 03:18:34
+/* Smarty version 3.1.34-dev-7, created on 2020-10-14 03:43:18
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/employeeList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f8651ea3982c3_05302491',
+  'unifunc' => 'content_5f8657b6e4b3b2_16538115',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'eae9421863c66dc9d84c4b62729d6f4a3058a32b' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/employeeList.html',
-      1 => 1602561946,
+      1 => 1602639797,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f8651ea3982c3_05302491 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f8657b6e4b3b2_16538115 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -180,10 +180,12 @@ echo $_smarty_tpl->tpl_vars['showLastID']->value;
                             item.creationDatetime,
                             (item.changeDatetime === null) ? '' : item.changeDatetime
                         ));
+                        showLastID = parseInt(item.id);
                     }
 
-
+                    lastID = parseInt(json.result.lastID);
                     getItemProcessing = false;
+                    $(window).trigger('scroll');
                 });
             }
         }).trigger('scroll');

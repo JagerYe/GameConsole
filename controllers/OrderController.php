@@ -35,8 +35,13 @@ class OrderController extends Controller
             $shoppingCart = json_decode($_COOKIE['shoppingCart']);
             $orderDetails = array();
 
-            for($i=0;$i<count($shoppingCart);$i++){
+            for ($i = 0; $i < count($shoppingCart); $i++) {
                 $commodity = $commodityDAO->getOneByID($shoppingCart[$i]->id);
+                if ($commodity === false) {
+                    array_splice($shoppingCart, $i, 1);
+                    $i--;
+                    continue;
+                }
 
                 $orderDetail->setQuantity($shoppingCart[$i]->quantity);
                 if ($commodity['status'] === '0') {

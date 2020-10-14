@@ -14,6 +14,7 @@ class Commodity implements \JsonSerializable
     {
         return $this->_id;
     }
+    
     public function setId($id)
     {
         if (!preg_match("/\d/", $id)) {

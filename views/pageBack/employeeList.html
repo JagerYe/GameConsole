@@ -134,10 +134,12 @@
                             item.creationDatetime,
                             (item.changeDatetime === null) ? '' : item.changeDatetime
                         ));
+                        showLastID = parseInt(item.id);
                     }
 
-
+                    lastID = parseInt(json.result.lastID);
                     getItemProcessing = false;
+                    $(window).trigger('scroll');
                 });
             }
         }).trigger('scroll');
