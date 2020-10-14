@@ -55,15 +55,15 @@ function getShoppingCartItemView(id, name, price, maxQuantity, quantity) {
                         </div>
                         <div class="col-xs-2 itemText">${name}</div>
                         <div class="col-xs-2 itemText">${price}</div>
-                        <div class="col-xs-3 ">${getQuantityInputView(maxQuantity, quantity)}</div>
+                        <div class="col-xs-3 ">${getQuantityInputView(maxQuantity, quantity, id)}</div>
                         <div class="col-xs-2">
                         <button class="width100Percentage deleteBtn" id="deleteBtn${id}">刪除</button>
                         </div>
                 </div>`;
 }
 
-function getQuantityInputView(maxQuantity, quantity) {
+function getQuantityInputView(maxQuantity, quantity, id) {
         return (maxQuantity <= 0) ?
                 `<h3>此商品已售完</h3>` :
-                `<input type="number" class="width100Percentage quantity form-control" id="buyQuantity${id}" max="${maxQuantity}" min="1" value="${quantity}">`;
+                `<input type="number" class="width100Percentage quantity form-control" id="quantity${id}" max="${maxQuantity}" min="1" value="${quantity}">`;
 }

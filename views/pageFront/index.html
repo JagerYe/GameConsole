@@ -43,7 +43,7 @@
         margin-bottom: 50px;
     }
 
-    .showImg {
+    .showImgDiv {
         padding: 0;
         margin: 0;
         height: 150px;
@@ -68,6 +68,8 @@
     let condition = 'newToOld';
 
     $(window).ready(() => {
+        
+
         //回最頂按鈕
         $(".topImgBtn").click(() => {
             $("html,body").animate({
@@ -77,6 +79,8 @@
 
         //滾動監聽器
         $(window).scroll(function (e) {
+            console.log($('.showImg').length);
+            console.log($('.showImg').get(0));
             let windowBottom = $(this).height() + $(this).scrollTop();
             console.log('window bottom' + windowBottom);
             console.log('body ' + $('body').height());
@@ -219,10 +223,8 @@
             <div class="col-xs-12 col-sm-6 col-md-3 col-lg-2 bg-light text-dark">
                 <div class="oneCommodity text-center">
                     <a href="/GameConsole/commodity/getOneView?id={{$commodity['id']}}">
-                        <div class="showImg">
-                            <img class="center-block vcenter"
-                                src="/GameConsole/commodity/getOneImg?ID={{$commodity['id']}}"
-                                onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
+                        <div class="showImgDiv">
+                            <img class="center-block vcenter showImg" src="/GameConsole/commodity/getOneImg?id={{$commodity['id']}}">
                         </div>
                         <h3>價格：{{$commodity['price']}}</h3>
                         <h4>{{$commodity['name']}}</h4>

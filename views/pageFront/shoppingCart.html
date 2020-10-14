@@ -67,45 +67,83 @@
             }, 1000);
         });
 
+        updateTotal();
+        setButtonListener();
+
         //滾動監聽器
         $(window).scroll(function (e) {
             let windowBottom = $(this).height() + $(this).scrollTop();
             console.log('window bottom' + windowBottom);
             console.log('body ' + $('body').height());
-            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing && (cartSize > lastID + 1)) {
+            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing && (cartSize > (lastID + 1))) {
                 getItemProcessing = true;
                 $.ajax({
                     type: 'GET',
-                    url: `/GameConsole/commodity/getSomeData?id=${lastID}`
+                    url: `/GameConsole/commodity/getSomeShppingCartItem?id=${lastID}`
                 }).then(function (e) {
+                    getItemProcessing = false;
                     e = organizeFormat(e);
                     let json = JSON.parse(e);
                     if (json.success === true) {
-                        for (let item of json.result) {
-                            $('#dataShow').append(getCommodityItemView(
+                        for (let item of json.result.data) {
+                            $('.showData').append(getShoppingCartItemView(
                                 item.id,
                                 item.name,
-                                item.price
+                                item.price,
+                                item.maxQuantity,
+                                item.quantity
                             ));
-                            lastID = item.id;
-                        }
 
-                    } else {
-                        alert(json.errMessage);
+                        }
+                        lastID = json.result.lastID;
+                        cartSize = json.result.cartSize;
+
+                        setButtonListener();
+                        return;
                     }
-                    getItemProcessing = false;
+
+                    alert(json.errMessage);
+
                 });
             }
         }).trigger('scroll');
 
+
+        //結帳按鈕
+        $('#checkoutBtn').click(() => {
+            if (!confirm('確定剁手手？')) {
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/GameConsole/order/insert'
+            }).then(function (e) {
+                e = organizeFormat(e);
+                let json = JSON.parse(e);
+
+                if (json.success === false) {
+                    alert(json.errMessage);
+                    history.go(0);
+                    return
+                }
+                if (json.result === true) {
+                    window.location.href = "/GameConsole/order/getMemOrderListView";
+                }
+            });
+        });
+
+    });
+
+    function setButtonListener() {
         //購買數量欄位
-        $('.quantity').change(function () {
+        $('.quantity').off('change').change(function () {
             if ((errMessage = getCheckQuantityMessage(this.value, this.id)).length > 0) {
                 alert(errMessage);
                 return;
             }
 
-            let id = this.id.substring(11, this.id.length)
+            let id = this.id.substring(8, this.id.length)
             let data = {
                 'id': id,
                 'quantity': this.value
@@ -124,26 +162,14 @@
                     return;
                 }
                 if (json.result === true) {
-                    $.ajax({
-                        type: "PUT",
-                        url: "/GameConsole/commodity/getShoppingCartTotal"
-                    }).then(function (e) {
-                        e = organizeFormat(e);
-                        let json = JSON.parse(e);
 
-                        if (json.success === false) {
-                            alert(json.errMessage);
-                            return;
-                        }
-
-                        $('#total').text(`總金額：${json.result}`);
-                    });
+                    updateTotal();
                 }
             });
         });
 
         //刪除按鈕
-        $('.deleteBtn').click(function () {
+        $('.deleteBtn').off('click').click(function () {
 
             let id = this.id.substring(9, this.id.length);
             let data = { 'id': id };
@@ -166,34 +192,23 @@
             });
         });
 
-        //結帳按鈕
-        $('#checkoutBtn').click(() => {
-            if (!confirm('確定剁手手？')) {
-                return;
+    }
+
+    //取得總金額
+    function updateTotal() {
+        $.ajax({
+            type: 'GET',
+            url: '/GameConsole/commodity/getShoppingCartTotal'
+        }).then(function (e) {
+            e = organizeFormat(e);
+            let json = JSON.parse(e);
+            if (json.success === true) {
+                $('#total').text(`總金額： ${json.result}`);
             }
-
-            $.ajax({
-                type: 'POST',
-                url: '/GameConsole/order/insert'
-            }).then(function (e) {
-                console.log(e);
-                e = organizeFormat(e);
-                let json = JSON.parse(e);
-
-                if (json.success === false) {
-                    alert(json.errMessage);
-                    history.go(0);
-                    return
-                }
-                if (json.result === true) {
-                    window.location.href = "/GameConsole/order/getMemOrderListView";
-                }
-            });
         });
+    }
 
-    });
-
-    //確認姓名並得到錯誤訊息內容
+    //確認確認修改數量格式
     function getCheckQuantityMessage(value, id) {
         let input = $(`#${id}`);
         let returnStr = '購買數量少於1，請把大膽的想法收起來！';
@@ -239,7 +254,7 @@
                 <div class="col-xs-2 itemText">{{$item->price}}</div>
                 <div class="col-xs-3 ">
                     {{if $item->maxQuantity > 0}}
-                    <input type="number" class="width100Percentage quantity form-control" id="buyQuantity{{$item->id}}"
+                    <input type="number" class="width100Percentage quantity form-control" id="quantity{{$item->id}}"
                         max="{{$item->maxQuantity}}" min="1" value="{{$item->quantity}}">
                     {{else}}
                     <h3>此商品已售完</h3>
@@ -260,9 +275,7 @@
         </div>
 
         <div class="text-right">
-            <h2 id="total">
-                總金額：{{$total}}
-            </h2>
+            <h2 id="total"></h2>
             {{if isset($isLogin)&&$isLogin}}
             <button class="btn btn-info " type="button" data-toggle="modal" data-target="#creatEmployeeModal"
                 id="checkoutBtn">結帳</button>

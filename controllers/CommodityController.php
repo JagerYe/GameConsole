@@ -2,9 +2,6 @@
 
 class CommodityController extends Controller
 {
-    private $success = false;
-    private $result = null;
-
     public function __construct()
     {
         $this->requireDAO("commodity");
@@ -26,31 +23,39 @@ class CommodityController extends Controller
             }
 
             $jsonObj = json_decode($str);
-            $commodity = new Commodity();
-            $commodity->setName($jsonObj->name);
-            $commodity->setPrice($jsonObj->price);
-            $commodity->setQuantity($jsonObj->quantity);
-            $commodity->setStatus($jsonObj->status);
+            $rule = new Rule;
+            if (!$rule->checkName($jsonObj->name)) {
+                throw new Exception('名稱格式錯誤');
+            }
+            if (!$rule->checkPrice($jsonObj->price)) {
+                throw new Exception('價格格式錯誤');
+            }
+            if (!$rule->checkStockQuantity($jsonObj->quantity)) {
+                throw new Exception('庫存數量錯誤');
+            }
+            if (!$rule->checkCommodityStatus($jsonObj->status)) {
+                throw new Exception('商品狀態格式錯誤');
+            }
 
 
-            if (($this->result['id'] = CommodityService::getDAO()->insert(
-                $commodity->getName(),
-                $commodity->getPrice(),
-                $commodity->getQuantity(),
-                $commodity->getStatus()
+            if (($result['id'] = CommodityService::getDAO()->insert(
+                $jsonObj->name,
+                $jsonObj->price,
+                $jsonObj->quantity,
+                $jsonObj->status
             )) <= 0) {
                 throw new Exception('新增發生錯誤');
             }
 
-            $this->result['result'] = true;
-            $this->success = true;
+            $result['result'] = true;
+            $success = true;
         } catch (Exception $err) {
-            $this->success = false;
+            $success = false;
         }
 
         return Result::getResultJson(
-            $this->success,
-            $this->result,
+            $success,
+            isset($result) ? $result : null,
             isset($err) ? $err->getMessage() : null
         );
     }
@@ -71,30 +76,41 @@ class CommodityController extends Controller
             }
 
             $jsonObj = json_decode($str);
-            $commodity = new Commodity();
-            $commodity->setId($jsonObj->id);
-            $commodity->setName($jsonObj->name);
-            $commodity->setPrice($jsonObj->price);
-            $commodity->setQuantity($jsonObj->quantity);
-            $commodity->setStatus($jsonObj->status);
 
-            if (!($this->result = CommodityService::getDAO()->update(
-                $commodity->getId(),
-                $commodity->getName(),
-                $commodity->getPrice(),
-                $commodity->getQuantity(),
-                $commodity->getStatus()
+            $rule = new Rule;
+            if (!$rule->checkID($jsonObj->id)) {
+                throw new Exception('ID格式錯誤');
+            }
+            if (!$rule->checkName($jsonObj->name)) {
+                throw new Exception('名稱格式錯誤');
+            }
+            if (!$rule->checkPrice($jsonObj->price)) {
+                throw new Exception('價格格式錯誤');
+            }
+            if (!$rule->checkStockQuantity($jsonObj->quantity)) {
+                throw new Exception('庫存數量錯誤');
+            }
+            if (!$rule->checkCommodityStatus($jsonObj->status)) {
+                throw new Exception('商品狀態格式錯誤');
+            }
+
+            if (!($result = CommodityService::getDAO()->update(
+                $jsonObj->id,
+                $jsonObj->name,
+                $jsonObj->price,
+                $jsonObj->quantity,
+                $jsonObj->status
             ))) {
                 throw new Exception('更新發生錯誤');
             }
-            $this->success = true;
+            $success = true;
         } catch (Exception $err) {
-            $this->success = false;
+            $success = false;
         }
 
         return Result::getResultJson(
-            $this->success,
-            $this->result,
+            $success,
+            isset($result) ? $result : null,
             isset($err) ? $err->getMessage() : null
         );
     }
@@ -115,22 +131,26 @@ class CommodityController extends Controller
             }
 
             //格式驗證
-            $commodity = new Commodity();
-            $commodity->setId($id);
-            $commodity->setImageType($imageType);
+            $rule = new Rule;
+            if (!$rule->checkID($id)) {
+                throw new Exception('ID格式錯誤');
+            }
+            if (!$rule->checkImageType($imageType)) {
+                throw new Exception('上傳圖片格式錯誤');
+            }
 
-            if (!($this->result = (CommodityService::getDAO()->updateImage($id, $image) && unlink($image)))) {
+            if (!($result = (CommodityService::getDAO()->updateImage($id, $image) && unlink($image)))) {
                 throw new Exception('更新圖片錯誤');
             }
 
-            $this->success = true;
+            $success = true;
         } catch (Exception $err) {
-            $this->success = false;
+            $success = false;
         }
 
         return Result::getResultJson(
-            $this->success,
-            $this->result,
+            $success,
+            isset($result) ? $result : null,
             isset($err) ? $err->getMessage() : null
         );
     }
@@ -145,22 +165,22 @@ class CommodityController extends Controller
     public function getOneData($id)
     {
         try {
+            if (!(new Rule)->checkID($id)) {
+                throw new Exception('ID格式錯誤');
+            }
 
-            $commodity = new Commodity();
-            $commodity->setId($id);
-
-            if (!($this->result = CommodityService::getDAO()->getOneByID($commodity->getId()))) {
+            if (!($result = CommodityService::getDAO()->getOneByID($id))) {
                 throw new Exception('取得發生錯誤');
             }
 
-            $this->success = true;
+            $success = true;
         } catch (Exception $err) {
-            $this->success = false;
+            $success = false;
         }
 
         return Result::getResultJson(
-            $this->success,
-            $this->result,
+            $success,
+            isset($result) ? $result : null,
             isset($err) ? $err->getMessage() : null
         );
     }
@@ -169,22 +189,22 @@ class CommodityController extends Controller
     public function getSomeData($lastID)
     {
         try {
+            if (!(new Rule)->checkID($lastID)) {
+                throw new Exception('ID格式錯誤');
+            }
 
-            $commodity = new Commodity();
-            $commodity->setId($lastID);
-
-            if (!($this->result = CommodityService::getDAO()->getSome($commodity->getId()))) {
+            if (!($result = CommodityService::getDAO()->getSome($lastID))) {
                 throw new Exception('取得發生錯誤');
             }
 
-            $this->success = true;
+            $success = true;
         } catch (Exception $err) {
-            $this->success = false;
+            $success = false;
         }
 
         return Result::getResultJson(
-            $this->success,
-            $this->result,
+            $success,
+            isset($result) ? $result : null,
             isset($err) ? $err->getMessage() : null
         );
     }
@@ -195,25 +215,33 @@ class CommodityController extends Controller
         try {
             $jsonObj = json_decode($str);
 
+            $rule = new Rule;
+            if (!$rule->checkOffset($jsonObj->offset)) {
+                throw new Exception('分頁位子格式錯誤');
+            }
+            if (!$rule->checkCondition($jsonObj->condition)) {
+                throw new Exception('條件格式錯誤');
+            }
+
             $commodityDAO = CommodityService::getDAO();
-            if ((count($this->result['data'] = $commodityDAO->getSomeCanBuy(
+            if ((count($result['data'] = $commodityDAO->getSomeCanBuy(
                     $jsonObj->offset,
                     $jsonObj->condition
                 )) === 0)
                 ||
-                (($this->result['stopSet'] = $commodityDAO->getSeletSize(array('%'))) === -1)
+                (($result['stopSet'] = $commodityDAO->getSeletSize(array('%'))) === -1)
             ) {
                 throw new Exception('取得發生錯誤');
             }
 
-            $this->success = true;
+            $success = true;
         } catch (Exception $err) {
-            $this->success = false;
+            $success = false;
         }
 
         return Result::getResultJson(
-            $this->success,
-            $this->result,
+            $success,
+            isset($result) ? $result : null,
             isset($err) ? $err->getMessage() : null
         );
     }
@@ -225,6 +253,9 @@ class CommodityController extends Controller
             $jsonObj = json_decode($str);
 
             $names = trim($jsonObj->names);
+            if (!(new Rule)->checkName($names)) {
+                throw new Exception('搜尋名稱格式錯誤');
+            }
 
             $names = explode(' ', $names);
             for ($i = 0; $i < count($names); $i++) {
@@ -233,25 +264,25 @@ class CommodityController extends Controller
 
             $commodityDAO = CommodityService::getDAO();
             if (
-                (count($this->result['data'] = $commodityDAO->getSomeByName(
+                (count($result['data'] = $commodityDAO->getSomeByName(
                     $names,
                     $jsonObj->offset,
                     $jsonObj->condition
                 )) === 0)
                 ||
-                (($this->result['stopSet'] = $commodityDAO->getSeletSize($names)) === -1)
+                (($result['stopSet'] = $commodityDAO->getSeletSize($names)) === -1)
             ) {
                 throw new Exception('找無相關商品');
             }
 
-            $this->success = true;
+            $success = true;
         } catch (Exception $err) {
-            $this->success = false;
+            $success = false;
         }
 
         return Result::getResultJson(
-            $this->success,
-            $this->result,
+            $success,
+            isset($result) ? $result : null,
             isset($err) ? $err->getMessage() : null
         );
     }
@@ -263,7 +294,16 @@ class CommodityController extends Controller
             if ($requestMethod !== 'POST') {
                 throw new Exception("請求方式錯誤");
             }
+
             $jsonObj = json_decode($str);
+
+            $rule = new Rule;
+            if (!$rule->checkBuyQuantity($jsonObj->quantity)) {
+                throw new Exception('購買數量錯誤');
+            }
+            if (!$rule->checkID($jsonObj->id)) {
+                throw new Exception('商品ID格式錯誤');
+            }
             if (!(CommodityService::getDAO()->getOneByID($jsonObj->id))) {
                 throw new Exception('無此商品');
             }
@@ -272,32 +312,33 @@ class CommodityController extends Controller
             } else {
                 $shoppingCart = array();
             }
-            $commodity = new Commodity();
-            $commodity->setQuantity($jsonObj->quantity);
 
-            foreach ($shoppingCart as $item) {
-                if ($item->id === $jsonObj->id) {
-                    $item->quantity += $jsonObj->quantity;
-                    setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
-                    return Result::getResultJson(
-                        true,
-                        true,
-                        null
-                    );
+            //檢查購物車是否有重複的商品，如果有就增加該商品數量
+            $isRepeat = false;
+            for ($i = 0; $i < count($shoppingCart); $i++) {
+                if ($shoppingCart[$i]->id === $jsonObj->id) {
+                    $shoppingCart[$i]->quantity += $jsonObj->quantity;
+                    $isRepeat = true;
+                    break;
                 }
             }
 
-            $shoppingCart[] = $jsonObj;
+            //當沒重複商品時新增項目
+            if (!$isRepeat) {
+                $shoppingCart[] = $jsonObj;
+            }
+            $a = json_encode($shoppingCart);
             setcookie("shoppingCart", json_encode($shoppingCart), (time() + 31536000), "/");
-            $this->result = true;
-            $this->success = true;
+            $result = true;
+            $success = true;
         } catch (Exception $err) {
-            $this->success = false;
+            $success = false;
+            $result = null;
         }
 
         return Result::getResultJson(
-            $this->success,
-            $this->result,
+            $success,
+            isset($result) ? $result : null,
             isset($err) ? $err->getMessage() : null
         );
     }
@@ -314,31 +355,32 @@ class CommodityController extends Controller
             if (!(CommodityService::getDAO()->getOneByID($jsonObj->id))) {
                 throw new Exception('無此商品');
             }
+            if (!(new Rule())->checkBuyQuantity($jsonObj->quantity)) {
+                throw new Exception('購買數量錯誤');
+            }
             if (isset($_COOKIE['shoppingCart'])) {
                 $shoppingCart = json_decode($_COOKIE['shoppingCart']);
             } else {
                 $shoppingCart = array();
             }
-            $commodity = new Commodity();
-            $commodity->setQuantity($jsonObj->quantity);
 
             foreach ($shoppingCart as $item) {
                 if ($item->id === $jsonObj->id) {
                     $item->quantity = $jsonObj->quantity;
                     setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
-                    $this->result = true;
+                    $result = true;
                     break;
                 }
             }
 
-            $this->success = true;
+            $success = true;
         } catch (Exception $err) {
-            $this->success = false;
+            $success = false;
         }
 
         return Result::getResultJson(
-            $this->success,
-            $this->result,
+            $success,
+            isset($result) ? $result : null,
             isset($err) ? $err->getMessage() : null
         );
     }
@@ -353,29 +395,85 @@ class CommodityController extends Controller
 
             $jsonObj = json_decode($str);
 
+            if (!(new Rule())->checkID($jsonObj->id)) {
+                throw new Exception('商品ID錯誤');
+            }
+
             if (isset($_COOKIE['shoppingCart'])) {
                 $shoppingCart = json_decode($_COOKIE['shoppingCart']);
             } else {
-                $shoppingCart = array();
+                throw new Exception('本來就是空，還想惹塵埃');
             }
 
+            $result = false;
             foreach ($shoppingCart as $key => $item) {
                 if ($item->id === $jsonObj->id) {
                     array_splice($shoppingCart, $key, 1);
                     setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
-                    $this->result = true;
+                    $result = true;
                     break;
                 }
             }
 
-            $this->success = true;
+            if (!$result) {
+                throw new Exception('沒有該商品，業障非常重');
+            }
+
+            $success = true;
         } catch (Exception $err) {
-            $this->success = false;
+            $success = false;
         }
 
         return Result::getResultJson(
-            $this->success,
-            $this->result,
+            $success,
+            isset($result) ? $result : null,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
+    //取得購物車資料
+    public function getSomeShppingCartItem($lastID)
+    {
+        try {
+            if (isset($_COOKIE['shoppingCart'])) {
+                $shoppingCart = json_decode($_COOKIE['shoppingCart']);
+            } else {
+                throw new Exception('空的！跟錢包一樣');
+            }
+
+            $commodityDAO = CommodityService::getDAO();
+            $lastID++;
+
+            for ($i = $lastID; $i < (count($shoppingCart) - $lastID <= 5 ? count($shoppingCart) : $lastID + 5); $i++) {
+
+                //檢查是否有該商品，如沒有就剔除
+                if (
+                    !($commodity = $commodityDAO->getOneByID($shoppingCart[$i]->id)) ||
+                    $commodity['status'] !== '1'
+                ) {
+                    array_splice($shoppingCart, $i, 1);
+                    setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
+                    $i--;
+                    continue;
+                }
+                $commodity['maxQuantity'] = $commodity['quantity'];
+                $commodity['quantity'] = $shoppingCart[$i]->quantity;
+                $item[] = $commodity;
+                $lastID = $i;
+            }
+
+
+            $result['data'] = $item;
+            $result['lastID'] = $lastID;
+            $result['cartSize'] = count($shoppingCart);
+            $success = true;
+        } catch (Exception $err) {
+            $success = false;
+        }
+
+        return Result::getResultJson(
+            $success,
+            isset($result) ? $result : null,
             isset($err) ? $err->getMessage() : null
         );
     }
@@ -390,22 +488,21 @@ class CommodityController extends Controller
                 $shoppingCart = array();
             }
 
-            $commodityDAO = CommodityService::getDAO();
             $total = 0;
             foreach ($shoppingCart as $item) {
-                $commodity = $commodityDAO->getOneByID($item->id);
+                $commodity = CommodityService::getDAO()->getOneByID($item->id);
                 $total += $item->quantity * $commodity['price'];
             }
 
-            $this->result = $total;
-            $this->success = true;
+            $result = $total;
+            $success = true;
         } catch (Exception $err) {
-            $this->success = false;
+            $success = false;
         }
 
         return Result::getResultJson(
-            $this->success,
-            $this->result,
+            $success,
+            $result,
             isset($err) ? $err->getMessage() : null
         );
     }
@@ -431,10 +528,9 @@ class CommodityController extends Controller
         $total = 0;
         $commodityDAO = CommodityService::getDAO();
         $lastID = -1;
-        $cartSize = count($shoppingCart);
 
-
-        for ($i = 0; $i < count($shoppingCart); $i++) {
+        $item = array();
+        for ($i = 0; $i < (count($shoppingCart) > 5 ? 5 : count($shoppingCart)); $i++) {
 
             //檢查是否為商城內的商品，如果不是就踢出購物車
             if (!($commodity = $commodityDAO->getOneByID($shoppingCart[$i]->id)) || !$commodity['status']) {
@@ -443,17 +539,18 @@ class CommodityController extends Controller
                 setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
                 continue;
             }
-            $shoppingCart[$key]->name = $commodity['name'];
-            $shoppingCart[$key]->price = $commodity['price'];
-            $shoppingCart[$key]->maxQuantity = $commodity['quantity'];
-            $total += $item->quantity * $commodity['price'];
-            $lastID = $key;
+            $shoppingCart[$i]->name = $commodity['name'];
+            $shoppingCart[$i]->price = $commodity['price'];
+            $shoppingCart[$i]->maxQuantity = $commodity['quantity'];
+            $total += $shoppingCart[$i]->quantity * $commodity['price'];
+            $item[] = $shoppingCart[$i];
+            $lastID = $i;
         }
+        $cartSize = count($shoppingCart);
 
         $smarty->assign('lastID', $lastID);
         $smarty->assign('cartSize', $cartSize);
-        $smarty->assign('shoppingCart', $shoppingCart);
-        $smarty->assign('total', $total);
+        $smarty->assign('shoppingCart', $item);
         $smarty->display('pageFront/shoppingCart.html');
     }
 

@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-14 03:35:44
+/* Smarty version 3.1.34-dev-7, created on 2020-10-14 12:08:41
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/index.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f8655f0d4cea6_47891078',
+  'unifunc' => 'content_5f86ce29b2d6a0_00494023',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'f112382ef2a0ba7f9eda2ec02fa42c2086bc4b63' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/index.html',
-      1 => 1602639148,
+      1 => 1602670120,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f8655f0d4cea6_47891078 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f86ce29b2d6a0_00494023 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -75,7 +75,7 @@ function content_5f8655f0d4cea6_47891078 (Smarty_Internal_Template $_smarty_tpl)
         margin-bottom: 50px;
     }
 
-    .showImg {
+    .showImgDiv {
         padding: 0;
         margin: 0;
         height: 150px;
@@ -111,6 +111,8 @@ echo $_smarty_tpl->tpl_vars['stopSet']->value;
     let condition = 'newToOld';
 
     $(window).ready(() => {
+        
+
         //回最頂按鈕
         $(".topImgBtn").click(() => {
             $("html,body").animate({
@@ -120,6 +122,8 @@ echo $_smarty_tpl->tpl_vars['stopSet']->value;
 
         //滾動監聽器
         $(window).scroll(function (e) {
+            console.log($('.showImg').length);
+            console.log($('.showImg').get(0));
             let windowBottom = $(this).height() + $(this).scrollTop();
             console.log('window bottom' + windowBottom);
             console.log('body ' + $('body').height());
@@ -270,11 +274,9 @@ $_smarty_tpl->tpl_vars['commodity']->do_else = false;
                 <div class="oneCommodity text-center">
                     <a href="/GameConsole/commodity/getOneView?id=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
 ">
-                        <div class="showImg">
-                            <img class="center-block vcenter"
-                                src="/GameConsole/commodity/getOneImg?ID=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
-"
-                                onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
+                        <div class="showImgDiv">
+                            <img class="center-block vcenter showImg" src="/GameConsole/commodity/getOneImg?id=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+">
                         </div>
                         <h3>價格：<?php echo $_smarty_tpl->tpl_vars['commodity']->value['price'];?>
 </h3>

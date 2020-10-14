@@ -4,6 +4,7 @@ require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/core/Controller.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/core/smartyConfig.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/core/Result.php";
 require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/core/Rule.php";
+require_once "{$_SERVER['DOCUMENT_ROOT']}/GameConsole/core/ErrorMessage.php";
 
 try {
     $api = new Api();

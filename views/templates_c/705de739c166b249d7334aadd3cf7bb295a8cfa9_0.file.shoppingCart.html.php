@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-14 03:10:33
+/* Smarty version 3.1.34-dev-7, created on 2020-10-14 11:27:46
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/shoppingCart.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f865009b7b219_24784279',
+  'unifunc' => 'content_5f86c4923f7775_25770642',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '705de739c166b249d7334aadd3cf7bb295a8cfa9' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/shoppingCart.html',
-      1 => 1602482185,
+      1 => 1602667663,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f865009b7b219_24784279 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f86c4923f7775_25770642 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -108,45 +108,83 @@ function content_5f865009b7b219_24784279 (Smarty_Internal_Template $_smarty_tpl)
             }, 1000);
         });
 
+        updateTotal();
+        setButtonListener();
+
         //滾動監聽器
         $(window).scroll(function (e) {
             let windowBottom = $(this).height() + $(this).scrollTop();
             console.log('window bottom' + windowBottom);
             console.log('body ' + $('body').height());
-            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing && (cartSize > lastID + 1)) {
+            if ((windowBottom >= ($('body').height() * 0.7)) && !getItemProcessing && (cartSize > (lastID + 1))) {
                 getItemProcessing = true;
                 $.ajax({
                     type: 'GET',
-                    url: `/GameConsole/commodity/getSomeData?id=${lastID}`
+                    url: `/GameConsole/commodity/getSomeShppingCartItem?id=${lastID}`
                 }).then(function (e) {
+                    getItemProcessing = false;
                     e = organizeFormat(e);
                     let json = JSON.parse(e);
                     if (json.success === true) {
-                        for (let item of json.result) {
-                            $('#dataShow').append(getCommodityItemView(
+                        for (let item of json.result.data) {
+                            $('.showData').append(getShoppingCartItemView(
                                 item.id,
                                 item.name,
-                                item.price
+                                item.price,
+                                item.maxQuantity,
+                                item.quantity
                             ));
-                            lastID = item.id;
-                        }
 
-                    } else {
-                        alert(json.errMessage);
+                        }
+                        lastID = json.result.lastID;
+                        cartSize = json.result.cartSize;
+
+                        setButtonListener();
+                        return;
                     }
-                    getItemProcessing = false;
+
+                    alert(json.errMessage);
+
                 });
             }
         }).trigger('scroll');
 
+
+        //結帳按鈕
+        $('#checkoutBtn').click(() => {
+            if (!confirm('確定剁手手？')) {
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/GameConsole/order/insert'
+            }).then(function (e) {
+                e = organizeFormat(e);
+                let json = JSON.parse(e);
+
+                if (json.success === false) {
+                    alert(json.errMessage);
+                    history.go(0);
+                    return
+                }
+                if (json.result === true) {
+                    window.location.href = "/GameConsole/order/getMemOrderListView";
+                }
+            });
+        });
+
+    });
+
+    function setButtonListener() {
         //購買數量欄位
-        $('.quantity').change(function () {
+        $('.quantity').off('change').change(function () {
             if ((errMessage = getCheckQuantityMessage(this.value, this.id)).length > 0) {
                 alert(errMessage);
                 return;
             }
 
-            let id = this.id.substring(11, this.id.length)
+            let id = this.id.substring(8, this.id.length)
             let data = {
                 'id': id,
                 'quantity': this.value
@@ -165,26 +203,14 @@ function content_5f865009b7b219_24784279 (Smarty_Internal_Template $_smarty_tpl)
                     return;
                 }
                 if (json.result === true) {
-                    $.ajax({
-                        type: "PUT",
-                        url: "/GameConsole/commodity/getShoppingCartTotal"
-                    }).then(function (e) {
-                        e = organizeFormat(e);
-                        let json = JSON.parse(e);
 
-                        if (json.success === false) {
-                            alert(json.errMessage);
-                            return;
-                        }
-
-                        $('#total').text(`總金額：${json.result}`);
-                    });
+                    updateTotal();
                 }
             });
         });
 
         //刪除按鈕
-        $('.deleteBtn').click(function () {
+        $('.deleteBtn').off('click').click(function () {
 
             let id = this.id.substring(9, this.id.length);
             let data = { 'id': id };
@@ -207,34 +233,23 @@ function content_5f865009b7b219_24784279 (Smarty_Internal_Template $_smarty_tpl)
             });
         });
 
-        //結帳按鈕
-        $('#checkoutBtn').click(() => {
-            if (!confirm('確定剁手手？')) {
-                return;
+    }
+
+    //取得總金額
+    function updateTotal() {
+        $.ajax({
+            type: 'GET',
+            url: '/GameConsole/commodity/getShoppingCartTotal'
+        }).then(function (e) {
+            e = organizeFormat(e);
+            let json = JSON.parse(e);
+            if (json.success === true) {
+                $('#total').text(`總金額： ${json.result}`);
             }
-
-            $.ajax({
-                type: 'POST',
-                url: '/GameConsole/order/insert'
-            }).then(function (e) {
-                console.log(e);
-                e = organizeFormat(e);
-                let json = JSON.parse(e);
-
-                if (json.success === false) {
-                    alert(json.errMessage);
-                    history.go(0);
-                    return
-                }
-                if (json.result === true) {
-                    window.location.href = "/GameConsole/order/getMemOrderListView";
-                }
-            });
         });
+    }
 
-    });
-
-    //確認姓名並得到錯誤訊息內容
+    //確認確認修改數量格式
     function getCheckQuantityMessage(value, id) {
         let input = $(`#${id}`);
         let returnStr = '購買數量少於1，請把大膽的想法收起來！';
@@ -291,7 +306,7 @@ $_smarty_tpl->tpl_vars['item']->do_else = false;
 </div>
                 <div class="col-xs-3 ">
                     <?php if ($_smarty_tpl->tpl_vars['item']->value->maxQuantity > 0) {?>
-                    <input type="number" class="width100Percentage quantity form-control" id="buyQuantity<?php echo $_smarty_tpl->tpl_vars['item']->value->id;?>
+                    <input type="number" class="width100Percentage quantity form-control" id="quantity<?php echo $_smarty_tpl->tpl_vars['item']->value->id;?>
 "
                         max="<?php echo $_smarty_tpl->tpl_vars['item']->value->maxQuantity;?>
 " min="1" value="<?php echo $_smarty_tpl->tpl_vars['item']->value->quantity;?>
@@ -318,10 +333,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
         </div>
 
         <div class="text-right">
-            <h2 id="total">
-                總金額：<?php echo $_smarty_tpl->tpl_vars['total']->value;?>
-
-            </h2>
+            <h2 id="total"></h2>
             <?php if ((isset($_smarty_tpl->tpl_vars['isLogin']->value)) && $_smarty_tpl->tpl_vars['isLogin']->value) {?>
             <button class="btn btn-info " type="button" data-toggle="modal" data-target="#creatEmployeeModal"
                 id="checkoutBtn">結帳</button>
