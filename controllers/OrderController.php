@@ -34,27 +34,30 @@ class OrderController extends Controller
 
             $shoppingCart = json_decode($_COOKIE['shoppingCart']);
             $orderDetails = array();
-            foreach ($shoppingCart as $key => $item) {
-                $commodity = $commodityDAO->getOneByID($item->id);
 
-                $orderDetail->setQuantity($item->quantity);
+            for($i=0;$i<count($shoppingCart);$i++){
+                $commodity = $commodityDAO->getOneByID($shoppingCart[$i]->id);
+
+                $orderDetail->setQuantity($shoppingCart[$i]->quantity);
                 if ($commodity['status'] === '0') {
-                    array_splice($shoppingCart, $key, 1);
+                    array_splice($shoppingCart, $i, 1);
+                    $i--;
                     setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
                     throw new Exception("{$commodity['name']}已下架，請再確認購買商品");
                 }
-                if ($item->quantity > $commodity['quantity']) {
-                    $shoppingCart[$key]->quantity = $commodity['quantity'];
+                if ($shoppingCart[$i]->quantity > $commodity['quantity']) {
+                    $shoppingCart[$i]->quantity = $commodity['quantity'];
                     setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
                     throw new Exception('購買數量超過庫存，數量將修改，請再確認購買數量');
                 }
-                if ($item->quantity <= 0) {
+                if ($shoppingCart[$i]->quantity <= 0) {
                     continue;
                 }
 
-                $commodity['quantity'] = $item->quantity;
+                $commodity['quantity'] = $shoppingCart[$i]->quantity;
                 $orderDetails[] = $commodity;
-                array_splice($shoppingCart, $key, 1);
+                array_splice($shoppingCart, $i, 1);
+                $i--;
             }
 
 

@@ -1,4 +1,28 @@
-<!DOCTYPE html>
+<?php
+/* Smarty version 3.1.34-dev-7, created on 2020-10-14 03:35:44
+  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/index.html' */
+
+/* @var Smarty_Internal_Template $_smarty_tpl */
+if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
+  'version' => '3.1.34-dev-7',
+  'unifunc' => 'content_5f8655f0d4cea6_47891078',
+  'has_nocache_code' => false,
+  'file_dependency' => 
+  array (
+    'f112382ef2a0ba7f9eda2ec02fa42c2086bc4b63' => 
+    array (
+      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/index.html',
+      1 => 1602639148,
+      2 => 'file',
+    ),
+  ),
+  'includes' => 
+  array (
+    'file:./navigationBar.html' => 1,
+  ),
+),false)) {
+function content_5f8655f0d4cea6_47891078 (Smarty_Internal_Template $_smarty_tpl) {
+?><!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -18,18 +42,26 @@
     <link href="/GameConsole/views/css/starter-template.css" rel="stylesheet">
 
     <!-- Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    <?php echo '<script'; ?>
+ src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
         integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
         integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
 
     <!-- ajax -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <?php echo '<script'; ?>
+ src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"><?php echo '</script'; ?>
+>
 </head>
 <style>
     img {
@@ -55,13 +87,24 @@
         vertical-align: middle;
     }
 </style>
-<script src="/GameConsole/views/js/jsonFormat.js"></script>
-<script src="/GameConsole/views/js/title.js"></script>
-<script src="/GameConsole/views/js/viewModels/commodityViewModel.js"></script>
-<script>
-    let offset = '{{if isset($offset)}}{{$offset}}{{/if}}';
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/jsonFormat.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/title.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/viewModels/commodityViewModel.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+>
+    let offset = '<?php if ((isset($_smarty_tpl->tpl_vars['offset']->value))) {
+echo $_smarty_tpl->tpl_vars['offset']->value;
+}?>';
     offset = parseInt(offset);
-    let stopSet = '{{if isset($stopSet)}}{{$stopSet}}{{/if}}';
+    let stopSet = '<?php if ((isset($_smarty_tpl->tpl_vars['stopSet']->value))) {
+echo $_smarty_tpl->tpl_vars['stopSet']->value;
+}?>';
     stopSet = parseInt(stopSet);
     let getItemProcessing = false;
     let seletStr = '';
@@ -190,10 +233,12 @@
 
     }
 
-</script>
+<?php echo '</script'; ?>
+>
 
 <body>
-    {{include file='./navigationBar.html'}}
+    <?php $_smarty_tpl->_subTemplateRender('file:./navigationBar.html', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
+?>
     <div class="blank"></div>
     <main class="container">
         <img class="topImgBtn" src="/GameConsole/views/img/top.png" alt="">
@@ -215,28 +260,40 @@
         <hr>
 
         <div class="row" id="dataShow">
-            {{foreach $commoditys as $commodity}}
+            <?php
+$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['commoditys']->value, 'commodity');
+$_smarty_tpl->tpl_vars['commodity']->do_else = true;
+if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['commodity']->value) {
+$_smarty_tpl->tpl_vars['commodity']->do_else = false;
+?>
             <div class="col-xs-12 col-sm-6 col-md-3 col-lg-2 bg-light text-dark">
                 <div class="oneCommodity text-center">
-                    <a href="/GameConsole/commodity/getOneView?id={{$commodity['id']}}">
+                    <a href="/GameConsole/commodity/getOneView?id=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+">
                         <div class="showImg">
                             <img class="center-block vcenter"
-                                src="/GameConsole/commodity/getOneImg?ID={{$commodity['id']}}"
+                                src="/GameConsole/commodity/getOneImg?ID=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+"
                                 onerror="javascript:this.src='/GameConsole/views/img/gravatar.jpg'">
                         </div>
-                        <h3>價格：{{$commodity['price']}}</h3>
-                        <h4>{{$commodity['name']}}</h4>
+                        <h3>價格：<?php echo $_smarty_tpl->tpl_vars['commodity']->value['price'];?>
+</h3>
+                        <h4><?php echo $_smarty_tpl->tpl_vars['commodity']->value['name'];?>
+</h4>
                     </a>
-                    {{if $commodity['quantity'] <= 0}}
+                    <?php if ($_smarty_tpl->tpl_vars['commodity']->value['quantity'] <= 0) {?>
                     <h3 class="text-danger">已售完</h3>
-                    {{/if}}
+                    <?php }?>
                 </div>
             </div>
-            {{/foreach}}
+            <?php
+}
+$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
         </div>
 
     </main><!-- /.container -->
 
 </body>
 
-</html>
+</html><?php }
+}

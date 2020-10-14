@@ -31,7 +31,7 @@ function getControl(comUse) {
         data-target="#commodityModal">修改</button></td>`: '';
 }
 
-function getCommodityItemView(id, name, price) {
+function getCommodityItemView(id, name, price, quantity) {
         return `<div class="col-xs-12 col-sm-6 col-md-3 col-lg-2 bg-light text-dark">
                         <div class="oneCommodity text-center">
                         <a href="/GameConsole/commodity/getOneView?id=${id}">
@@ -42,6 +42,7 @@ function getCommodityItemView(id, name, price) {
                                 <h3>價格：${price}</h3>
                                 <h4>${name}</h4>
                         </a>
+                        ${(quantity <= 0) ? '<h3 class="text-danger">已售完</h3>' : ''}
                         </div>
                 </div>`;
 }
