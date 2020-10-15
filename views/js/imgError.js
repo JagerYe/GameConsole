@@ -3,6 +3,5 @@ function setOnImgErrListener() {
         .on('error', function () {
             console.log(this.id);
             $(this).attr('src', '/GameConsole/views/img/gravatar.jpg');
-        })
-        ;
+        });
 }
