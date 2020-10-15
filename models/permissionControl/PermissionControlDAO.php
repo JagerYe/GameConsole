@@ -91,7 +91,8 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
     //更新
     public function update($empID, $deleteList, $insertList)
     {
-        $sqlStr = "DELETE FROM `PermissionControl` WHERE `empID`=:empID && `empID`!=1 && (";
+        $sqlStr = "DELETE FROM `PermissionControl` WHERE `empID`=:empID &&
+            `empID`!=(SELECT `id` FROM `Employees` WHERE `account`='superEmp') && (";
         $countRow = count($deleteList);
         for ($i = 0; $i < $countRow; $i++) {
             $sqlStr .= " `permissionID`=:permissionID{$i} ||";
@@ -108,6 +109,9 @@ class PermissionControlDAO implements PermissionControlDAO_Interface
                     $sth->bindParam("permissionID{$i}", $deleteList[$i]);
                 }
                 $sth->execute();
+                if ($sth->rowCount() <= 0) {
+                    throw new PDOException('刪除權限失敗');
+                }
             }
 
             if (count($insertList) >= 1) {

@@ -53,15 +53,17 @@
 <script src="/GameConsole/views/js/title.js"></script>
 <script src="/GameConsole/views/js/viewModels/commodityViewModel.js"></script>
 <script src="/GameConsole/views/js/imgError.js"></script>
+<script src="/GameConsole/views/js/cookie.js"></script>
+<script>setCookie('lastPath', '/GameConsole/commodity/getShoppingCartView');</script>
 <script>
     let lastID = '{{$lastID}}';
     let cartSize = '{{$cartSize}}';
     lastID = parseInt(lastID);
     cartSize = parseInt(cartSize);
     let getItemProcessing = false;
+    let persistenceShopping = false;
 
     $(window).ready(() => {
-        setOnImgErrListener();
 
         //回最頂按鈕
         $(".topImgBtn").click(() => {
@@ -118,9 +120,14 @@
                 return;
             }
 
+            let data = {
+                'persistenceShopping': persistenceShopping
+            }
+
             $.ajax({
                 type: 'POST',
-                url: '/GameConsole/order/insert'
+                url: '/GameConsole/order/insert',
+                data: { 0: JSON.stringify(data) }
             }).then(function (e) {
                 e = organizeFormat(e);
                 let json = JSON.parse(e);
@@ -130,9 +137,15 @@
                     history.go(0);
                     return
                 }
+                if (json.success === 'Warning') {
+                    alert(json.errMessage);
+                    console.log(json);
+                    persistenceShopping = true;
+                }
                 if (json.result === true) {
                     window.location.href = "/GameConsole/order/getMemOrderListView";
                 }
+
             });
         });
 
@@ -293,5 +306,8 @@
     </main><!-- /.container -->
 
 </body>
+<script>
+    setOnImgErrListener();
+</script>
 
 </html>

@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-14 16:42:25
-  from 'C:\xampp\htdocs\GameConsole\views\pageFront\shoppingCart.html' */
+/* Smarty version 3.1.34-dev-7, created on 2020-10-15 11:45:09
+  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/shoppingCart.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f870e51ab89d6_30973010',
+  'unifunc' => 'content_5f881a250e39a7_66437722',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
-    'e8987fafd380af5711f7c6f44bcc3341ce564412' => 
+    '705de739c166b249d7334aadd3cf7bb295a8cfa9' => 
     array (
-      0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageFront\\shoppingCart.html',
-      1 => 1602682309,
+      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/shoppingCart.html',
+      1 => 1602754899,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f870e51ab89d6_30973010 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f881a250e39a7_66437722 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -91,6 +91,15 @@ function content_5f870e51ab89d6_30973010 (Smarty_Internal_Template $_smarty_tpl)
  src="/GameConsole/views/js/viewModels/commodityViewModel.js"><?php echo '</script'; ?>
 >
 <?php echo '<script'; ?>
+ src="/GameConsole/views/js/imgError.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/cookie.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+>setCookie('lastPath', '/GameConsole/commodity/getShoppingCartView');<?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
 >
     let lastID = '<?php echo $_smarty_tpl->tpl_vars['lastID']->value;?>
 ';
@@ -99,8 +108,10 @@ function content_5f870e51ab89d6_30973010 (Smarty_Internal_Template $_smarty_tpl)
     lastID = parseInt(lastID);
     cartSize = parseInt(cartSize);
     let getItemProcessing = false;
+    let persistenceShopping = false;
 
     $(window).ready(() => {
+
         //回最頂按鈕
         $(".topImgBtn").click(() => {
             $("html,body").animate({
@@ -138,7 +149,7 @@ function content_5f870e51ab89d6_30973010 (Smarty_Internal_Template $_smarty_tpl)
                         }
                         lastID = json.result.lastID;
                         cartSize = json.result.cartSize;
-
+                        setOnImgErrListener();
                         setButtonListener();
                         return;
                     }
@@ -156,9 +167,14 @@ function content_5f870e51ab89d6_30973010 (Smarty_Internal_Template $_smarty_tpl)
                 return;
             }
 
+            let data = {
+                'persistenceShopping': persistenceShopping
+            }
+
             $.ajax({
                 type: 'POST',
-                url: '/GameConsole/order/insert'
+                url: '/GameConsole/order/insert',
+                data: { 0: JSON.stringify(data) }
             }).then(function (e) {
                 e = organizeFormat(e);
                 let json = JSON.parse(e);
@@ -168,9 +184,15 @@ function content_5f870e51ab89d6_30973010 (Smarty_Internal_Template $_smarty_tpl)
                     history.go(0);
                     return
                 }
+                if (json.success === 'Warning') {
+                    alert(json.errMessage);
+                    console.log(json);
+                    persistenceShopping = true;
+                }
                 if (json.result === true) {
                     window.location.href = "/GameConsole/order/getMemOrderListView";
                 }
+
             });
         });
 
@@ -348,6 +370,11 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
     </main><!-- /.container -->
 
 </body>
+<?php echo '<script'; ?>
+>
+    setOnImgErrListener();
+<?php echo '</script'; ?>
+>
 
 </html><?php }
 }

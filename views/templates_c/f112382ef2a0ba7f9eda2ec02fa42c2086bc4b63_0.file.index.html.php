@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-14 16:40:17
-  from 'C:\xampp\htdocs\GameConsole\views\pageFront\index.html' */
+/* Smarty version 3.1.34-dev-7, created on 2020-10-15 11:37:28
+  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/index.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f870dd16054b9_90209422',
+  'unifunc' => 'content_5f8818586582d8_28447194',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
-    '89d631e73d8e1f804ecf03865a260fd27664d59c' => 
+    'f112382ef2a0ba7f9eda2ec02fa42c2086bc4b63' => 
     array (
-      0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageFront\\index.html',
-      1 => 1602686410,
+      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/index.html',
+      1 => 1602754646,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f870dd16054b9_90209422 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f8818586582d8_28447194 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -100,6 +100,12 @@ function content_5f870dd16054b9_90209422 (Smarty_Internal_Template $_smarty_tpl)
  src="/GameConsole/views/js/imgError.js"><?php echo '</script'; ?>
 >
 <?php echo '<script'; ?>
+ src="/GameConsole/views/js/cookie.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+>setCookie('lastPath', '/GameConsole/index');<?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
 >
     let offset = '<?php if ((isset($_smarty_tpl->tpl_vars['offset']->value))) {
 echo $_smarty_tpl->tpl_vars['offset']->value;
@@ -114,7 +120,9 @@ echo $_smarty_tpl->tpl_vars['stopSet']->value;
     let condition = 'newToOld';
 
     $(window).ready(() => {
-        onImgErrListener();
+        // console.log(getCookie('lastPageaaa'));
+        // console.log(setCookie('empName', 'FF'));
+        // console.log(deleteCookie('lastPage'));
 
         //回最頂按鈕
         $(".topImgBtn").click(() => {
@@ -142,7 +150,7 @@ echo $_smarty_tpl->tpl_vars['stopSet']->value;
 
         }).trigger('scroll');
 
-        //搜尋按鈕
+        //搜尋
         $('#seletText').on('input propertychange', () => {
             seletStr = $('#seletText').val();
             offset = 0;
@@ -200,7 +208,7 @@ echo $_smarty_tpl->tpl_vars['stopSet']->value;
                             item.quantity
                         ));
                     }
-                    onImgErrListener();
+                    setOnImgErrListener();
                     offset += json.result.data.length;
                     stopSet = parseInt(json.result.stopSet);
                     $(window).trigger('scroll');
@@ -221,7 +229,7 @@ echo $_smarty_tpl->tpl_vars['stopSet']->value;
                 let json = JSON.parse(e);
                 console.log(json);
                 if (json.success === false) {
-                    alert(json.errMessage);
+                    $('#dataShow').html(getSeleteNullView(json.errMessage));
                     return;
                 }
 
@@ -233,7 +241,7 @@ echo $_smarty_tpl->tpl_vars['stopSet']->value;
                         item.quantity
                     ));
                 }
-                onImgErrListener();
+                setOnImgErrListener();
                 offset += json.result.data.length;
                 stopSet = parseInt(json.result.stopSet);
                 $(window).trigger('scroll');
@@ -267,7 +275,7 @@ echo $_smarty_tpl->tpl_vars['stopSet']->value;
 
         <hr>
 
-        <div class="row" id="dataShow">
+        <div class="row text-center" id="dataShow">
             <?php
 $_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['commoditys']->value, 'commodity');
 $_smarty_tpl->tpl_vars['commodity']->do_else = true;
@@ -279,7 +287,8 @@ $_smarty_tpl->tpl_vars['commodity']->do_else = false;
                     <a href="/GameConsole/commodity/getOneView?id=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
 ">
                         <div class="showImgDiv">
-                            <img class="center-block vcenter showImg"
+                            <img class="center-block vcenter showImg" id="img<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+"
                                 src="/GameConsole/commodity/getOneImg?id=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
 ">
                         </div>
@@ -301,6 +310,11 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
     </main><!-- /.container -->
 
 </body>
+<?php echo '<script'; ?>
+>
+    setOnImgErrListener();
+<?php echo '</script'; ?>
+>
 
 </html><?php }
 }

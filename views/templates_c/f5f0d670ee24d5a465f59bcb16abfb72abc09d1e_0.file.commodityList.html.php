@@ -1,4 +1,28 @@
-<!DOCTYPE html>
+<?php
+/* Smarty version 3.1.34-dev-7, created on 2020-10-15 08:28:42
+  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/commodityList.html' */
+
+/* @var Smarty_Internal_Template $_smarty_tpl */
+if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
+  'version' => '3.1.34-dev-7',
+  'unifunc' => 'content_5f87ec1a2c3d87_92968095',
+  'has_nocache_code' => false,
+  'file_dependency' => 
+  array (
+    'f5f0d670ee24d5a465f59bcb16abfb72abc09d1e' => 
+    array (
+      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/commodityList.html',
+      1 => 1602743317,
+      2 => 'file',
+    ),
+  ),
+  'includes' => 
+  array (
+    'file:./navigationBar.html' => 1,
+  ),
+),false)) {
+function content_5f87ec1a2c3d87_92968095 (Smarty_Internal_Template $_smarty_tpl) {
+?><!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -18,22 +42,30 @@
     <link href="/GameConsole/views/css/starter-template.css" rel="stylesheet">
 
     <!-- Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    <?php echo '<script'; ?>
+ src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
         integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
         integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
 
     <!-- ajax -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <?php echo '<script'; ?>
+ src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"><?php echo '</script'; ?>
+>
 
-    {{if !(isset($comSee))}}
+    <?php if (!((isset($_smarty_tpl->tpl_vars['comSee']->value)))) {?>
     <meta http-equiv="refresh" content="0;url=/GameConsole/employee/getUpdateSelfView">
-    {{/if}}
+    <?php }?>
 </head>
 <style>
     .topImgBtn {
@@ -63,16 +95,29 @@
         max-height: 100px;
     }
 </style>
-<script src="/GameConsole/views/js/jsonFormat.js"></script>
-<script src="/GameConsole/views/js/title.js"></script>
-<script src="/GameConsole/views/js/rule.js"></script>
-<script src="/GameConsole/views/js/viewModels/commodityViewModel.js"></script>
-<script src="/GameConsole/views/js/imgError.js"></script>
-<script>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/jsonFormat.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/title.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/rule.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/viewModels/commodityViewModel.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/imgError.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+>
     let updateID = -1;
-    let lastID = '{{$lastID}}';
+    let lastID = '<?php echo $_smarty_tpl->tpl_vars['lastID']->value;?>
+';
     let getItemProcessing = false;
-    let comUse = "{{isset($comUse)&&$comUse}}";
+    let comUse = "<?php echo (isset($_smarty_tpl->tpl_vars['comUse']->value)) && $_smarty_tpl->tpl_vars['comUse']->value;?>
+";
 
 
     $(window).ready(() => {
@@ -429,10 +474,12 @@
     }
 
 
-</script>
+<?php echo '</script'; ?>
+>
 
 <body>
-    {{include file='./navigationBar.html'}}
+    <?php $_smarty_tpl->_subTemplateRender('file:./navigationBar.html', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
+?>
     <div class="blank"></div>
 
     <main class="container">
@@ -449,36 +496,53 @@
                     <th>上下架狀態</th>
                     <th>建立時間</th>
                     <th>修改時間</th>
-                    {{if isset($comUse) && $comUse}}
+                    <?php if ((isset($_smarty_tpl->tpl_vars['comUse']->value)) && $_smarty_tpl->tpl_vars['comUse']->value) {?>
                     <th>
                         <button class="btn btn-success width100Percentage" id="creatBtn" type="button"
                             data-toggle="modal" data-target="#commodityModal">新增商品</button>
                     </th>
-                    {{/if}}
+                    <?php }?>
                 </tr>
             </thead>
 
             <tbody id="dataShow">
-                {{foreach $commoditys as $commodity}}
-                <tr class="oneCommodity" id="com{{$commodity['id']}}">
-                    <td class="commodityID">{{$commodity['id']}}</td>
-                    <td><img src="/GameConsole/commodity/getOneImg?id={{$commodity['id']}}" alt=""
-                            id="showImg{{$commodity['id']}}"></td>
-                    <td>{{$commodity['name']}}</td>
-                    <td>{{$commodity['price']}}</td>
-                    <td>{{$commodity['quantity']}}</td>
-                    <td>{{($commodity['status'])?'上架':'下架'}}</td>
-                    <td>{{$commodity['creationDatetime']}}</td>
-                    <td>{{$commodity['changeDatetime']}}</td>
+                <?php
+$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['commoditys']->value, 'commodity');
+$_smarty_tpl->tpl_vars['commodity']->do_else = true;
+if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['commodity']->value) {
+$_smarty_tpl->tpl_vars['commodity']->do_else = false;
+?>
+                <tr class="oneCommodity" id="com<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+">
+                    <td class="commodityID"><?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+</td>
+                    <td><img src="/GameConsole/commodity/getOneImg?id=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+" alt=""
+                            id="showImg<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+"></td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['commodity']->value['name'];?>
+</td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['commodity']->value['price'];?>
+</td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['commodity']->value['quantity'];?>
+</td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['commodity']->value['status'] ? '上架' : '下架';?>
+</td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['commodity']->value['creationDatetime'];?>
+</td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['commodity']->value['changeDatetime'];?>
+</td>
 
-                    {{if isset($comUse) && $comUse}}
+                    <?php if ((isset($_smarty_tpl->tpl_vars['comUse']->value)) && $_smarty_tpl->tpl_vars['comUse']->value) {?>
                     <td>
                         <button class="btn btn-info width100Percentage updateBtn" type="button" data-toggle="modal"
                             data-target="#commodityModal">修改</button>
                     </td>
-                    {{/if}}
+                    <?php }?>
                 </tr>
-                {{/foreach}}
+                <?php
+}
+$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
             </tbody>
 
 
@@ -488,7 +552,7 @@
 
         </table>
 
-        {{if isset($comUse) && $comUse}}
+        <?php if ((isset($_smarty_tpl->tpl_vars['comUse']->value)) && $_smarty_tpl->tpl_vars['comUse']->value) {?>
         <!-- Modal，用於新增or修改商品用-->
         <div class="modal fade" id="commodityModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
             <!--背景-->
@@ -542,7 +606,8 @@
                                 <tr>
                                     <td>圖片預覽</td>
                                     <td>
-                                        <img src="/GameConsole/commodity/getOneImg?id={{$commodity['id']}}" alt=""
+                                        <img src="/GameConsole/commodity/getOneImg?id=<?php echo $_smarty_tpl->tpl_vars['commodity']->value['id'];?>
+" alt=""
                                             id="picturePreview">
                                     </td>
                                 </tr>
@@ -564,12 +629,15 @@
                 </div>
             </div>
         </div>
-        {{/if}}
+        <?php }?>
 
     </main><!-- /.container -->
 
 </body>
-<script>
+<?php echo '<script'; ?>
+>
     setOnImgErrListener();
-</script>
-</html>
+<?php echo '</script'; ?>
+>
+</html><?php }
+}

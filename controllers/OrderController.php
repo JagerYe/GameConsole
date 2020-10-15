@@ -14,31 +14,35 @@ class OrderController extends Controller
     }
 
     //新增
-    public function insert($requestMethod)
+    public function insert($str, $requestMethod)
     {
         try {
-
             //驗證
+            if (!isset($_COOKIE['shoppingCart'])) {
+                throw new Exception('購物車為空，跟你的錢包一樣');
+            }
+
+            $shoppingCart = json_decode($_COOKIE['shoppingCart']);
+            $rollbackShoppingCart = $shoppingCart;
+
             if ($requestMethod !== 'POST') {
                 throw new Exception('請求方式錯誤');
             }
             if (!$this->checkIsMem()) {
                 throw new Exception('確認身份發生錯誤');
             }
-            if (!isset($_COOKIE['shoppingCart'])) {
-                throw new Exception('購物車為空，跟你的錢包一樣');
-            }
+
+
+            $jsonObj = json_decode($str);
 
             $orderDetail = new OrderDetail();
             $commodityDAO = CommodityService::getDAO();
 
-            $shoppingCart = json_decode($_COOKIE['shoppingCart']);
             $orderDetails = array();
-
             for ($i = 0; $i < count($shoppingCart); $i++) {
                 $commodity = $commodityDAO->getOneByID($shoppingCart[$i]->id);
                 if ($commodity === false) {
-                    array_splice($shoppingCart, $i, 1);
+                    array_splice($rollbackShoppingCart, $i, 1);
                     $i--;
                     continue;
                 }
@@ -47,13 +51,12 @@ class OrderController extends Controller
                 if ($commodity['status'] === '0') {
                     array_splice($shoppingCart, $i, 1);
                     $i--;
-                    setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
                     throw new Exception("{$commodity['name']}已下架，請再確認購買商品");
                 }
-                if ($shoppingCart[$i]->quantity > $commodity['quantity']) {
-                    $shoppingCart[$i]->quantity = $commodity['quantity'];
-                    setcookie('shoppingCart', json_encode($shoppingCart), (time() + 31536000), "/");
-                    throw new Exception('購買數量超過庫存，數量將修改，請再確認購買數量');
+                if (!$jsonObj->persistenceShopping && $shoppingCart[$i]->quantity > $commodity['quantity']) {
+                    $this->success = 'Warning';
+                    $this->result['id'] = $commodity['id'];
+                    throw new Exception("{$commodity['name']}購買數量超過庫存，請下修購買數量，如執意要購買該數量時，請再次按下結帳，但交易時間將不確定");
                 }
                 if ($shoppingCart[$i]->quantity <= 0) {
                     continue;
@@ -78,7 +81,11 @@ class OrderController extends Controller
 
             $this->success = true;
         } catch (Exception $err) {
-            $this->success = false;
+            if ($this->success !== 'Warning') {
+                $this->success = false;
+            }
+
+            setcookie('shoppingCart', json_encode($rollbackShoppingCart), (time() + 31536000), "/");
         }
 
         return Result::getResultJson(

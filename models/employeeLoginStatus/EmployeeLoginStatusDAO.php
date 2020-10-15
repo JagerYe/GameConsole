@@ -122,4 +122,35 @@ class EmployeeLoginStatusDAO implements EmployeeLoginStatusDAO_Interface
         $dbh = null;
         return $request;
     }
+
+    public function checkLoginAndGetIsKeep($loginID, $empID, $cookieID)
+    {
+        try {
+            $dbh = Config::getDBConnect();
+            $sth = $dbh->prepare("SELECT `isKeep`, `cookieID`,
+                (DATE_ADD(`usageDatetime`,INTERVAL 30 MINUTE) <= NOW()) AS `timeOut`
+                FROM `EmployeeLoginStatus`
+                WHERE `loginID`=:loginID && `empID`=:empID && IF(`logoutDatetime`,FALSE,TRUE);");
+            $sth->bindParam("loginID", $loginID);
+            $sth->bindParam("empID", $empID);
+            $sth->execute();
+            $request = $sth->fetch(PDO::FETCH_ASSOC);
+
+            if ($request === false) {
+                throw new Exception("已登出，請重新登入");
+            }
+            if ($request['timeOut'] && $request['isKeep']) {
+                throw new Exception("超過時間，請重新登入");
+            }
+            if (!password_verify($cookieID, $request['cookieID'])) {
+                throw new Exception("身份判斷錯誤");
+            }
+            $sth = null;
+        } catch (PDOException $err) {
+            $dbh = null;
+            throw new Exception("確認狀態發生錯誤");
+        }
+        $dbh = null;
+        return $request['isKeep'];
+    }
 }

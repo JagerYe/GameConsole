@@ -65,3 +65,7 @@ function getQuantityInputView(maxQuantity, quantity, id) {
                 `<h3>此商品已售完</h3>` :
                 `<input type="number" class="width100Percentage quantity form-control" id="quantity${id}" max="${maxQuantity}" min="1" value="${quantity}">`;
 }
+
+function getSeleteNullView(errMessage){
+        return `<h2 class="text-danger">${errMessage}</h2>`;
+}

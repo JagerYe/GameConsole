@@ -523,7 +523,7 @@ class CommodityController extends Controller
             $smarty->assign('name',  $_COOKIE['memName']);
             $smarty->assign('memID',  $_COOKIE['memID']);
         }
-        $shoppingCart = isset($_COOKIE['shoppingCart']) ? json_decode($_COOKIE['shoppingCart']) : array();
+        $shoppingCart = isset($_COOKIE['shoppingCart']) && $_COOKIE['shoppingCart'] !== 'null' ? json_decode($_COOKIE['shoppingCart']) : array();
 
         $total = 0;
         $commodityDAO = CommodityService::getDAO();

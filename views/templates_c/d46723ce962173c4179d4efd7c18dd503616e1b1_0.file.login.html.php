@@ -1,4 +1,27 @@
-<!DOCTYPE html>
+<?php
+/* Smarty version 3.1.34-dev-7, created on 2020-10-15 06:08:15
+  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/login.html' */
+
+/* @var Smarty_Internal_Template $_smarty_tpl */
+if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
+  'version' => '3.1.34-dev-7',
+  'unifunc' => 'content_5f87cb2f5d0928_57931751',
+  'has_nocache_code' => false,
+  'file_dependency' => 
+  array (
+    'd46723ce962173c4179d4efd7c18dd503616e1b1' => 
+    array (
+      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/login.html',
+      1 => 1602119333,
+      2 => 'file',
+    ),
+  ),
+  'includes' => 
+  array (
+  ),
+),false)) {
+function content_5f87cb2f5d0928_57931751 (Smarty_Internal_Template $_smarty_tpl) {
+?><!DOCTYPE html>
 <html>
 
 <head>
@@ -18,18 +41,26 @@
 	<link href="/GameConsole/views/css/signin.css" rel="stylesheet">
 	<!-- Custom styles for this template -->
 
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+	<?php echo '<script'; ?>
+ src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
 		integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-		crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+		crossorigin="anonymous"><?php echo '</script'; ?>
+>
+	<?php echo '<script'; ?>
+ src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
 		integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-		crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+		crossorigin="anonymous"><?php echo '</script'; ?>
+>
+	<?php echo '<script'; ?>
+ src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
 		integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
-		crossorigin="anonymous"></script>
+		crossorigin="anonymous"><?php echo '</script'; ?>
+>
 
 	<!-- ajax -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<?php echo '<script'; ?>
+ src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"><?php echo '</script'; ?>
+>
 </head>
 <style>
 	form {
@@ -40,15 +71,17 @@
 		height: 50%;
 	}
 </style>
-<script src="/GameConsole/views/js/jsonFormat.js"></script>
-<script src="/GameConsole/views/js/cookie.js"></script>
-<script>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/jsonFormat.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+>
 	//檢查是否要登出
 	function checkIsLogOut() {
 		$("body").css("display", "none");
 		$.ajax({
 			type: "GET",
-			url: "/GameConsole/member/checkIsLogin"
+			url: "/GameConsole/employee/checkIsLogin"
 		}).then(function (e) {
 			console.log(e);
 
@@ -63,12 +96,11 @@
 			} catch (error) {
 				$.ajax({
 					type: "GET",
-					url: "/GameConsole/member/logout"
+					url: "/GameConsole/employee/logout"
 				}).then(() => {
 					history.go(0);
 				});
 			}
-
 		});
 	}
 
@@ -83,7 +115,7 @@
 			};
 			$.ajax({
 				type: "POST",
-				url: "/GameConsole/member/login",
+				url: "/GameConsole/employee/login",
 				data: { 0: JSON.stringify(data) }
 			}).then(function (e) {
 				console.log(e);
@@ -91,37 +123,30 @@
 				if (json.success === false) {
 					alert(json.errMessage);
 				} else if (json.result === true) {
-					let lastPage = getCookie('lastPath');
-					if (lastPage === '') {
-						window.location.href = "/GameConsole/index/getIndexView";
-					} else {
-						window.location.href = lastPage;
-					}
-
+					window.location.href = "/GameConsole/employee/getUpdateSelfView";
 				} else {
 					alert("發生不明錯誤");
 				}
 			});
 		});
 	});
-</script>
+<?php echo '</script'; ?>
+>
 
 <body class="text-center">
 	<form class="form-signin" method="post">
-		<a href="/GameConsole/index/getIndexView">
-			<img class="mb-4" src="/GameConsole/views/img/logo.png" alt="回首頁" style="background-color: black;">
-		</a>
-		<h1 class="h3 mb-3 font-weight-normal">會員登入</h1>
+		<img class="mb-4" src="/GameConsole/views/img/logo.png" alt="回首頁" style="background-color: black;">
+		<h1 class="h3 mb-3 font-weight-normal">員工登入</h1>
 		<label for="account" class="sr-only">帳號</label>
 		<input type="text" id="account" name="account" class="form-control" placeholder="帳號" required autofocus>
 		<label for="password" class="sr-only">密碼</label>
 		<input type="password" id="password" name="password" class="form-control" placeholder="密碼" required>
 		<label><input type="checkbox" name="isKeep" id="isKeep" value="true">保持登入</label>
 		<button class="btn btn-lg btn-primary btn-block" id="login" type="button">登入</button>
-		<a class="btn btn-lg btn-primary btn-block" href="/GameConsole/member/getCreateView">註冊</a>
 		<p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
 	</form>
 
 </body>
 
-</html>
+</html><?php }
+}

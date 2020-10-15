@@ -33,7 +33,7 @@ class CommodityDAO implements CommodityDAO_Interface
     {
         try {
             $sth = $dbh->prepare("UPDATE `Commodities` SET
-                `quantity`=(SELECT SUM(`quantity`-:buyQuantity) FROM `Commodities` WHERE `id`=:id && `quantity` >= :buyQuantity),
+                `quantity`=(SELECT SUM(`quantity`-:buyQuantity) FROM `Commodities` WHERE `id`=:id),
                 `changeDatetime`=NOW() WHERE `id`=:id;");
             $sth->bindParam("id", $id);
             $sth->bindParam("buyQuantity", $buyQuantity);

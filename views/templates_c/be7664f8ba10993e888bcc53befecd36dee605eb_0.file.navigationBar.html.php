@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-14 16:31:38
-  from 'C:\xampp\htdocs\GameConsole\views\pageFront\navigationBar.html' */
+/* Smarty version 3.1.34-dev-7, created on 2020-10-15 06:03:59
+  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/navigationBar.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f870bca4261f0_08795964',
+  'unifunc' => 'content_5f87ca2f5289d6_93183448',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
-    '9d1cc2998841c4776a8e4448193ffe3cd07a2867' => 
+    'be7664f8ba10993e888bcc53befecd36dee605eb' => 
     array (
-      0 => 'C:\\xampp\\htdocs\\GameConsole\\views\\pageFront\\navigationBar.html',
-      1 => 1602410114,
+      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/navigationBar.html',
+      1 => 1602734631,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_5f870bca4261f0_08795964 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f87ca2f5289d6_93183448 (Smarty_Internal_Template $_smarty_tpl) {
 ?><nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -49,7 +49,7 @@ function content_5f870bca4261f0_08795964 (Smarty_Internal_Template $_smarty_tpl)
             <ul class="nav navbar-nav navbar-right">
                 <?php if ($_smarty_tpl->tpl_vars['isLogin']->value === true) {?>
                 <li id="showUserName"><a
-                        href=<?php echo (isset($_smarty_tpl->tpl_vars['isUpdate']->value)) && $_smarty_tpl->tpl_vars['isUpdate']->value ? "#" : "/GameConsole/member/getUpdateView";?>
+                        href=<?php echo (isset($_smarty_tpl->tpl_vars['isUpdate']->value)) && $_smarty_tpl->tpl_vars['isUpdate']->value ? "#" : "/GameConsole/member/getUpdateSelfView";?>
 ><?php echo $_smarty_tpl->tpl_vars['name']->value;?>
 </a>
                 </li>

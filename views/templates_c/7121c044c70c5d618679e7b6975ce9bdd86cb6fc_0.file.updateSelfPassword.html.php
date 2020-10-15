@@ -1,4 +1,28 @@
-<!doctype html>
+<?php
+/* Smarty version 3.1.34-dev-7, created on 2020-10-15 06:10:20
+  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/updateSelfPassword.html' */
+
+/* @var Smarty_Internal_Template $_smarty_tpl */
+if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
+  'version' => '3.1.34-dev-7',
+  'unifunc' => 'content_5f87cbace33aa9_64129549',
+  'has_nocache_code' => false,
+  'file_dependency' => 
+  array (
+    '7121c044c70c5d618679e7b6975ce9bdd86cb6fc' => 
+    array (
+      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageFront/updateSelfPassword.html',
+      1 => 1602734995,
+      2 => 'file',
+    ),
+  ),
+  'includes' => 
+  array (
+    'file:./navigationBar.html' => 1,
+  ),
+),false)) {
+function content_5f87cbace33aa9_64129549 (Smarty_Internal_Template $_smarty_tpl) {
+?><!doctype html>
 <html lang="en">
 
 <head>
@@ -18,21 +42,29 @@
 	<link href="/GameConsole/views/css/starter-template.css" rel="stylesheet">
 
 	<!-- Bootstrap -->
-	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+	<?php echo '<script'; ?>
+ src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
 		integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-		crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+		crossorigin="anonymous"><?php echo '</script'; ?>
+>
+	<?php echo '<script'; ?>
+ src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
 		integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-		crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+		crossorigin="anonymous"><?php echo '</script'; ?>
+>
+	<?php echo '<script'; ?>
+ src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
 		integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
-		crossorigin="anonymous"></script>
+		crossorigin="anonymous"><?php echo '</script'; ?>
+>
 
 	<!-- ajax -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	{{if !(isset($isLogin)&&$isLogin)}}
+	<?php echo '<script'; ?>
+ src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"><?php echo '</script'; ?>
+>
+	<?php if (!((isset($_smarty_tpl->tpl_vars['isLogin']->value)) && $_smarty_tpl->tpl_vars['isLogin']->value)) {?>
     <meta http-equiv="refresh" content="0;url=/GameConsole/index">
-    {{/if}}
+    <?php }?>
 </head>
 <style>
 	body {
@@ -64,11 +96,19 @@
 	}
 </style>
 
-<script src="/GameConsole/views/js/rule.js"></script>
-<script src="/GameConsole/views/js/title.js"></script>
-<script src="/GameConsole/views/js/jsonFormat.js"></script>
-<script>
-	let id = '{{($isLogin)?$mem["id"]:-1}}';
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/rule.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/title.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/jsonFormat.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+>
+	let id = '<?php echo $_smarty_tpl->tpl_vars['isLogin']->value ? $_smarty_tpl->tpl_vars['mem']->value["id"] : -1;?>
+';
 	if (id < 0 || !Number.isInteger(parseInt(id))) {
 		window.location.href = "/GameConsole/index";
 	}
@@ -104,7 +144,8 @@
 	}
 
 	$(window).ready(() => {
-		$('body').css('display', '{{($isLogin)?inline:none}}')
+		$('body').css('display', '<?php echo $_smarty_tpl->tpl_vars['isLogin']->value ? 'inline' : 'none';?>
+')
 
 		//格式檢查
 		$("#userOldPassword").change(function () {
@@ -159,11 +200,13 @@
 			});
 		});
 	});
-</script>
+<?php echo '</script'; ?>
+>
 
 <body>
-	{{if $isLogin}}
-	{{include file='./navigationBar.html'}}
+	<?php if ($_smarty_tpl->tpl_vars['isLogin']->value) {?>
+	<?php $_smarty_tpl->_subTemplateRender('file:./navigationBar.html', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
+?>
 	<div class="blank"></div>
 	<main role="main" class="container">
 		<div class="card bg-light">
@@ -205,7 +248,8 @@
 		</div> <!-- card.// -->
 
 	</main><!-- /.container -->
-	{{/if}}
+	<?php }?>
 </body>
 
-</html>
+</html><?php }
+}

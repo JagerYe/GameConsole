@@ -59,6 +59,8 @@
 <script src="/GameConsole/views/js/title.js"></script>
 <script src="/GameConsole/views/js/viewModels/commodityViewModel.js"></script>
 <script src="/GameConsole/views/js/imgError.js"></script>
+<script src="/GameConsole/views/js/cookie.js"></script>
+<script>setCookie('lastPath', '/GameConsole/index');</script>
 <script>
     let offset = '{{if isset($offset)}}{{$offset}}{{/if}}';
     offset = parseInt(offset);
@@ -69,7 +71,9 @@
     let condition = 'newToOld';
 
     $(window).ready(() => {
-        setOnImgErrListener();
+        // console.log(getCookie('lastPageaaa'));
+        // console.log(setCookie('empName', 'FF'));
+        // console.log(deleteCookie('lastPage'));
 
         //回最頂按鈕
         $(".topImgBtn").click(() => {
@@ -97,7 +101,7 @@
 
         }).trigger('scroll');
 
-        //搜尋按鈕
+        //搜尋
         $('#seletText').on('input propertychange', () => {
             seletStr = $('#seletText').val();
             offset = 0;
@@ -176,7 +180,7 @@
                 let json = JSON.parse(e);
                 console.log(json);
                 if (json.success === false) {
-                    alert(json.errMessage);
+                    $('#dataShow').html(getSeleteNullView(json.errMessage));
                     return;
                 }
 
@@ -220,13 +224,13 @@
 
         <hr>
 
-        <div class="row" id="dataShow">
+        <div class="row text-center" id="dataShow">
             {{foreach $commoditys as $commodity}}
             <div class="col-xs-12 col-sm-6 col-md-3 col-lg-2 bg-light text-dark">
                 <div class="oneCommodity text-center">
                     <a href="/GameConsole/commodity/getOneView?id={{$commodity['id']}}">
                         <div class="showImgDiv">
-                            <img class="center-block vcenter showImg"
+                            <img class="center-block vcenter showImg" id="img{{$commodity['id']}}"
                                 src="/GameConsole/commodity/getOneImg?id={{$commodity['id']}}">
                         </div>
                         <h3>價格：{{$commodity['price']}}</h3>
@@ -243,5 +247,8 @@
     </main><!-- /.container -->
 
 </body>
+<script>
+    setOnImgErrListener();
+</script>
 
 </html>

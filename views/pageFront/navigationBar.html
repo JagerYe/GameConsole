@@ -26,7 +26,7 @@
             <ul class="nav navbar-nav navbar-right">
                 {{if $isLogin === true}}
                 <li id="showUserName"><a
-                        href={{( isset($isUpdate) && $isUpdate ) ? "#" : "/GameConsole/member/getUpdateView"}}>{{$name}}</a>
+                        href={{( isset($isUpdate) && $isUpdate ) ? "#" : "/GameConsole/member/getUpdateSelfView"}}>{{$name}}</a>
                 </li>
                 <li><a href="/GameConsole/member/getLoginView">登出</a></li>
                 {{else}}

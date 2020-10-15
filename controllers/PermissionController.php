@@ -89,7 +89,7 @@ class PermissionController extends Controller
                 for ($i = 0; $i < count($jsonObj->permissions); $i++) {
                     if (isset($jsonObj->permissions[$i]) && $itemOld['permissionID'] === $jsonObj->permissions[$i]) {
                         //如果有就不動作
-                        unset($jsonObj->permissions[$i]);
+                        array_splice($jsonObj->permissions, $i, 1);
                         continue 2;
                     }
                 }

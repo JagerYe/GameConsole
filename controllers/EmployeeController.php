@@ -34,16 +34,13 @@ class EmployeeController extends Controller
             return false;
         }
         try {
-            $loginData = $empLoginDAO->getLoginData($_COOKIE['empLoginID']);
-            if ($loginData === false || $_COOKIE['empID'] !== $loginData['empID'] || !password_verify($_COOKIE['empCookieID'], $loginData['cookieID'])) {
-                throw new Exception("登入錯誤");
-            }
-            if ($loginData['timeOut'] && !$loginData['isKeep']) {
-                $this->logout(true);
-                throw new Exception("超過時間，請重新登入");
-            }
+            $isKeep = EmployeeLoginStatusService::getDAO()->checkLoginAndGetIsKeep(
+                $_COOKIE['empLoginID'],
+                $_COOKIE['empID'],
+                $_COOKIE['empCookieID']
+            );
 
-            $this->saveTime = time() + (($loginData['isKeep']) ? (60 * 60 * 24 * 365) : (60 * 30));
+            $this->saveTime = time() + (($isKeep) ? (60 * 60 * 24 * 365) : (60 * 30));
             setcookie('empID', $_COOKIE['empID'], $this->saveTime, "/");
             setcookie('empName', $_COOKIE['empName'], $this->saveTime, "/");
             setcookie('empLoginID', $_COOKIE['empLoginID'], $this->saveTime, "/");
@@ -55,6 +52,36 @@ class EmployeeController extends Controller
         }
         return false;
     }
+
+    // //確認身份
+    // public function checkIdentity()
+    // {
+    //     $empLoginDAO = EmployeeLoginStatusService::getDAO();
+    //     if (!isset($_COOKIE['empLoginID']) || !isset($_COOKIE['empCookieID']) || !isset($_COOKIE['empID'])) {
+    //         return false;
+    //     }
+    //     try {
+    //         $loginData = $empLoginDAO->getLoginData($_COOKIE['empLoginID']);
+    //         if ($loginData === false || $_COOKIE['empID'] !== $loginData['empID'] || !password_verify($_COOKIE['empCookieID'], $loginData['cookieID'])) {
+    //             throw new Exception("登入錯誤");
+    //         }
+    //         if ($loginData['timeOut'] && !$loginData['isKeep']) {
+    //             $this->logout(true);
+    //             throw new Exception("超過時間，請重新登入");
+    //         }
+
+    //         $this->saveTime = time() + (($loginData['isKeep']) ? (60 * 60 * 24 * 365) : (60 * 30));
+    //         setcookie('empID', $_COOKIE['empID'], $this->saveTime, "/");
+    //         setcookie('empName', $_COOKIE['empName'], $this->saveTime, "/");
+    //         setcookie('empLoginID', $_COOKIE['empLoginID'], $this->saveTime, "/");
+    //         setcookie('empCookieID', $_COOKIE['empCookieID'], $this->saveTime, "/");
+
+    //         return $empLoginDAO->updateUsingByID($_COOKIE['empLoginID']);
+    //     } catch (Exception $err) {
+    //         throw new Exception($err->getMessage());
+    //     }
+    //     return false;
+    // }
 
     //新增
     public function insert($str, $requestMethod)

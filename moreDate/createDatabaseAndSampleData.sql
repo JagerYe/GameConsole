@@ -37,9 +37,9 @@ CREATE TABLE `Commodities`(
     `name` TEXT NOT NULL COMMENT '商品名稱',
     `price` INT NOT NULL,
     `quantity` INT NOT NULL COMMENT '商品庫存',
-    `status` INT NOT NULL COMMENT '商品上下架狀態，下架為1，上架為2',
+    `status` INT NOT NULL COMMENT '商品上下架狀態，下架為0，上架為1',
     `text` TEXT COMMENT '商品介紹內文',
-    `image` BLOB,
+    `image` LONGBLOB,
     `creationDatetime` DATETIME NOT NULL,
     `changeDatetime` DATETIME,
     PRIMARY KEY(`id`)
