@@ -237,6 +237,38 @@ class MemberController extends Controller
         );
     }
 
+    public function getOne($id, $requestMethod)
+    {
+        try {
+            //驗證
+            if ($requestMethod !== 'GET') {
+                throw new Exception("請求方式錯誤");
+            }
+            if (!$this->checkIsEmp()) {
+                throw new Exception("確認身份發生錯誤");
+            }
+            if (!PermissionControlService::getDAO()->checkHavePermissionByEmpID($_COOKIE['empID'], 5)) {
+                throw new Exception("無此權限");
+            }
+
+            $memberDAO = MemberService::getDAO();
+            if (($this->result = $memberDAO->getOneMemberByID($id)) === false) {
+                throw new Exception('取得失敗');
+            }
+
+            $this->success = true;
+        } catch (Exception $err) {
+            $this->result = null;
+            $this->success = false;
+        }
+
+        return Result::getResultJson(
+            $this->success,
+            $this->result,
+            isset($err) ? $err->getMessage() : null
+        );
+    }
+
     public function getLastID($requestMethod)
     {
         try {

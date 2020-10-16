@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-16 03:56:09
+/* Smarty version 3.1.34-dev-7, created on 2020-10-16 04:40:18
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/memberList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f88fdb96c7d82_27402809',
+  'unifunc' => 'content_5f890812423ea6_54817931',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '2c02a50c3ad3cd70704776d896bfd70b73bce38f' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/memberList.html',
-      1 => 1602813366,
+      1 => 1602816016,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f88fdb96c7d82_27402809 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f890812423ea6_54817931 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -424,6 +424,7 @@ echo '<script'; ?>
                     return;
                 }
                 if (json.result === true) {
+                   
                     if (status) {
                         button.removeClass('btn-success').addClass('btn-danger').text('停用');
                     } else {

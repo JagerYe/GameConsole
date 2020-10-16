@@ -16,6 +16,18 @@ function getMemberListView(memUse, id, account, name, email, phone, status, crea
             </tr>`;
 }
 
+function getMemberListMemberDaraView(memUse, id, account, name, email, phone, status, creationDatetime, changeDatetime = '') {
+    return `<td class="memberID">${id}</td>
+            <td>${account}</td>
+            <td>${name}</td>
+            <td>${email}</td>
+            <td>${phone}</td>
+            <td>${getStatusBtnView(status)}</td>
+            <td>${creationDatetime}</td>
+            <td>${changeDatetime}</td>
+            ${getShowOrderView(memUse)}`
+}
+
 function getStatusBtnView(status) {
     if (status) {
         return `<button type="button" class="status width100 btn btn-success">啟用</button>`;

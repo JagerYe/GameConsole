@@ -43,15 +43,20 @@ class OrderController extends Controller
                 $commodity = $commodityDAO->getOneByID($shoppingCart[$i]->id);
                 if ($commodity === false) {
                     array_splice($rollbackShoppingCart, $i, 1);
+                    array_splice($shoppingCart, $i, 1);
                     $i--;
                     continue;
                 }
 
                 $orderDetail->setQuantity($shoppingCart[$i]->quantity);
                 if ($commodity['status'] === '0') {
-                    array_splice($shoppingCart, $i, 1);
-                    $i--;
+                    array_splice($rollbackShoppingCart, $i, 1);
                     throw new Exception("{$commodity['name']}已下架，請再確認購買商品");
+                }
+                if (!$jsonObj->persistenceShopping && $commodity['quantity'] <= 0) {
+                    $rollbackShoppingCart[$i]->quantity = 0;
+                    $this->success = 'Warning';
+                    throw new Exception("{$commodity['name']}已售完，再次按下結帳按鈕並不會加入已售完產品");
                 }
                 if (!$jsonObj->persistenceShopping && $shoppingCart[$i]->quantity > $commodity['quantity']) {
                     $this->success = 'Warning';
@@ -62,10 +67,12 @@ class OrderController extends Controller
                     continue;
                 }
 
-                $commodity['quantity'] = $shoppingCart[$i]->quantity;
-                $orderDetails[] = $commodity;
-                array_splice($shoppingCart, $i, 1);
-                $i--;
+                if ($commodity['quantity'] > 0) {
+                    $commodity['quantity'] = $shoppingCart[$i]->quantity;
+                    $orderDetails[] = $commodity;
+                    array_splice($shoppingCart, $i, 1);
+                    $i--;
+                }
             }
 
 
