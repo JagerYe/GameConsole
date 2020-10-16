@@ -192,6 +192,7 @@
                         showLastID = parseInt(item.id);
                     }
 
+                    updateListener();
                     lastID = parseInt(json.result.lastID);
                     getItemProcessing = false;
                     $(window).trigger('scroll');

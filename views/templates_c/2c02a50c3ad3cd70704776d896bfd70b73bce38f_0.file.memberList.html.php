@@ -1,4 +1,28 @@
-<!DOCTYPE html>
+<?php
+/* Smarty version 3.1.34-dev-7, created on 2020-10-16 03:56:09
+  from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/memberList.html' */
+
+/* @var Smarty_Internal_Template $_smarty_tpl */
+if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
+  'version' => '3.1.34-dev-7',
+  'unifunc' => 'content_5f88fdb96c7d82_27402809',
+  'has_nocache_code' => false,
+  'file_dependency' => 
+  array (
+    '2c02a50c3ad3cd70704776d896bfd70b73bce38f' => 
+    array (
+      0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/memberList.html',
+      1 => 1602813366,
+      2 => 'file',
+    ),
+  ),
+  'includes' => 
+  array (
+    'file:./navigationBar.html' => 1,
+  ),
+),false)) {
+function content_5f88fdb96c7d82_27402809 (Smarty_Internal_Template $_smarty_tpl) {
+?><!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -18,21 +42,29 @@
     <link href="/GameConsole/views/css/starter-template.css" rel="stylesheet">
 
     <!-- Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    <?php echo '<script'; ?>
+ src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
         integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
         integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous"><?php echo '</script'; ?>
+>
 
     <!-- ajax -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    {{if !(isset($memSee))}}
+    <?php echo '<script'; ?>
+ src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"><?php echo '</script'; ?>
+>
+    <?php if (!((isset($_smarty_tpl->tpl_vars['memSee']->value)))) {?>
     <meta http-equiv="refresh" content="0;url=/GameConsole/employee/getUpdateSelfView">
-    {{/if}}
+    <?php }?>
 </head>
 <style>
     .topImgBtn {
@@ -57,17 +89,32 @@
         padding: 0;
     }
 </style>
-<script src="/GameConsole/views/js/jsonFormat.js"></script>
-<script src="/GameConsole/views/js/title.js"></script>
-<script src="/GameConsole/views/js/viewModels/orderViewModel.js"></script>
-<script src="/GameConsole/views/js/viewModels/memberViewModel.js"></script>
-<script>
-    let memUse = '{{if isset($memUse)&&$memUse}}{{$memUse}}{{/if}}';
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/jsonFormat.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/title.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/viewModels/orderViewModel.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+ src="/GameConsole/views/js/viewModels/memberViewModel.js"><?php echo '</script'; ?>
+>
+<?php echo '<script'; ?>
+>
+    let memUse = '<?php if ((isset($_smarty_tpl->tpl_vars['memUse']->value)) && $_smarty_tpl->tpl_vars['memUse']->value) {
+echo $_smarty_tpl->tpl_vars['memUse']->value;
+}?>';
     memUse = (memUse.length > 0 || memUse === '1') ? true : false;
     let getItemProcessing = false;//取得其他項目執行狀態
     let getLastIDProcessing = false;//取得最後ID執行狀態
-    let lastID = '{{if isset($lastID)}}{{$lastID}}{{/if}}';
-    let showLastID = '{{if isset($showLastID)}}{{$showLastID}}{{/if}}';
+    let lastID = '<?php if ((isset($_smarty_tpl->tpl_vars['lastID']->value))) {
+echo $_smarty_tpl->tpl_vars['lastID']->value;
+}?>';
+    let showLastID = '<?php if ((isset($_smarty_tpl->tpl_vars['showLastID']->value))) {
+echo $_smarty_tpl->tpl_vars['showLastID']->value;
+}?>';
     lastID = parseInt(lastID);
     showLastID = parseInt(showLastID);
 
@@ -162,9 +209,11 @@
 
 
 
-</script>
-{{if isset($memUse)&&$memUse}}
-<script>
+<?php echo '</script'; ?>
+>
+<?php if ((isset($_smarty_tpl->tpl_vars['memUse']->value)) && $_smarty_tpl->tpl_vars['memUse']->value) {
+echo '<script'; ?>
+>
 
     function getOrderListBtnListener() {
         $('.orderListBtn').off('click').click(function () {
@@ -386,11 +435,13 @@
 
         });
     }
-</script>
-{{/if}}
+<?php echo '</script'; ?>
+>
+<?php }?>
 
 <body>
-    {{include file='./navigationBar.html'}}
+    <?php $_smarty_tpl->_subTemplateRender('file:./navigationBar.html', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
+?>
     <div class="blank"></div>
 
     <main class="container">
@@ -407,41 +458,55 @@
                     <th>目前狀態</th>
                     <th>創立時間</th>
                     <th>修改資料時間</th>
-                    {{if isset($memUse) && $memUse}}
+                    <?php if ((isset($_smarty_tpl->tpl_vars['memUse']->value)) && $_smarty_tpl->tpl_vars['memUse']->value) {?>
                     <th></th>
-                    {{/if}}
+                    <?php }?>
                 </tr>
             </thead>
 
 
             <tbody id="dataShow">
-                {{foreach $members as $member}}
+                <?php
+$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['members']->value, 'member');
+$_smarty_tpl->tpl_vars['member']->do_else = true;
+if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['member']->value) {
+$_smarty_tpl->tpl_vars['member']->do_else = false;
+?>
                 <tr class="oneMember">
-                    <td class="memberID">{{$member['id']}}</td>
-                    <td>{{$member['account']}}</td>
-                    <td>{{$member['name']}}</td>
-                    <td>{{$member['email']}}</td>
-                    <td>{{$member['phone']}}</td>
+                    <td class="memberID"><?php echo $_smarty_tpl->tpl_vars['member']->value['id'];?>
+</td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['member']->value['account'];?>
+</td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['member']->value['name'];?>
+</td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['member']->value['email'];?>
+</td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['member']->value['phone'];?>
+</td>
                     <td>
-                        {{if $member['status']==='1'}}
+                        <?php if ($_smarty_tpl->tpl_vars['member']->value['status'] === '1') {?>
                         <button type="button" class="status width100 btn btn-success">啟用</button>
-                        {{else}}
+                        <?php } else { ?>
                         <button type="button" class="status width100 btn btn-danger">停用</button>
-                        {{/if}}
+                        <?php }?>
                     </td>
-                    <td>{{$member['creationDatetime']}}</td>
-                    <td>{{$member['changeDatetime']}}</td>
-                    {{if isset($memUse) && $memUse}}
+                    <td><?php echo $_smarty_tpl->tpl_vars['member']->value['creationDatetime'];?>
+</td>
+                    <td><?php echo $_smarty_tpl->tpl_vars['member']->value['changeDatetime'];?>
+</td>
+                    <?php if ((isset($_smarty_tpl->tpl_vars['memUse']->value)) && $_smarty_tpl->tpl_vars['memUse']->value) {?>
                     <td>
                         <button type="button" class="btn btn-info width100 orderListBtn">開啟訂單記錄</button>
                     </td>
-                    {{/if}}
+                    <?php }?>
                 </tr>
                 <tr class="hidden memberOrders info">
                     <td></td>
                     <td class="showOrder" colspan="8"></td>
                 </tr>
-                {{/foreach}}
+                <?php
+}
+$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
             </tbody>
 
 
@@ -451,4 +516,5 @@
 
 </body>
 
-</html>
+</html><?php }
+}

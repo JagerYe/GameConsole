@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.34-dev-7, created on 2020-10-15 09:09:09
+/* Smarty version 3.1.34-dev-7, created on 2020-10-16 03:16:22
   from '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/employeeList.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.34-dev-7',
-  'unifunc' => 'content_5f87f595e30bd1_84243237',
+  'unifunc' => 'content_5f88f4664ecb64_84027252',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'eae9421863c66dc9d84c4b62729d6f4a3058a32b' => 
     array (
       0 => '/Applications/XAMPP/xamppfiles/htdocs/GameConsole/views/pageBack/employeeList.html',
-      1 => 1602731579,
+      1 => 1602810980,
       2 => 'file',
     ),
   ),
@@ -21,7 +21,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:./navigationBar.html' => 1,
   ),
 ),false)) {
-function content_5f87f595e30bd1_84243237 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5f88f4664ecb64_84027252 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="en">
 
@@ -238,6 +238,7 @@ echo $_smarty_tpl->tpl_vars['showLastID']->value;
                         showLastID = parseInt(item.id);
                     }
 
+                    updateListener();
                     lastID = parseInt(json.result.lastID);
                     getItemProcessing = false;
                     $(window).trigger('scroll');

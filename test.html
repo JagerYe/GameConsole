@@ -39,8 +39,8 @@
         }
         $.ajax({
             type: 'POST',
-            url: '/GameConsole/employee/logout'
-            // data: { 1: JSON.stringify(data) }
+            url: '/GameConsole/employee/logout/ggininder/insert',
+            data: { 1: JSON.stringify(data) }
         }).then(function (e) {
             $("#re").html(e);
         });
